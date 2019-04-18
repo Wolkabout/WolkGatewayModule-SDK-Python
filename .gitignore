@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Sublime Text stuff
+*.sublime-workspace
+*.sublime-project
+sftp-config.json
