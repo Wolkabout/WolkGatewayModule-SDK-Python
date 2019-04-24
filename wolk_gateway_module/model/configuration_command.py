@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Optional
 from enum import Enum, unique, auto
 
 
@@ -31,4 +31,6 @@ class ConfigurationCommand:
     """Configuration command with command and optionally value."""
 
     command: ConfigurationCommandType
-    value: Dict[str, Union[int, float, str, Tuple]] = field(default=None)
+    value: Optional[Dict[str, Union[int, float, str, Tuple]]] = field(
+        default=None
+    )

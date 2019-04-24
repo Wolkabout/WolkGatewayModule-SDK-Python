@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass
-from typing import Union
+from typing import Optional
 
 
 @dataclass
@@ -31,4 +31,4 @@ class Alarm:
 
     reference: str
     active: bool
-    timestamp: Union[int, None]
+    timestamp: Optional[int]

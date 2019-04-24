@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Optional
 from enum import Enum, unique, auto
 
 
@@ -32,4 +32,4 @@ class ActuatorCommand:
 
     reference: str
     command: ActuatorCommandType
-    value: Union[int, float, str] = field(default=None)
+    value: Optional[Union[int, float, str]] = field(default=None)

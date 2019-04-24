@@ -13,31 +13,22 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from dataclasses import dataclass, field
+from typing import Optional
 
+
+@dataclass
 class AlarmTemplate:
-    """Alarm template for registering device on WolkAbout IoT Platform."""
+    """Alarm template for registering device on WolkAbout IoT Platform.
 
-    def __init__(self, name, reference, description=None):
-        """Alarm template for device registration request.
+    :ivar name: Alarm name
+    :vartype name: str
+    :ivar reference: Alarm reference
+    :vartype reference: str
+    :ivar description: Alarm description
+    :vartype description: str
+    """
 
-        :param name: Alarm name
-        :type name: str
-        :param reference: Alarm reference
-        :type reference: str
-        :param description: Alarm description
-        :type description: str or None
-        """
-        self.name = name
-        self.reference = reference
-        self.description = description
-
-    def __repr__(self):
-        """Make string representation of alarm template.
-
-        :returns: representation
-        :rtype: str
-        """
-        return (
-            f"AlarmTemplate(name='{self.name}', "
-            f"reference='{self.reference}', description='{self.description}')"
-        )
+    name: str
+    reference: str
+    description: Optional[str] = field(default="")

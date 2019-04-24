@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Optional
 
 
 @dataclass
@@ -28,4 +28,4 @@ class Message:
     """
 
     topic: str
-    payload: Union[bytes, str, None] = field(default=None)
+    payload: Optional[Union[bytes, str, None]] = field(default=None)

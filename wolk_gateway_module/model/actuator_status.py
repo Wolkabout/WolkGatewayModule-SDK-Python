@@ -13,8 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from dataclasses import dataclass
-from typing import Union
+from dataclasses import dataclass, field
+from typing import Union, Optional
 
 from actuator_state import ActuatorState
 
@@ -33,4 +33,4 @@ class ActuatorStatus:
 
     reference: str
     state: ActuatorState
-    value: Union[int, float, str, None]
+    value: Optional[Union[int, float, str]] = field(default=None)

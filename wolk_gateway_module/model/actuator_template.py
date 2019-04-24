@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from data_type import DataType
+from typing import Optional, Union
 
 
 class ActuatorTemplate:
@@ -35,14 +36,14 @@ class ActuatorTemplate:
 
     def __init__(
         self,
-        name,
-        reference,
-        data_type=None,
-        reading_type_name=None,
-        unit=None,
-        description=None,
-        minimum=None,
-        maximum=None,
+        name: str,
+        reference: str,
+        data_type: DataType = None,
+        reading_type_name: str = None,
+        unit: str = None,
+        description: str = None,
+        minimum: Optional[Union[int, float]] = None,
+        maximum: Optional[Union[int, float]] = None,
     ):
         """Actuator template for device registration request.
 

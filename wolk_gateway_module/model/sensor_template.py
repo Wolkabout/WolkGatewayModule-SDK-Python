@@ -13,8 +13,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from typing import Optional, Union
+
 from data_type import DataType
 from reading_type import ReadingType
+from reading_type_name import ReadingTypeName as Name
+from reading_type_measurement_unit import ReadingTypeMeasurementUnit as Unit
 
 
 class SensorTemplate:
@@ -36,14 +40,14 @@ class SensorTemplate:
 
     def __init__(
         self,
-        name,
-        reference,
-        data_type=None,
-        reading_type_name=None,
-        unit=None,
-        description=None,
-        minimum=None,
-        maximum=None,
+        name: str,
+        reference: str,
+        data_type: DataType = None,
+        reading_type_name: Name = None,
+        unit: Unit = None,
+        description: Optional[str] = None,
+        minimum: Optional[Union[int, float]] = None,
+        maximum: Optional[Union[int, float]] = None,
     ):
         """Sensor template for device registration request.
 

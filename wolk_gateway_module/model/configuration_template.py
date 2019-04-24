@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from data_type import DataType
+from typing import Optional, Union
 
 
 class ConfigurationTemplate:
@@ -41,15 +42,15 @@ class ConfigurationTemplate:
 
     def __init__(
         self,
-        name,
-        reference,
-        data_type,
-        description=None,
-        size=1,
-        labels=None,
-        default_value=None,
-        minimum=None,
-        maximum=None,
+        name: str,
+        reference: str,
+        data_type: DataType,
+        description: Optional[str] = None,
+        size: int = 1,
+        labels: Optional[str] = None,
+        default_value: Optional[Union[int, float]] = None,
+        minimum: Optional[Union[int, float]] = None,
+        maximum: Optional[Union[int, float]] = None,
     ):
         """Configuration template for device registration request.
 

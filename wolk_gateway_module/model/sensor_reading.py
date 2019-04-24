@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
 
 @dataclass
@@ -30,5 +30,7 @@ class SensorReading:
     """
 
     reference: str
-    value: Union[int, float, str, Tuple[int, float, str]]
-    timestamp: int = field(default=None)
+    value: Union[
+        int, float, str, Tuple[int, ...], Tuple[float, ...], Tuple[str, ...]
+    ]
+    timestamp: Optional[int] = field(default=None)

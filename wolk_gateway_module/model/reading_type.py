@@ -13,6 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from typing import Union, Optional
+
 from data_type import DataType
 from reading_type_name import ReadingTypeName as Name
 from reading_type_measurement_unit import ReadingTypeMeasurementUnit as Unit
@@ -37,7 +39,12 @@ class ReadingType:
     :vartype unit: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit or str
     """
 
-    def __init__(self, data_type=None, name=None, unit=None):
+    def __init__(
+        self,
+        data_type: Optional[DataType] = None,
+        name: Optional[Name] = None,
+        unit: Optional[Unit] = None,
+    ):
         """Reading type used for registering device's sensors.
 
         :param data_type: Data type for generic reading type
@@ -84,7 +91,7 @@ class ReadingType:
         return f"ReadingType(name='{self.name}', unit='{self.unit}')"
 
     @staticmethod
-    def validate(name, unit):
+    def validate(name, unit) -> bool:
         """Validate reading type name and measurement unit.
 
         :param name: Reading type name
@@ -357,3 +364,5 @@ class ReadingType:
             return True if unit == Unit.TEXT else False
         elif name == Name.GENERIC_BOOLEAN:
             return True if unit == Unit.BOOLEAN else False
+
+        assert False
