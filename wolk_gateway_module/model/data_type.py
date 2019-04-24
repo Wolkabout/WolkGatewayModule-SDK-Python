@@ -35,15 +35,3 @@ class DataType(Enum):
     NUMERIC = 0
     BOOLEAN = 1
     STRING = 2
-
-    @classmethod
-    def has_value(cls, value):
-        """Check if value is present in enumeration.
-
-        :param value: value to search for
-        :type value: str
-
-        :returns: present
-        :rtype: bool
-        """
-        return any(value == item.value for item in cls)

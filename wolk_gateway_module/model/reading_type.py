@@ -53,7 +53,7 @@ class ReadingType:
             raise ValueError("Nothing passed, can't create reading type")
 
         if data_type:
-            if not DataType.has_value(data_type):
+            if not isinstance(data_type, DataType):
                 raise ValueError("Invalid data type given")
             if data_type == DataType.NUMERIC:
                 self.name = Name.GENERIC
@@ -74,6 +74,14 @@ class ReadingType:
 
         self.name = name
         self.unit = unit
+
+    def __repr__(self):
+        """Make string representation of reading type.
+
+        :returns: representation
+        :rtype: str
+        """
+        return f"ReadingType(name='{self.name}', unit='{self.unit}')"
 
     @staticmethod
     def validate(name, unit):
