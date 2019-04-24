@@ -19,7 +19,7 @@ from enum import Enum, unique, auto
 
 
 @unique
-class Command(Enum):
+class ConfigurationCommandType(Enum):
     """Configuration command type."""
 
     GET = auto()
@@ -30,5 +30,5 @@ class Command(Enum):
 class ConfigurationCommand:
     """Configuration command with command and optionally value."""
 
-    command: Command
+    command: ConfigurationCommandType
     value: Dict[str, Union[int, float, str, Tuple]] = field(default=None)

@@ -19,7 +19,7 @@ from enum import Enum, unique, auto
 
 
 @unique
-class Command(Enum):
+class ActuatorCommandType(Enum):
     """Actuator command type."""
 
     GET = auto()
@@ -31,5 +31,5 @@ class ActuatorCommand:
     """Actuator command for reference with command and optionally value."""
 
     reference: str
-    command: Command
+    command: ActuatorCommandType
     value: Union[int, float, str] = field(default=None)
