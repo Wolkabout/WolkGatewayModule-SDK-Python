@@ -20,6 +20,27 @@ class RegistrationProtocol(ABC):
     """Parse inbound messages and serialize outbound registration messages."""
 
     @abstractmethod
+    def get_inbound_topics(self):
+        """Return list of inbound topics.
+
+        :returns: inbound_topics
+        :rtype: list
+        """
+        pass
+
+    @abstractmethod
+    def extract_device_key_from_message(self, message):
+        """Return device key from message.
+
+        :param message: Message received
+        :type message: wolk_gateway_module.model.message.Message
+
+        :returns: device_key
+        :rtype: str
+        """
+        pass
+
+    @abstractmethod
     def is_device_registration_response_message(self, message):
         """Check if message is device registration response.
 
@@ -32,13 +53,11 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_registration_request_message(
-        self, device_registration_request
-    ):
+    def make_device_registration_request_message(self, request):
         """Make message from device registration request.
 
-        :param device_registration_request: Device registration request
-        :type device_registration_request: wolk_gateway_module.model.device_registration_request.DeviceRegistrationRequest
+        :param request: Device registration request
+        :type request: wolk_gateway_module.model.device_registration_request.DeviceRegistrationRequest
 
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message

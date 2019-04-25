@@ -13,11 +13,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Union, Optional
+from typing import Optional
 
-from data_type import DataType
-from reading_type_name import ReadingTypeName as Name
-from reading_type_measurement_unit import ReadingTypeMeasurementUnit as Unit
+from model.data_type import DataType
+from model.reading_type_name import ReadingTypeName as Name
+from model.reading_type_measurement_unit import (
+    ReadingTypeMeasurementUnit as Unit,
+)
 
 
 class ReadingType:
@@ -73,7 +75,7 @@ class ReadingType:
                 self.unit = Unit.TEXT
             return
 
-        if not (name and unit):
+        if not (name and (isinstance(unit, str) or isinstance(unit, Unit))):
             raise ValueError("Both name and unit must be provided")
 
         if not ReadingType.validate(name, unit):

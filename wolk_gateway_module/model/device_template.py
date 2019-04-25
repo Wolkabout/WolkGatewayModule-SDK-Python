@@ -16,10 +16,10 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from actuator_template import ActuatorTemplate
-from alarm_template import AlarmTemplate
-from configuration_template import ConfigurationTemplate
-from sensor_template import SensorTemplate
+from model.actuator_template import ActuatorTemplate
+from model.alarm_template import AlarmTemplate
+from model.configuration_template import ConfigurationTemplate
+from model.sensor_template import SensorTemplate
 
 
 @dataclass
@@ -34,8 +34,8 @@ class DeviceTemplate:
     :vartype configurations: list(wolk_gateway_module.model.configuration_template.ConfigurationTemplate)
     :ivar connectivity_parameters: Device's connectivity parameters
     :vartype connectivity_parameters: dict
-    :ivar firmware_update_type: Device's firmware update type
-    :vartype firmware_update_type: str
+    :ivar supports_firmware_update: Is firmware update enabled for this device
+    :vartype supports_firmware_update: bool
     :ivar sensors: List of sensors on device
     :vartype sensors: list(wolk_gateway_module.model.sensor_template.SensorTemplate)
     :ivar type_parameters: Device's type parameters
@@ -48,7 +48,7 @@ class DeviceTemplate:
     alarms: List[AlarmTemplate] = field(default_factory=list)
     configurations: List[ConfigurationTemplate] = field(default_factory=list)
     sensors: List[SensorTemplate] = field(default_factory=list)
-    firmware_update_type: str = field(default="")
+    supports_firmware_update: bool = field(default=False)
     type_parameters: Dict = field(default_factory=dict)
     connectivity_parameters: Dict = field(default_factory=dict)
     firmware_update_parameters: Dict = field(default_factory=dict)

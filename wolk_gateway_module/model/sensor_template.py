@@ -15,10 +15,12 @@
 
 from typing import Optional, Union
 
-from data_type import DataType
-from reading_type import ReadingType
-from reading_type_name import ReadingTypeName as Name
-from reading_type_measurement_unit import ReadingTypeMeasurementUnit as Unit
+from model.data_type import DataType
+from model.reading_type import ReadingType
+from model.reading_type_name import ReadingTypeName as Name
+from model.reading_type_measurement_unit import (
+    ReadingTypeMeasurementUnit as Unit,
+)
 
 
 class SensorTemplate:
@@ -97,7 +99,10 @@ class SensorTemplate:
                 self.unit = ReadingType(DataType.STRING)
             return
 
-        if not (reading_type_name and unit):
+        if not (
+            reading_type_name
+            and (isinstance(unit, str) or isinstance(unit, Unit))
+        ):
             raise ValueError(
                 "Both reading type name and unit must be provided"
             )

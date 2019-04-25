@@ -13,8 +13,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from data_type import DataType
 from typing import Optional, Union
+
+from model.data_type import DataType
 
 
 class ConfigurationTemplate:

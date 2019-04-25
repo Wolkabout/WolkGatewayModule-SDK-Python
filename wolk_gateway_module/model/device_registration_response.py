@@ -15,7 +15,7 @@
 
 from dataclasses import dataclass, field
 
-from device_registration_response_result import (
+from model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
 
