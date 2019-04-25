@@ -32,11 +32,30 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_status_response_message(self, device_status):
+    def make_device_status_response_message(self, device_status, device_key):
         """Make message from device status response.
 
         :param device_status: Device's current status
         :type device_status: wolk_gateway_module.model.device_status.DeviceStatus
+        :param device_key: Device to which the status belongs to
+        :type device_key: str
+
+        :returns: message
+        :rtype: wolk_gateway_module.model.message.Message
+        """
+        pass
+
+    @abstractmethod
+    def make_device_status_update_message(self, device_status, device_key):
+        """Make message from device status update.
+
+        :param device_status: Device's current status
+        :type device_status: wolk_gateway_module.model.device_status.DeviceStatus
+        :param device_key: Device to which the status belongs to
+        :type device_key: str
+
+        :returns: message
+        :rtype: wolk_gateway_module.model.message.Message
         """
         pass
 
@@ -46,18 +65,6 @@ class StatusProtocol(ABC):
 
         :param device_keys: List of device keys
         :type device_keys: list(str)
-
-        :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
-        """
-        pass
-
-    @abstractmethod
-    def make_ping_request_message(self, device_key):
-        """Make message for ping request for device key.
-
-        :param device_key: Device requesting ping
-        :type device_key: str
 
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
