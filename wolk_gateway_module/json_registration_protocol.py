@@ -166,7 +166,9 @@ class JsonRegistrationProtocol(RegistrationProtocol):
 
         return Message(
             self.DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT,
-            json.dumps(request_dict),
+            json.dumps(request_dict, ensure_ascii=False)
+            .encode("utf-8")
+            .decode("utf-8"),
         )
 
     def make_device_registration_response(
