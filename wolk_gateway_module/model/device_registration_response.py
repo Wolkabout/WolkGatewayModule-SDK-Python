@@ -15,7 +15,7 @@
 
 from dataclasses import dataclass, field
 
-from model.device_registration_response_result import (
+from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
 

@@ -15,7 +15,7 @@
 
 from typing import Optional, Union
 
-from model.data_type import DataType
+from wolk_gateway_module.model.data_type import DataType
 
 
 class ConfigurationTemplate:

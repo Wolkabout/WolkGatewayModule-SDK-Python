@@ -16,10 +16,12 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from model.actuator_template import ActuatorTemplate
-from model.alarm_template import AlarmTemplate
-from model.configuration_template import ConfigurationTemplate
-from model.sensor_template import SensorTemplate
+from wolk_gateway_module.model.actuator_template import ActuatorTemplate
+from wolk_gateway_module.model.alarm_template import AlarmTemplate
+from wolk_gateway_module.model.configuration_template import (
+    ConfigurationTemplate,
+)
+from wolk_gateway_module.model.sensor_template import SensorTemplate
 
 
 @dataclass

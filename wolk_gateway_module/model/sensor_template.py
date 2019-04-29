@@ -15,10 +15,10 @@
 
 from typing import Optional, Union
 
-from model.data_type import DataType
-from model.reading_type import ReadingType
-from model.reading_type_name import ReadingTypeName as Name
-from model.reading_type_measurement_unit import (
+from wolk_gateway_module.model.data_type import DataType
+from wolk_gateway_module.model.reading_type import ReadingType
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName as Name
+from wolk_gateway_module.model.reading_type_measurement_unit import (
     ReadingTypeMeasurementUnit as Unit,
 )
 

@@ -15,15 +15,23 @@
 
 import json
 
-from protocol.registration_protocol import RegistrationProtocol
-from model.message import Message
-from model.device_registration_request import DeviceRegistrationRequest
-from model.device_registration_response import DeviceRegistrationResponse
-from model.device_registration_response_result import (
+from wolk_gateway_module.protocol.registration_protocol import (
+    RegistrationProtocol,
+)
+from wolk_gateway_module.model.message import Message
+from wolk_gateway_module.model.device_registration_request import (
+    DeviceRegistrationRequest,
+)
+from wolk_gateway_module.model.device_registration_response import (
+    DeviceRegistrationResponse,
+)
+from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
-from model.reading_type_name import ReadingTypeName
-from model.reading_type_measurement_unit import ReadingTypeMeasurementUnit
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName
+from wolk_gateway_module.model.reading_type_measurement_unit import (
+    ReadingTypeMeasurementUnit,
+)
 
 
 class JsonRegistrationProtocol(RegistrationProtocol):
