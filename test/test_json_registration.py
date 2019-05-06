@@ -27,6 +27,7 @@ from wolk_gateway_module.model.alarm_template import AlarmTemplate
 from wolk_gateway_module.model.configuration_template import (
     ConfigurationTemplate,
 )
+from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
 )
@@ -134,6 +135,239 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
         )
 
         self.assertEqual(expected_payload, json.loads(message.payload))
+
+    def test_simple_device_registration_request(self):
+        """Test registration request for simple device template."""
+        json_registration_protocol = JsonRegistrationProtocol()
+
+        device_name = "simple_device"
+        device_key = "simple_key"
+        temperature_sensor = SensorTemplate(
+            "Temperature",
+            "T",
+            reading_type_name=ReadingTypeName.TEMPERATURE,
+            unit=ReadingTypeMeasurementUnit.CELSIUS,
+            minimum=0,
+            maximum=100,
+            description="A temperature sensor",
+        )
+
+        sensors = [temperature_sensor]
+
+        device_template = DeviceTemplate(sensors=sensors)
+
+        device_registration_request = DeviceRegistrationRequest(
+            device_name, device_key, device_template
+        )
+
+        expected_payload = json.loads(
+            "{"
+            + '"name": "simple_device",'
+            + '"deviceKey": "simple_key",'
+            + '"defaultBinding": true,'
+            + '"sensors": ['
+            + '{"name": "Temperature", '
+            + '"reference": "T", '
+            + '"unit": {"readingTypeName": "TEMPERATURE", "symbol": "℃"}, '
+            + '"description": "A temperature sensor", '
+            + '"minimum": 0, '
+            + '"maximum": 100}],'
+            + '"actuators": [],'
+            + '"alarms": [],'
+            + '"configurations": [],'
+            + '"typeParameters": {},'
+            + '"connectivityParameters": {},'
+            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": false}'
+            + "}"
+        )
+
+        message = json_registration_protocol.make_device_registration_request_message(
+            device_registration_request
+        )
+
+        self.assertEqual(expected_payload, json.loads(message.payload))
+
+    def test_full_device_registration_request(self):
+        """Test registration request for full device template."""
+        json_registration_protocol = JsonRegistrationProtocol()
+
+        device_name = "full_device"
+        device_key = "full_key"
+        temperature_sensor = SensorTemplate(
+            "Temperature",
+            "T",
+            reading_type_name=ReadingTypeName.TEMPERATURE,
+            unit=ReadingTypeMeasurementUnit.CELSIUS,
+            minimum=0,
+            maximum=100,
+            description="A temperature sensor",
+        )
+        pressure_sensor = SensorTemplate(
+            "Pressure",
+            "P",
+            reading_type_name=ReadingTypeName.PRESSURE,
+            unit=ReadingTypeMeasurementUnit.MILLIBAR,
+            description="A pressure sensor",
+            minimum=300,
+            maximum=1200,
+        )
+        humidity_sensor = SensorTemplate(
+            "Humidity",
+            "H",
+            reading_type_name=ReadingTypeName.HUMIDITY,
+            unit=ReadingTypeMeasurementUnit.PERCENT,
+            description="A humidity sensor",
+            minimum=0,
+            maximum=100,
+        )
+
+        accelerometer_sensor = SensorTemplate(
+            "Accelerometer",
+            "ACL",
+            reading_type_name=ReadingTypeName.ACCELEROMETER,
+            unit=ReadingTypeMeasurementUnit.METRES_PER_SQUARE_SECOND,
+            description="An accelerometer sensor",
+            minimum=0,
+            maximum=100,
+        )
+
+        sensors = [
+            temperature_sensor,
+            pressure_sensor,
+            humidity_sensor,
+            accelerometer_sensor,
+        ]
+
+        high_humidity_alarm = AlarmTemplate(
+            "High Humidity", "HH", "High humidity has been detected"
+        )
+
+        alarms = [high_humidity_alarm]
+
+        slider_actuator = ActuatorTemplate(
+            "Slider", "SL", data_type=DataType.NUMERIC, minimum=0, maximum=100
+        )
+
+        switch_actuator = ActuatorTemplate(
+            "Switch", "SW", data_type=DataType.BOOLEAN
+        )
+
+        actuators = [switch_actuator, slider_actuator]
+
+        configuration_1 = ConfigurationTemplate(
+            "configuration_1",
+            "config_1",
+            DataType.NUMERIC,
+            minimum=0,
+            maximum=100,
+        )
+        configuration_2 = ConfigurationTemplate(
+            "configuration_2", "config_2", DataType.BOOLEAN
+        )
+        configuration_3 = ConfigurationTemplate(
+            "configuration_3", "config_3", DataType.STRING
+        )
+        configuration_4 = ConfigurationTemplate(
+            "configuration_4",
+            "config_4",
+            DataType.STRING,
+            size=3,
+            labels="a,b,c",
+        )
+
+        configurations = [
+            configuration_1,
+            configuration_2,
+            configuration_3,
+            configuration_4,
+        ]
+
+        device_template = DeviceTemplate(
+            actuators, alarms, configurations, sensors, True
+        )
+
+        device_registration_request = DeviceRegistrationRequest(
+            device_name, device_key, device_template
+        )
+
+        expected_payload = json.loads(
+            "{"
+            + '"name": "full_device",'
+            + '"deviceKey": "full_key",'
+            + '"defaultBinding": true,'
+            + '"sensors": ['
+            + '{"name": "Temperature", '
+            + '"reference": "T", '
+            + '"unit": {"readingTypeName": "TEMPERATURE", "symbol": "℃"}, '
+            + '"description": "A temperature sensor", '
+            + '"minimum": 0, '
+            + '"maximum": 100},'
+            + '{"name": "Pressure", "reference": "P", '
+            + '"unit": {"readingTypeName": "PRESSURE", "symbol": "mb"}, '
+            + '"description": "A pressure sensor", '
+            + '"minimum": 300, "maximum": 1200}, '
+            + '{"name": "Humidity", "reference": "H", '
+            + '"unit": {"readingTypeName": "HUMIDITY", "symbol": "%"}, '
+            + '"description": "A humidity sensor", '
+            + '"minimum": 0, "maximum": 100}, '
+            + '{"name": "Accelerometer", "reference": "ACL", '
+            + '"unit": {"readingTypeName": "ACCELEROMETER", "symbol":"m/s²"},'
+            + '"description": "An accelerometer sensor", '
+            + '"minimum": 0, "maximum": 100}],'
+            + '"actuators": [{"name": "Switch", "reference": "SW", '
+            + '"description": null, "minimum": null, "maximum": null, '
+            + '"unit": {"readingTypeName": "SWITCH(ACTUATOR)", "symbol": ""}},'
+            + '{"name": "Slider", "reference": "SL", "description": null, '
+            + '"minimum": 0, "maximum": 100, '
+            + '"unit": {"readingTypeName": "COUNT(ACTUATOR)", '
+            + '"symbol": "count"}}],'
+            + '"alarms": [{"name": "High Humidity", "reference": "HH", '
+            + '"description": "High humidity has been detected"}],'
+            + '"configurations": [{"name": "configuration_1", '
+            + '"reference": "config_1", "description": null, '
+            + '"defaultValue": null, "size": 1, "labels": null, "minimum": 0,'
+            + '"maximum": 100, "dataType": "NUMERIC"}, '
+            + '{"name": "configuration_2", "reference": "config_2", '
+            + '"description": null, "defaultValue": null, "size": 1, '
+            + '"labels": null, "minimum": null, "maximum": null, '
+            + '"dataType": "BOOLEAN"}, '
+            + '{"name": "configuration_3", "reference": "config_3", '
+            + '"description": null, "defaultValue": null, "size": 1, '
+            + '"labels": null, "minimum": null, "maximum": null, '
+            + '"dataType": "STRING"}, '
+            + '{"name": "configuration_4", "reference": "config_4", '
+            + '"description": null, "defaultValue": null, "size": 3, '
+            + '"labels": "a,b,c", "minimum": null, "maximum": null, '
+            + '"dataType": "STRING"}],'
+            + '"typeParameters": {},'
+            + '"connectivityParameters": {},'
+            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": true}'
+            + "}"
+        )
+
+        message = json_registration_protocol.make_device_registration_request_message(
+            device_registration_request
+        )
+
+        self.assertEqual(expected_payload, json.loads(message.payload))
+
+
+def test_make_device_registration_response(self):
+    """Test for valid response parsing."""
+    json_registration_protocol = JsonRegistrationProtocol()
+    message = Message(
+        "", '{"payload":{"device_key":"some_key"}, "result":"OK"}'
+    )
+
+    expected = DeviceRegistrationResponse(
+        "some_key", DeviceRegistrationResponseResult.OK
+    )
+
+    deserialized = json_registration_protocol.make_device_registration_response(
+        message
+    )
+
+    self.assertEqual(expected, deserialized)
 
 
 if __name__ == "__main__":
