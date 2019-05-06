@@ -20,6 +20,15 @@ class DataProtocol(ABC):
     """Parse inbound messages and serialize outbound messages."""
 
     @abstractmethod
+    def get_inbound_topics(self):
+        """Return list of inbound topics.
+
+        :returns: inbound_topics
+        :rtype: list
+        """
+        pass
+
+    @abstractmethod
     def is_actuator_get_message(self, message):
         """Check if message is actuator get command.
 

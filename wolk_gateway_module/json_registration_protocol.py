@@ -185,7 +185,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """Make device registration response from message.
 
         :param message: Message received
-        :rtpe message: wolk_gateway_module.model.message.Message
+        :rtype message: wolk_gateway_module.model.message.Message
 
         :returns: device_registration_response
         :rtype: wolk_gateway_module.model.device_registration_response.DeviceRegistrationResponse
@@ -193,11 +193,12 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         response = json.loads(message.payload)
 
         if response["result"] in [
-            e.value for e in DeviceRegistrationResponseResult
+            enumeration.value
+            for enumeration in DeviceRegistrationResponseResult
         ]:
-            for e in DeviceRegistrationResponseResult:
-                if response["result"] == e.value:
-                    result = e
+            for enumeration in DeviceRegistrationResponseResult:
+                if response["result"] == enumeration.value:
+                    result = enumeration
                     break
         else:
             result = DeviceRegistrationResponseResult.ERROR_UNKNOWN

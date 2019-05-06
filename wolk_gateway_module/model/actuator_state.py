@@ -22,13 +22,13 @@ class ActuatorState(Enum):
     """Enumeration of available actuator states.
 
     :ivar BUSY: Actuator currently in busy state
-    :vartype BUSY: int
+    :vartype BUSY: str
     :ivar ERROR: Actuator currently in error state
-    :vartype ERROR: int
+    :vartype ERROR: str
     :ivar READY: Actuator currently in ready state
-    :vartype READY: int
+    :vartype READY: str
     """
 
-    READY = 0
-    BUSY = 1
-    ERROR = 2
+    READY = "READY"
+    BUSY = "BUSY"
+    ERROR = "ERROR"
