@@ -17,10 +17,10 @@ from typing import Optional, Union
 
 from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.reading_type import ReadingType
-from wolk_gateway_module.model.reading_type_name import ReadingTypeName as Name
 from wolk_gateway_module.model.reading_type_measurement_unit import (
     ReadingTypeMeasurementUnit as Unit,
 )
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName as Name
 
 
 class SensorTemplate:

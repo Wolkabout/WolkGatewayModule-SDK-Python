@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Union, Optional
+from typing import Optional, Union
 
 
 @dataclass

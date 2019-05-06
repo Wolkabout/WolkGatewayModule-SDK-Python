@@ -14,18 +14,18 @@
 #   limitations under the License.
 
 import json
-import unittest
-
 import sys
+import unittest
 
 sys.path.append("..")  # noqa
 
 from wolk_gateway_module.json_registration_protocol import (
     JsonRegistrationProtocol,
 )
-from wolk_gateway_module.model.message import Message
-from wolk_gateway_module.protocol.registration_protocol import (
-    RegistrationProtocol,
+from wolk_gateway_module.model.actuator_template import ActuatorTemplate
+from wolk_gateway_module.model.alarm_template import AlarmTemplate
+from wolk_gateway_module.model.configuration_template import (
+    ConfigurationTemplate,
 )
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
@@ -37,16 +37,15 @@ from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
 from wolk_gateway_module.model.device_template import DeviceTemplate
-from wolk_gateway_module.model.reading_type_name import ReadingTypeName
+from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.model.reading_type_measurement_unit import (
     ReadingTypeMeasurementUnit,
 )
-from wolk_gateway_module.model.actuator_template import ActuatorTemplate
-from wolk_gateway_module.model.alarm_template import AlarmTemplate
-from wolk_gateway_module.model.configuration_template import (
-    ConfigurationTemplate,
-)
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName
 from wolk_gateway_module.model.sensor_template import SensorTemplate
+from wolk_gateway_module.protocol.registration_protocol import (
+    RegistrationProtocol,
+)
 
 
 class JsonRegistrationProtocolTests(unittest.TestCase):
@@ -103,7 +102,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             True,
         )
 
-    def test_make_device_registration_request_message(self):
+    def test_empty_device_registration_request(self):
         """Test registration request for empty device template."""
         json_registration_protocol = JsonRegistrationProtocol()
 

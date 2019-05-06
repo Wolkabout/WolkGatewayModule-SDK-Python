@@ -15,20 +15,20 @@
 
 import json
 
-from wolk_gateway_module.protocol.data_protocol import DataProtocol
-from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.model.actuator_command import (
     ActuatorCommand,
     ActuatorCommandType,
 )
+from wolk_gateway_module.model.actuator_state import ActuatorState
+from wolk_gateway_module.model.actuator_status import ActuatorStatus
+from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.configuration_command import (
     ConfigurationCommand,
     ConfigurationCommandType,
 )
+from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.model.sensor_reading import SensorReading
-from wolk_gateway_module.model.alarm import Alarm
-from wolk_gateway_module.model.actuator_status import ActuatorStatus
-from wolk_gateway_module.model.actuator_state import ActuatorState
+from wolk_gateway_module.protocol.data_protocol import DataProtocol
 
 
 class JsonDataProtocol(DataProtocol):
