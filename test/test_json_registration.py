@@ -96,11 +96,10 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
 
         message = Message(self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT)
 
-        self.assertEqual(
+        self.assertTrue(
             json_registration_protocol.is_device_registration_response_message(
                 message
-            ),
-            True,
+            )
         )
 
     def test_empty_device_registration_request(self):

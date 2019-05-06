@@ -121,7 +121,7 @@ class JsonDataProtocol(DataProtocol):
         reference = message.topic.split("/")[-1]
         if self.is_actuator_set_message(message):
             command = ActuatorCommandType.SET
-            payload = json.loads(message.payload.decode("utf-8"))
+            payload = json.loads(message.payload)
             value = payload["value"]
         elif self.is_actuator_get_message(message):
             command = ActuatorCommandType.GET
@@ -142,8 +142,30 @@ class JsonDataProtocol(DataProtocol):
         """
         if self.is_configuration_set_message(message):
             command = ConfigurationCommandType.SET
-            payload = json.loads(message.payload.decode("utf-8"))
+            payload = json.loads(message.payload)
             values = payload["values"]
+            for reference, value in values.items():
+                if "\n" in str(value):
+                    value = value.replace("\n", "\\n")
+                    value = value.replace("\r", "")
+
+                if isinstance(value, bool):
+                    pass
+                else:
+                    if "," in value:
+                        values_list = value.split(",")
+                        try:
+                            if any("." in value for value in values_list):
+                                values_list = [
+                                    float(value) for value in values_list
+                                ]
+                            else:
+                                values_list = [
+                                    int(value) for value in values_list
+                                ]
+                        except ValueError:
+                            pass
+                        values[reference] = tuple(values_list)
         elif self.is_configuration_get_message(message):
             command = ConfigurationCommandType.GET
             values = None

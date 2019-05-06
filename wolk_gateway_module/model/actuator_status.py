@@ -16,7 +16,7 @@
 from dataclasses import dataclass, field
 from typing import Optional, Union
 
-from actuator_state import ActuatorState
+from wolk_gateway_module.model.actuator_state import ActuatorState
 
 
 @dataclass
