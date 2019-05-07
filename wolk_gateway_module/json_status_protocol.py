@@ -13,23 +13,33 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from abc import ABC, abstractmethod
+import json
+
+from wolk_gateway_module.model.device_status import DeviceStatus
+from wolk_gateway_module.model.message import Message
+from wolk_gateway_module.protocol.status_protocol import StatusProtocol
 
 
-class StatusProtocol(ABC):
+class JsonStatusProtocol(StatusProtocol):
     """Parse inbound messages and serialize device status messages."""
 
-    @abstractmethod
+    DEVICE_PATH_PREFIX = "d/"
+    DEVICE_STATUS_UPDATE_TOPIC_ROOT = "d2p/subdevice_status_update/"
+    DEVICE_STATUS_RESPONSE_TOPIC_ROOT = "d2p/subdevice_status_response/"
+    DEVICE_STATUS_REQUEST_TOPIC_ROOT = "p2d/subdevice_status_request/"
+    LAST_WILL_TOPIC = "lastwill"
+
     def get_inbound_topics(self):
         """Return list of inbound topics.
 
         :returns: topics
         :rtype: list
         """
-        pass
+        return [
+            self.DEVICE_STATUS_REQUEST_TOPIC_ROOT + self.DEVICE_PATH_PREFIX
+        ]
 
-    @abstractmethod
-    def is_device_status_request_message(self, message):
+    def is_device_status_request_message(self, message: Message) -> bool:
         """Check if message is device status request.
 
         :param message: Message received
@@ -38,10 +48,11 @@ class StatusProtocol(ABC):
         :returns: is_device_status_request
         :rtype: bool
         """
-        pass
+        return message.topic.startswith(self.DEVICE_STATUS_REQUEST_TOPIC_ROOT)
 
-    @abstractmethod
-    def make_device_status_response_message(self, device_status, device_key):
+    def make_device_status_response_message(
+        self, device_status: DeviceStatus, device_key: str
+    ) -> Message:
         """Make message from device status response.
 
         :param device_status: Device's current status
@@ -52,10 +63,16 @@ class StatusProtocol(ABC):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        pass
+        return Message(
+            self.DEVICE_STATUS_RESPONSE_TOPIC_ROOT
+            + self.DEVICE_PATH_PREFIX
+            + device_key,
+            json.dumps({"state": device_status.value}),
+        )
 
-    @abstractmethod
-    def make_device_status_update_message(self, device_status, device_key):
+    def make_device_status_update_message(
+        self, device_status: DeviceStatus, device_key: str
+    ) -> Message:
         """Make message from device status update.
 
         :param device_status: Device's current status
@@ -66,10 +83,14 @@ class StatusProtocol(ABC):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        pass
+        return Message(
+            self.DEVICE_STATUS_UPDATE_TOPIC_ROOT
+            + self.DEVICE_PATH_PREFIX
+            + device_key,
+            json.dumps({"state": device_status.value}),
+        )
 
-    @abstractmethod
-    def make_last_will_message(self, device_keys):
+    def make_last_will_message(self, device_keys: list) -> Message:
         """Make last will message from list of device keys.
 
         :param device_keys: List of device keys
@@ -78,4 +99,4 @@ class StatusProtocol(ABC):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        pass
+        return Message(self.LAST_WILL_TOPIC, json.dumps(device_keys))

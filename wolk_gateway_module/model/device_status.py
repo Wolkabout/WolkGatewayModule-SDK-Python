@@ -21,16 +21,16 @@ class DeviceStatus(Enum):
     """Enumeration of available device statuses.
 
     :ivar CONNECTED: Device currently connected
-    :vartype CONNECTED: int
+    :vartype CONNECTED: str
     :ivar OFFLINE: Device currently offline
-    :vartype OFFLINE: int
-    :ivar SERVICE: Device currently in service mode
-    :vartype SERVICE: int
+    :vartype OFFLINE: str
+    :ivar SERVICE_MODE: Device currently in service mode
+    :vartype SERVICE_MODE: str
     :ivar SLEEP: Device currently in sleep mode
-    :vartype SLEEP: int
+    :vartype SLEEP: str
     """
 
-    CONNECTED = 0
-    OFFLINE = 1
-    SLEEP = 2
-    SERVICE = 3
+    CONNECTED = "CONNECTED"
+    OFFLINE = "OFFLINE"
+    SLEEP = "SLEEP"
+    SERVICE_MODE = "SERVICE_MODE"
