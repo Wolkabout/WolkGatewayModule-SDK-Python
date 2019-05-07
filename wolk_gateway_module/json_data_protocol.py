@@ -203,7 +203,10 @@ class JsonDataProtocol(DataProtocol):
             sensor_reading.value = "".join(map(str, values_list))
 
         payload = json.dumps(
-            {"data": sensor_reading.value, "utc": sensor_reading.timestamp}
+            {
+                "data": str(sensor_reading.value),
+                "utc": sensor_reading.timestamp,
+            }
         )
 
         return Message(topic, payload)
@@ -263,7 +266,7 @@ class JsonDataProtocol(DataProtocol):
         payload = json.dumps(
             {
                 "status": actuator_status.state.value,
-                "value": actuator_status.value,
+                "value": str(actuator_status.value),
             }
         )
 
@@ -286,7 +289,7 @@ class JsonDataProtocol(DataProtocol):
             self.CONFIGURATION_STATUS + self.DEVICE_PATH_PREFIX + device_key
         )
 
-        for reference, config_value in configuration.items:
+        for reference, config_value in configuration.items():
             if isinstance(config_value, tuple):
                 delimiter = ","
                 values_list = list()
@@ -304,7 +307,13 @@ class JsonDataProtocol(DataProtocol):
                     values_list.append(delimiter)
                 values_list.pop()
                 configuration[reference] = "".join(map(str, values_list))
+            else:
+                if config_value is True:
+                    config_value = "true"
+                elif config_value is False:
+                    config_value = "false"
+                configuration[reference] = str(config_value)
 
-        payload = json.dumps(configuration)
+        payload = json.dumps({"values": configuration})
 
         return Message(topic, payload)
