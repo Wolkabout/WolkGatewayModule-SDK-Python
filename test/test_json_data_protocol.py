@@ -253,6 +253,78 @@ class JsonDataProtocolTests(unittest.TestCase):
 
         self.assertEqual(expected, serialized)
 
+    def test_make_actuator_status_message(self):
+        """Test serializing of actuator status for device key."""
+        json_data_protocol = JsonDataProtocol()
+
+        device_key = "some_key"
+        reference = "REF"
+        actuator_status = ActuatorStatus(reference, ActuatorState.READY, 15)
+
+        expected = Message(
+            self.ACTUATOR_STATUS
+            + self.DEVICE_PATH_PREFIX
+            + device_key
+            + self.REFERENCE_PATH_PREFIX
+            + reference,
+            json.dumps({"status": "READY", "value": "15"}),
+        )
+
+        serialized = json_data_protocol.make_actuator_status_message(
+            device_key, actuator_status
+        )
+
+        self.assertEqual(expected, serialized)
+
+    def test_make_multi_data_actuator_status_message(self):
+        """Test serializing of tuple actuator status for device key."""
+        json_data_protocol = JsonDataProtocol()
+
+        device_key = "some_key"
+        reference = "REF"
+        actuator_status = ActuatorStatus(
+            reference, ActuatorState.READY, (15, 12)
+        )
+
+        expected = Message(
+            self.ACTUATOR_STATUS
+            + self.DEVICE_PATH_PREFIX
+            + device_key
+            + self.REFERENCE_PATH_PREFIX
+            + reference,
+            json.dumps({"status": "READY", "value": "15,12"}),
+        )
+
+        serialized = json_data_protocol.make_actuator_status_message(
+            device_key, actuator_status
+        )
+
+        self.assertEqual(expected, serialized)
+
+    def test_make_configuration_message(self):
+        """Test serializing of configuration message for device key."""
+        json_data_protocol = JsonDataProtocol()
+
+        device_key = "some_key"
+        configuration = {
+            "ref1": False,
+            "ref2": 2,
+            "ref3": 4.4,
+            "ref4": ("a", "b"),
+        }
+
+        expected = Message(
+            self.CONFIGURATION_STATUS + self.DEVICE_PATH_PREFIX + device_key,
+            '{"values": {"ref1": "false", "ref2": "2",'
+            + ' "ref3": "4.4", "ref4": "a,b"}}',
+        )
+
+        serialized = json_data_protocol.make_configuration_message(
+            device_key, configuration
+        )
+
+        self.assertEqual(expected, serialized)
+
 
 if __name__ == "__main__":
     unittest.main()
