@@ -46,8 +46,11 @@ class JsonDataProtocol(DataProtocol):
     CONFIGURATION_GET = "p2d/configuration_get/"
     CONFIGURATION_STATUS = "d2p/configuration_get/"
 
-    def get_inbound_topics(self) -> list:
-        """Return list of inbound topics.
+    def get_inbound_topics_for_device(self, device_key: str) -> list:
+        """Return list of inbound topics for given device key.
+
+        :param device_key: Device key for which to create topics
+        :type device_key: str
 
         :returns: inbound_topics
         :rtype: list
@@ -55,14 +58,16 @@ class JsonDataProtocol(DataProtocol):
         return [
             self.ACTUATOR_SET
             + self.DEVICE_PATH_PREFIX
-            + self.CHANNEL_WILDCARD
-            + self.REFERENCE_PATH_PREFIX,
+            + device_key
+            + self.REFERENCE_PATH_PREFIX
+            + self.CHANNEL_WILDCARD,
             self.ACTUATOR_GET
             + self.DEVICE_PATH_PREFIX
-            + self.CHANNEL_WILDCARD
-            + self.REFERENCE_PATH_PREFIX,
-            self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX,
-            self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX,
+            + device_key
+            + self.REFERENCE_PATH_PREFIX
+            + self.CHANNEL_WILDCARD,
+            self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + device_key,
+            self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX + device_key,
         ]
 
     def is_actuator_get_message(self, message: Message) -> bool:

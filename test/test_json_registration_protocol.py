@@ -59,16 +59,19 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
         "p2d/register_subdevice_response/"
     )
 
-    def test_get_inbound_topics(self):
-        """Test that returned list is correct."""
+    def test_get_inbound_topics_for_device(self):
+        """Test that returned list is correct for given device key."""
         json_registration_protocol = JsonRegistrationProtocol()
+        device_key = "some_key"
 
         self.assertEqual(
-            json_registration_protocol.get_inbound_topics(),
+            json_registration_protocol.get_inbound_topics_for_device(
+                device_key
+            ),
             [
                 self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT
                 + self.DEVICE_PATH_PREFIX
-                + self.CHANNEL_WILDCARD
+                + device_key
             ],
         )
 

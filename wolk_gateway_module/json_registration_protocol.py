@@ -54,8 +54,11 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         "p2d/register_subdevice_response/"
     )
 
-    def get_inbound_topics(self) -> list:
-        """Return list of inbound topics.
+    def get_inbound_topics_for_device(self, device_key: str) -> list:
+        """Return list of inbound topics for given device key.
+
+        :param device_key: Device key for which to create topics
+        :type device_key: str
 
         :returns: inbound_topics
         :rtype: list
@@ -63,7 +66,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         return [
             self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
-            + self.CHANNEL_WILDCARD
+            + device_key
         ]
 
     def extract_device_key_from_message(self, message: Message) -> str:

@@ -51,23 +51,26 @@ class JsonDataProtocolTests(unittest.TestCase):
     CONFIGURATION_GET = "p2d/configuration_get/"
     CONFIGURATION_STATUS = "d2p/configuration_get/"
 
-    def test_get_inbound_topics(self):
+    def test_get_inbound_topics_for_device(self):
         """Test that returned list is correct."""
         json_data_protocol = JsonDataProtocol()
+        device_key = "some_key"
 
         self.assertEqual(
-            json_data_protocol.get_inbound_topics(),
+            json_data_protocol.get_inbound_topics_for_device(device_key),
             [
                 self.ACTUATOR_SET
                 + self.DEVICE_PATH_PREFIX
-                + self.CHANNEL_WILDCARD
-                + self.REFERENCE_PATH_PREFIX,
+                + device_key
+                + self.REFERENCE_PATH_PREFIX
+                + self.CHANNEL_WILDCARD,
                 self.ACTUATOR_GET
                 + self.DEVICE_PATH_PREFIX
-                + self.CHANNEL_WILDCARD
-                + self.REFERENCE_PATH_PREFIX,
-                self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX,
-                self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX,
+                + device_key
+                + self.REFERENCE_PATH_PREFIX
+                + self.CHANNEL_WILDCARD,
+                self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + device_key,
+                self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX + device_key,
             ],
         )
 

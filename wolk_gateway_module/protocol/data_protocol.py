@@ -20,8 +20,11 @@ class DataProtocol(ABC):
     """Parse inbound messages and serialize outbound messages."""
 
     @abstractmethod
-    def get_inbound_topics(self):
-        """Return list of inbound topics.
+    def get_inbound_topics_for_device(self, device_key):
+        """Return list of inbound topics for given device key.
+
+        :param device_key: Device key for which to create topics
+        :type device_key: str
 
         :returns: inbound_topics
         :rtype: list

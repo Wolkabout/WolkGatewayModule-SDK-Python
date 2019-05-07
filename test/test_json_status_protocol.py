@@ -33,13 +33,18 @@ class JsonStatusProtocolTests(unittest.TestCase):
     DEVICE_STATUS_REQUEST_TOPIC_ROOT = "p2d/subdevice_status_request/"
     LAST_WILL_TOPIC = "lastwill"
 
-    def test_get_inbound_topics(self):
-        """Test that returned list is correct."""
+    def test_get_inbound_topics_for_device(self):
+        """Test that returned list is correctfor given device key."""
         json_status_protocol = JsonStatusProtocol()
+        device_key = "some_key"
 
         self.assertEqual(
-            [self.DEVICE_STATUS_REQUEST_TOPIC_ROOT + self.DEVICE_PATH_PREFIX],
-            json_status_protocol.get_inbound_topics(),
+            [
+                self.DEVICE_STATUS_REQUEST_TOPIC_ROOT
+                + self.DEVICE_PATH_PREFIX
+                + device_key
+            ],
+            json_status_protocol.get_inbound_topics_for_device(device_key),
         )
 
     def test_is_device_status_request_message(self):
