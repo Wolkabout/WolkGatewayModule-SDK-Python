@@ -81,6 +81,34 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
             ),
         )
 
+    def test_make_firmware_update_error_file_system_status_message(self):
+        """Test that firmware update status message is created correctly."""
+        json_firmware_update_protocol = JsonFirmwareUpdateProtocol()
+        device_key = "some_key"
+        status = FirmwareUpdateStatus(
+            FirmwareUpdateState.INSTALLATION,
+            FirmwareUpdateErrorCode.FILE_SYSTEM_ERROR,
+        )
+
+        expected = Message(
+            self.FIRMWARE_UPDATE_STATUS_TOPIC_ROOT
+            + self.DEVICE_PATH_PREFIX
+            + device_key,
+            json.dumps(
+                {
+                    "status": status.status.value,
+                    "error": status.error_code.value,
+                }
+            ),
+        )
+
+        self.assertEqual(
+            expected,
+            json_firmware_update_protocol.make_firmware_update_status_message(
+                device_key, status
+            ),
+        )
+
     def test_make_firmware_version_message(self):
         """Test that firmware version message is created correctly."""
         json_firmware_update_protocol = JsonFirmwareUpdateProtocol()
