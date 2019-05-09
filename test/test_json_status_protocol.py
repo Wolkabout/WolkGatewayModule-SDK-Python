@@ -1,4 +1,4 @@
-"""Handling of inbound and outbound messages related to device status."""
+"""Tests for JsonStatusProtocol."""
 #   Copyright 2019 WolkAbout Technology s.r.o.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
