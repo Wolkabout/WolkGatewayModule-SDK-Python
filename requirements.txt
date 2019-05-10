@@ -1,1 +1,1 @@
-pre-commit
+paho_mqtt==1.4.0
