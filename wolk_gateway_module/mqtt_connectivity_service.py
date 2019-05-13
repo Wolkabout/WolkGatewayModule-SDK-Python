@@ -142,8 +142,11 @@ class MQTTConnectivityService(ConnectivityService):
         :raises RuntimeError: Reason for connection being refused
         """
         self.connected = False
-        self.client.loop_stop()
-        self.client.disconnect()
+        try:
+            self.client.loop_stop()
+            self.client.disconnect()
+        except AttributeError:
+            pass
         try:
             return self.connect()
         except RuntimeError as exception:
@@ -151,11 +154,15 @@ class MQTTConnectivityService(ConnectivityService):
 
     def disconnect(self) -> None:
         """Terminate connection with WolkGateway."""
-        self.client.publish(
-            self.lastwill_message.topic, self.lastwill_message.payload
-        )
-        self.client.loop_stop()
-        self.client.disconnect()
+        try:
+            self.client.publish(
+                self.lastwill_message.topic, self.lastwill_message.payload
+            )
+            self.client.loop_stop()
+            self.client.disconnect()
+        except AttributeError:
+            pass
+        self.connected = False
 
     def publish(self, message: Message) -> bool:
         """Publish serialized data to WolkGateway.

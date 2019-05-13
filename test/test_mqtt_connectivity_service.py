@@ -94,7 +94,42 @@ class MQTTConnectivityServiceTests(unittest.TestCase):
         """Test that connect is called correctly."""
         self.set_up()
 
-        self.mqttcs.set_inbound_message_listener(self.mock_listener)
+        self.mqttcs.connected_rc = 0
+
+        self.assertTrue(self.mqttcs.connect())
+
+        self.tear_down()
+
+    def test_connect_raises_exception(self):
+        """Test that connect raises exception."""
+        self.set_up()
+
+        self.mqttcs.connected_rc = 5
+
+        try:
+            self.mqttcs.connect()
+        except Exception as expection:
+            self.assertTrue(isinstance(expection, RuntimeError))
+
+        self.tear_down()
+
+    def test_reconnect(self):
+        """Test that reconnection method will call connect."""
+        self.set_up()
+
+        self.mqttcs.connected_rc = 0
+
+        self.assertTrue(self.mqttcs.reconnect())
+
+        self.tear_down()
+
+    def test_publish_fails(self):
+        """Test that publishing fails when not connected."""
+        self.set_up()
+
+        message = Message("test")
+
+        self.assertFalse(self.mqttcs.publish(message))
 
         self.tear_down()
 
