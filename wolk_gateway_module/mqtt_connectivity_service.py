@@ -54,7 +54,7 @@ class MQTTConnectivityService(ConnectivityService):
         self.host = host
         self.port = port
         self.client_id = client_id
-        self.topics = topics if topics is not None else []
+        self.topics = topics
         self.qos = qos
         self.lastwill_message = lastwill_message
         self.inbound_message_listener = None
@@ -175,7 +175,9 @@ class MQTTConnectivityService(ConnectivityService):
         else:
             return info.is_published()
 
-    def _on_mqtt_message(self, client, userdata, message):
+    def _on_mqtt_message(
+        self, client: mqtt.Client, userdata: str, message: mqtt.MQTTMessage
+    ):
         """Parse inbound messages and pass them to message listener.
 
         :param client: Client that received the message
@@ -187,7 +189,9 @@ class MQTTConnectivityService(ConnectivityService):
         """
         self.inbound_message_listener(Message(message.topic, message.payload))
 
-    def _on_mqtt_connect(self, client, userdata, flags, rc):
+    def _on_mqtt_connect(
+        self, client: mqtt.Client, userdata: str, flags: int, rc: int
+    ):
         """
         Handle when the client receives a CONNACK response from the server.
 
