@@ -54,6 +54,14 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         "p2d/register_subdevice_response/"
     )
 
+    def __repr__(self):
+        """Make string representation of JsonRegistrationProtocol.
+
+        :returns: representation
+        :rtype: str
+        """
+        return "JsonRegistrationProtocol()"
+
     def get_inbound_topics_for_device(self, device_key: str) -> list:
         """Return list of inbound topics for given device key.
 

@@ -29,6 +29,14 @@ class JsonStatusProtocol(StatusProtocol):
     DEVICE_STATUS_REQUEST_TOPIC_ROOT = "p2d/subdevice_status_request/"
     LAST_WILL_TOPIC = "lastwill"
 
+    def __repr__(self):
+        """Make string representation of JsonStatusProtocol.
+
+        :returns: representation
+        :rtype: str
+        """
+        return "JsonStatusProtocol()"
+
     def get_inbound_topics_for_device(self, device_key: str) -> list:
         """Return list of inbound topics for given device key.
 

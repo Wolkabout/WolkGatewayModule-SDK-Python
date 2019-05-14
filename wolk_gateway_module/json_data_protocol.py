@@ -46,6 +46,14 @@ class JsonDataProtocol(DataProtocol):
     CONFIGURATION_GET = "p2d/configuration_get/"
     CONFIGURATION_STATUS = "d2p/configuration_get/"
 
+    def __repr__(self):
+        """Make string representation of JsonDataProtocol.
+
+        :returns: representation
+        :rtype: str
+        """
+        return "JsonDataProtocol()"
+
     def get_inbound_topics_for_device(self, device_key: str) -> list:
         """Return list of inbound topics for given device key.
 

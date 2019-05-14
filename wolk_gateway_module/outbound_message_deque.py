@@ -23,15 +23,24 @@ from wolk_gateway_module.model.message import Message
 
 
 class OutboundMessageDeque(OutboundMessageQueue):
-    """Responsible for storing messages before being sent to WolkGateway.
-
-        Messages are sent in the order they were added to the queue.
-
-        Storing readings and alarms without Unix timestamp will result
-        in all sent messages being treated as live readings and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via `int(round(time.time() * 1000))`
     """
+    Responsible for storing messages before being sent to WolkGateway.
+
+    Messages are sent in the order they were added to the queue.
+
+    Storing readings and alarms without Unix timestamp will result
+    in all sent messages being treated as live readings and
+    will be assigned a timestamp upon reception, so for a valid
+    history add timestamps to readings via `int(round(time.time() * 1000))`
+    """
+
+    def __repr__(self):
+        """Make string representation of OutboundMessageDeque.
+
+        :returns: representation
+        :rtype: str
+        """
+        return "OutboundMessageDeque()"
 
     def __init__(self):
         """Initialize a double ended queue for storing messages."""
