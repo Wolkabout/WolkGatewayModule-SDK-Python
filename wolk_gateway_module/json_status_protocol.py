@@ -29,7 +29,7 @@ class JsonStatusProtocol(StatusProtocol):
     DEVICE_STATUS_REQUEST_TOPIC_ROOT = "p2d/subdevice_status_request/"
     LAST_WILL_TOPIC = "lastwill"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of JsonStatusProtocol.
 
         :returns: representation
@@ -64,7 +64,7 @@ class JsonStatusProtocol(StatusProtocol):
         return message.topic.startswith(self.DEVICE_STATUS_REQUEST_TOPIC_ROOT)
 
     def make_device_status_response_message(
-        self, device_status: DeviceStatus, device_key: str
+        self, device_key: str, device_status: DeviceStatus
     ) -> Message:
         """Make message from device status response.
 
@@ -84,7 +84,7 @@ class JsonStatusProtocol(StatusProtocol):
         )
 
     def make_device_status_update_message(
-        self, device_status: DeviceStatus, device_key: str
+        self, device_key: str, device_status: DeviceStatus
     ) -> Message:
         """Make message from device status update.
 

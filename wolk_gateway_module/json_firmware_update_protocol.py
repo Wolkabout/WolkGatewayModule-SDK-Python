@@ -35,7 +35,7 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
     FIRMWARE_UPDATE_STATUS_TOPIC_ROOT = "d2p/firmware_update_status/"
     FIRMWARE_VERSION_UPDATE_TOPIC_ROOT = "d2p/firmware_version_update/"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of JsonFirmwareUpdateProtocol.
 
         :returns: representation

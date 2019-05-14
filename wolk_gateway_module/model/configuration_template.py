@@ -94,7 +94,7 @@ class ConfigurationTemplate:
             raise ValueError("Invalid data type given")
         self.data_type = data_type
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of configuration template.
 
         :returns: representation

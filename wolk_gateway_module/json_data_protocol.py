@@ -46,7 +46,7 @@ class JsonDataProtocol(DataProtocol):
     CONFIGURATION_GET = "p2d/configuration_get/"
     CONFIGURATION_STATUS = "d2p/configuration_get/"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of JsonDataProtocol.
 
         :returns: representation

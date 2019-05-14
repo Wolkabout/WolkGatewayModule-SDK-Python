@@ -15,7 +15,7 @@
 
 from dataclasses import dataclass, field
 
-from device_template import DeviceTemplate
+from wolk_gateway_module.model.device_template import DeviceTemplate
 
 
 @dataclass

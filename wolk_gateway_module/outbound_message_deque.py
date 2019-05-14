@@ -34,7 +34,7 @@ class OutboundMessageDeque(OutboundMessageQueue):
     history add timestamps to readings via `int(round(time.time() * 1000))`
     """
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of OutboundMessageDeque.
 
         :returns: representation

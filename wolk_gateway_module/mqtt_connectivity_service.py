@@ -27,7 +27,7 @@ from wolk_gateway_module.model.message import Message
 class MQTTConnectivityService(ConnectivityService):
     """Responsible for exchanging data with WolkGateway through MQTT."""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of MQTTConnectivityService.
 
         :returns: representation

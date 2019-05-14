@@ -100,7 +100,7 @@ class ActuatorTemplate:
             )
         self.unit = {"readingTypeName": reading_type_name, "symbol": unit}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of actuator template.
 
         :returns: representation

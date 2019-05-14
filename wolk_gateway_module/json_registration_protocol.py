@@ -54,7 +54,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         "p2d/register_subdevice_response/"
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Make string representation of JsonRegistrationProtocol.
 
         :returns: representation
