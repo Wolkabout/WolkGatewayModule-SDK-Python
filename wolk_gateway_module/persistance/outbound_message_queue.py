@@ -44,6 +44,31 @@ class OutboundMessageQueue(ABC):
         pass
 
     @abstractmethod
+    def remove(self, message):
+        """
+        Remove specific message from storage.
+
+        :returns: result
+        :rtype: bool
+        """
+        pass
+
+    @abstractmethod
+    def get_messages_for_device(self, device_key):
+        """
+        Return a list of messages that belong to a certain device.
+
+        Does not remove from storage.
+
+        :param device_key: Device identifier
+        :type device_key: str
+
+        :returns: messages
+        :rtype: List[Message]
+        """
+        pass
+
+    @abstractmethod
     def queue_size(self):
         """
         Return current number of messages in storage.

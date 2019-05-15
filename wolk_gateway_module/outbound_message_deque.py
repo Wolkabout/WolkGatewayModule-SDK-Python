@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from collections import deque
-from typing import Optional
+from typing import Optional, List
 
 from wolk_gateway_module.persistance.outbound_message_queue import (
     OutboundMessageQueue,
@@ -58,6 +58,38 @@ class OutboundMessageDeque(OutboundMessageQueue):
         """
         self.queue.append(message)
         return True
+
+    def remove(self, message: Message) -> bool:
+        """
+        Remove specific message from storage.
+
+        :returns: result
+        :rtype: bool
+        """
+        if message in self.queue:
+            self.queue.remove(message)
+            return True
+        return True
+
+    def get_messages_for_device(self, device_key: str) -> List[Message]:
+        """
+        Return a list of messages that belong to a certain device.
+
+        Does not remove from storage.
+
+        :param device_key: Device identifier
+        :type device_key: str
+
+        :returns: messages
+        :rtype: List[Message]
+        """
+        if self.queue_size() == 0:
+            return []
+        messages = []
+        for message in self.queue:
+            if device_key in message.topic:
+                messages.append(message)
+        return messages
 
     def get(self) -> Optional[Message]:
         """

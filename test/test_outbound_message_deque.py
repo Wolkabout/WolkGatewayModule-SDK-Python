@@ -19,6 +19,7 @@ import unittest
 sys.path.append("..")  # noqa
 
 from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
+from wolk_gateway_module.model.message import Message
 
 
 class OutboundMessageDequeTests(unittest.TestCase):
@@ -54,6 +55,49 @@ class OutboundMessageDequeTests(unittest.TestCase):
         deque.put(3)
 
         self.assertEqual(3, deque.queue_size())
+
+    def test_remove(self):
+        """Test removing from queue."""
+        deque = OutboundMessageDeque()
+        deque.put(1)
+        deque.put(2)
+        deque.put(3)
+
+        deque.remove(2)
+
+        self.assertEqual(2, deque.queue_size())
+
+    def test_get_no_messages_for_device(self):
+        """Test getting no messages for specific device from empty queue."""
+        deque = OutboundMessageDeque()
+        device_key = "some_key"
+
+        self.assertFalse(deque.get_messages_for_device(device_key))
+
+    def test_get_no_matching_messages_for_device(self):
+        """Test getting no messages for specific device from queue."""
+        deque = OutboundMessageDeque()
+        device_key = "some_key"
+
+        deque.put(Message("some_other_key"))
+        deque.put(Message("another_key"))
+        deque.put(Message("different_key"))
+
+        self.assertFalse(deque.get_messages_for_device(device_key))
+
+    def test_get_messages_for_device(self):
+        """Test getting some messages for specific device from queue."""
+        deque = OutboundMessageDeque()
+        device_key = "some_key"
+
+        deque.put(Message("some_key/2"))
+        deque.put(Message("another_key"))
+        deque.put(Message("some_key/1"))
+
+        self.assertEqual(
+            [Message("some_key/2"), Message("some_key/1")],
+            deque.get_messages_for_device(device_key),
+        )
 
 
 if __name__ == "__main__":
