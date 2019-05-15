@@ -56,7 +56,7 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_registration_request_message(self, request):
+    def make_registration_message(self, request):
         """Make message from device registration request.
 
         :param request: Device registration request

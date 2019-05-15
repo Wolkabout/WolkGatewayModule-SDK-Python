@@ -42,7 +42,7 @@ class MQTTConnectivityService(ConnectivityService):
             f"qos='{self.qos}', "
             f"lastwill_message='{self.lastwill_message}', "
             f"inbound_message_listener='{self.inbound_message_listener}', "
-            f"connected='{self.connected}')"
+            f"connected='{self._connected}')"
         )
 
     def __init__(
@@ -78,7 +78,7 @@ class MQTTConnectivityService(ConnectivityService):
         self.qos = qos
         self.lastwill_message = lastwill_message
         self.inbound_message_listener = None
-        self.connected = False
+        self._connected = False
 
         self.log.debug(self.__repr__())
 
@@ -96,7 +96,7 @@ class MQTTConnectivityService(ConnectivityService):
     def set_lastwill_message(self, message: Message) -> None:
         """Send offline state for module devices on disconnect."""
         self.log.debug(f"Set lastwill message: {message}")
-        if self.connected:
+        if self._connected:
             self.log.debug("Reconnecting to set lastwill")
             self.disconnect()
             self.lastwill_message = message
@@ -127,6 +127,14 @@ class MQTTConnectivityService(ConnectivityService):
             if device_key in topic:
                 self.topics.remove(topic)
 
+    def connected(self) -> bool:
+        """Return if currently connected.
+
+        :returns: connected
+        :rtype: bool
+        """
+        return self._connected
+
     def connect(self) -> bool:
         """Establish connection with WolkGateway.
 
@@ -135,7 +143,7 @@ class MQTTConnectivityService(ConnectivityService):
 
         :raises RuntimeError: Reason for connection being refused
         """
-        if self.connected:
+        if self._connected:
             self.log.debug("Already connected")
             return True
 
@@ -164,7 +172,7 @@ class MQTTConnectivityService(ConnectivityService):
                 continue
 
             if self.connected_rc == 0:
-                self.connected = True
+                self._connected = True
                 break
 
             elif self.connected_rc == 1:
@@ -192,7 +200,7 @@ class MQTTConnectivityService(ConnectivityService):
         for topic in self.topics:
             self.client.subscribe(topic, 2)
 
-        return self.connected
+        return self._connected
 
     def reconnect(self) -> bool:
         """Terminate existing and create new connection with WolkGateway.
@@ -203,7 +211,7 @@ class MQTTConnectivityService(ConnectivityService):
         :raises RuntimeError: Reason for connection being refused
         """
         self.log.debug("Attempting reconnect")
-        self.connected = False
+        self._connected = False
         try:
             self.client.loop_stop()
             self.client.disconnect()
@@ -225,7 +233,7 @@ class MQTTConnectivityService(ConnectivityService):
             self.client.disconnect()
         except AttributeError:
             pass
-        self.connected = False
+        self._connected = False
 
     def publish(self, message: Message) -> bool:
         """Publish serialized data to WolkGateway.
@@ -235,7 +243,7 @@ class MQTTConnectivityService(ConnectivityService):
         :returns: result
         :rtype: bool
         """
-        if not self.connected:
+        if not self._connected:
             self.log.warning(f"Not connected, unable to publish {message}")
             return False
 
@@ -278,7 +286,7 @@ class MQTTConnectivityService(ConnectivityService):
         """
         self.log.debug(f"CONNACK: {rc}")
         if rc == 0:  # Connection successful
-            self.connected = True
+            self._connected = True
             self.connected_rc = 0
             # Subscribing in on_mqtt_connect() means if we lose the connection
             # and reconnect then subscriptions will be renewed.
@@ -313,5 +321,5 @@ class MQTTConnectivityService(ConnectivityService):
         self.log.debug(f"Disconnect return code: {rc}")
         if rc != 0:
             raise RuntimeError("Unexpected disconnection.")
-        self.connected = False
+        self._connected = False
         self.connected_rc = None

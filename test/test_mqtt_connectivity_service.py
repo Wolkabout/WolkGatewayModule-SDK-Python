@@ -136,6 +136,14 @@ class MQTTConnectivityServiceTests(unittest.TestCase):
 
         self.tear_down()
 
+    def test_connected(self):
+        """Test connected returns false."""
+        self.set_up()
+
+        self.assertFalse(self.mqttcs.connected())
+
+        self.tear_down()
+
     def test_connect_raises_exception(self):
         """Test that connect raises exception."""
         self.set_up()

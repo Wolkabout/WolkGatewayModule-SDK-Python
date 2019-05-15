@@ -29,6 +29,10 @@ from wolk_gateway_module.mqtt_connectivity_service import (
 )
 from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
+from wolk_gateway_module.model.device import Device
+from wolk_gateway_module.model.device_registration_request import (
+    DeviceRegistrationRequest,
+)
 from wolk_gateway_module.model.device_status import DeviceStatus
 from wolk_gateway_module.model.actuator_state import ActuatorState
 from wolk_gateway_module.model.actuator_status import ActuatorStatus
@@ -463,7 +467,7 @@ class Wolk:
         message = self.data_protocol.make_actuator_status_message(
             device_key, status
         )
-        if self.connectivity_service.connected:
+        if self.connectivity_service.connected():
             if not self.connectivity_service.publish(message):
                 if not self.outbound_message_queue.put(message):
                     raise RuntimeError(
@@ -530,7 +534,7 @@ class Wolk:
         message = self.data_protocol.make_configuration_message(
             device_key, configuration
         )
-        if self.connectivity_service.connected:
+        if self.connectivity_service.connected():
             if not self.connectivity_service.publish(message):
                 if not self.outbound_message_queue.put(message):
                     raise RuntimeError(
@@ -540,3 +544,89 @@ class Wolk:
         else:
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
+
+    def add_device(self, device: Device) -> None:
+        """
+        Add device to module.
+
+        Will attempt to send a registration request and
+        update list of subscribed topics.
+
+        :param device: Device to be added to module
+        :type device: wolk_gateway_module.model.device.Device
+        """
+        self.log.debug(f"Add device: {device}")
+        if not isinstance(device, Device):
+            raise ValueError(
+                f"Given device is not an instance of Device class!"
+            )
+        if device.key in self.device_keys:
+            self.log.error(f"Device with key '{device.key}' was already added")
+            return
+
+        device_topics = []
+        device_topics.extend(
+            self.data_protocol.get_inbound_topics_for_device(device.key)
+        )
+        device_topics.extend(
+            self.registration_protocol.get_inbound_topics_for_device(
+                device.key
+            )
+        )
+        device_topics.extend(
+            self.firmware_update_protocol.get_inbound_topics_for_device(
+                device.key
+            )
+        )
+        device_topics.extend(
+            self.status_protocol.get_inbound_topics_for_device(device.key)
+        )
+
+        self.connectivity_service.add_subscription_topics(device_topics)
+
+        self.connectivity_service.set_lastwill_message(
+            self.status_protocol.make_last_will_message(self.device_keys)
+        )
+
+        registration_request = DeviceRegistrationRequest(
+            device.name, device.key, device.template
+        )
+
+        message = self.registration_protocol.make_registration_message(
+            registration_request
+        )
+
+        if not self.connectivity_service.connected():
+            if not self.outbound_message_queue.put(message):
+                raise RuntimeError(f"Unable to store message: {message}")
+        else:
+            if not self.connectivity_service.publish(message):
+                if not self.outbound_message_queue.put(message):
+                    raise RuntimeError(f"Unable to store message: {message}")
+
+    def remove_device(self, device_key: str) -> None:
+        """
+        Remove device from module.
+
+        Removes device for subscription topics and lastwill message.
+
+        :param device_key: Device identifier
+        :type device_key: str
+        """
+        self.log.debug(f"Removing device: {device_key}")
+        if device_key not in self.device_keys:
+            return
+
+        self.device_keys.remove(device_key)
+
+        self.connectivity_service.remove_topics_for_device(device_key)
+
+        self.connectivity_service.set_lastwill_message(
+            self.status_protocol.make_last_will_message(self.device_keys)
+        )
+
+        if self.connectivity_service.connected():
+            try:
+                self.connectivity_service.reconnect()
+            except RuntimeError as e:
+                raise e

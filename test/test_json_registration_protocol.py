@@ -132,7 +132,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + "}"
         )
 
-        message = json_registration_protocol.make_device_registration_request_message(
+        message = json_registration_protocol.make_registration_message(
             device_registration_request
         )
 
@@ -183,7 +183,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + "}"
         )
 
-        message = json_registration_protocol.make_device_registration_request_message(
+        message = json_registration_protocol.make_registration_message(
             device_registration_request
         )
 
@@ -347,7 +347,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + "}"
         )
 
-        message = json_registration_protocol.make_device_registration_request_message(
+        message = json_registration_protocol.make_registration_message(
             device_registration_request
         )
 

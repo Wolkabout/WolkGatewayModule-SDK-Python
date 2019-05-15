@@ -69,7 +69,7 @@ class JsonStatusProtocolTests(unittest.TestCase):
         )
 
         serialized = json_status_protocol.make_device_status_response_message(
-            status, device_key
+            device_key, status
         )
 
         self.assertEqual(expected, serialized)
@@ -88,7 +88,7 @@ class JsonStatusProtocolTests(unittest.TestCase):
         )
 
         serialized = json_status_protocol.make_device_status_update_message(
-            status, device_key
+            device_key, status
         )
 
         self.assertEqual(expected, serialized)

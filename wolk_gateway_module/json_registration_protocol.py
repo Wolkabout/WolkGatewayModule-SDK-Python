@@ -115,8 +115,9 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             f"Is {message} device registration response "
             f"message: {is_device_registration_response}"
         )
+        return is_device_registration_response
 
-    def make_device_registration_request_message(
+    def make_registration_message(
         self, request: DeviceRegistrationRequest
     ) -> Message:
         """Make message from device registration request.

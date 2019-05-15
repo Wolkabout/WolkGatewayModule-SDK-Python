@@ -57,6 +57,15 @@ class ConnectivityService(ABC):
         pass
 
     @abstractmethod
+    def connected(self):
+        """Return if currently connected.
+
+        :returns: connected
+        :rtype: bool
+        """
+        pass
+
+    @abstractmethod
     def connect(self):
         """Establish connection with WolkGateway."""
         pass
