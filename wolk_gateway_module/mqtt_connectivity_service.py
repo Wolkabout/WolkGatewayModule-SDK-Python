@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Callable
+from typing import Callable, List
 from time import time, sleep
 
 from paho.mqtt import client as mqtt
@@ -92,6 +92,40 @@ class MQTTConnectivityService(ConnectivityService):
         """
         self.log.debug(f"Set inbound message listener to {on_inbound_message}")
         self.inbound_message_listener = on_inbound_message
+
+    def set_lastwill_message(self, message: Message) -> None:
+        """Send offline state for module devices on disconnect."""
+        self.log.debug(f"Set lastwill message: {message}")
+        if self.connected:
+            self.log.debug("Reconnecting to set lastwill")
+            self.disconnect()
+            self.lastwill_message = message
+            self.connect()
+        else:
+            self.lastwill_message = message
+
+    def add_subscription_topics(self, topics: List[str]) -> None:
+        """Add subscription topics.
+
+        :param topics: List of topics
+        :type topics: List[str]
+        """
+        self.log.debug(f"Adding {topics} to {self.topics}")
+        self.topics.extend(topics)
+
+    def remove_topics_for_device(self, device_key: str) -> None:
+        """Remove topics for device from subscription topics.
+
+        :param device_key: Device identifier
+        :type device_key: str
+        """
+        self.log.debug(f"Removing topics for device {device_key}")
+        if len(self.topics) == 0:
+            return
+
+        for topic in self.topics:
+            if device_key in topic:
+                self.topics.remove(topic)
 
     def connect(self) -> bool:
         """Establish connection with WolkGateway.

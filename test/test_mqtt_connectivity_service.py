@@ -18,8 +18,6 @@ import unittest
 
 sys.path.append("..")  # noqa
 
-from paho.mqtt import client as mqtt
-
 from wolk_gateway_module.mqtt_connectivity_service import (
     MQTTConnectivityService,
 )
@@ -73,6 +71,44 @@ class MQTTConnectivityServiceTests(unittest.TestCase):
         self.assertEqual(
             self.mock_listener, self.mqttcs.inbound_message_listener
         )
+
+        self.tear_down()
+
+    def test_set_lastwill_message(self):
+        """Test that lastwill message is set correctly."""
+        self.set_up()
+
+        message = Message("lastwill")
+
+        self.mqttcs.set_lastwill_message(message)
+
+        self.assertEqual(message, self.mqttcs.lastwill_message)
+
+        self.tear_down()
+
+    def test_add_subscription_topics(self):
+        """Test adding subscription topics."""
+        self.set_up()
+
+        topics = ["topic1", "topic2", "topic3"]
+
+        self.mqttcs.add_subscription_topics(topics)
+
+        self.assertEqual(3, len(self.mqttcs.topics))
+
+        self.tear_down()
+
+    def test_remove_topics_for_device(self):
+        """Test removing topics from subscription topics."""
+        self.set_up()
+
+        self.mqttcs.topics = ["key1", "key2", "key3", "key1"]
+
+        device_key = "key1"
+
+        self.mqttcs.remove_topics_for_device(device_key)
+
+        self.assertEqual(2, len(self.mqttcs.topics))
 
         self.tear_down()
 
