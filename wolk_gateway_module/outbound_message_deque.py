@@ -19,6 +19,7 @@ from typing import Optional, List
 from wolk_gateway_module.persistance.outbound_message_queue import (
     OutboundMessageQueue,
 )
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.message import Message
 
 
@@ -34,6 +35,11 @@ class OutboundMessageDeque(OutboundMessageQueue):
     history add timestamps to readings via `int(round(time.time() * 1000))`
     """
 
+    def __init__(self) -> None:
+        """Initialize a double ended queue for storing messages."""
+        self.queue = deque()
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
     def __repr__(self) -> str:
         """Make string representation of OutboundMessageDeque.
 
@@ -41,10 +47,6 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :rtype: str
         """
         return "OutboundMessageDeque()"
-
-    def __init__(self):
-        """Initialize a double ended queue for storing messages."""
-        self.queue = deque()
 
     def put(self, message: Message) -> bool:
         """
@@ -56,6 +58,7 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :returns: result
         :rtype: bool
         """
+        self.log.debug(f"Placing in storage: {message}")
         self.queue.append(message)
         return True
 
@@ -66,6 +69,7 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :returns: result
         :rtype: bool
         """
+        self.log.debug(f"Removing from storage: {message}")
         if message in self.queue:
             self.queue.remove(message)
             return True
@@ -83,12 +87,15 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :returns: messages
         :rtype: List[Message]
         """
+        self.log.debug(f"Getting messages for device: {device_key}")
         if self.queue_size() == 0:
+            self.log.debug("No messages in queue")
             return []
         messages = []
         for message in self.queue:
             if device_key in message.topic:
                 messages.append(message)
+        self.log.debug(f"Found messages: {messages}")
         return messages
 
     def get(self) -> Optional[Message]:
@@ -99,9 +106,11 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :rtype: wolk_gateway_module.model.message.Message, None
         """
         try:
-            return self.queue.popleft()
+            message = self.queue.popleft()
         except IndexError:
-            return None
+            message = None
+        self.log.debug(f"Got message from storage: {message}")
+        return message
 
     def queue_size(self) -> int:
         """
@@ -110,4 +119,6 @@ class OutboundMessageDeque(OutboundMessageQueue):
         :returns: size
         :rtype: int
         """
-        return len(self.queue)
+        size = len(self.queue)
+        self.log.debug(f"Queue size: {size}")
+        return size

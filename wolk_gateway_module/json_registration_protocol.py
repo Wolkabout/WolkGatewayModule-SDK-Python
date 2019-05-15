@@ -15,6 +15,7 @@
 
 import json
 
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
 )
@@ -54,6 +55,10 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         "p2d/register_subdevice_response/"
     )
 
+    def __init__(self) -> None:
+        """Create object."""
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
     def __repr__(self) -> str:
         """Make string representation of JsonRegistrationProtocol.
 
@@ -71,11 +76,13 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         :returns: inbound_topics
         :rtype: list
         """
-        return [
+        inbound_topics = [
             self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
             + device_key
         ]
+        self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+        return inbound_topics
 
     def extract_device_key_from_message(self, message: Message) -> str:
         """Return device key from message.
@@ -86,7 +93,9 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         :returns: device_key
         :rtype: str
         """
-        return message.topic.split("/")[-1]
+        device_key = message.topic.split("/")[-1]
+        self.log.debug(f"Made {device_key} from {message}")
+        return device_key
 
     def is_device_registration_response_message(
         self, message: Message
@@ -99,8 +108,12 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         :returns: is_device_registration_response
         :rtype: bool
         """
-        return message.topic.startswith(
+        is_device_registration_response = message.topic.startswith(
             self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT
+        )
+        self.log.debug(
+            f"Is {message} device registration response "
+            f"message: {is_device_registration_response}"
         )
 
     def make_device_registration_request_message(
@@ -183,12 +196,14 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             "firmwareUpdateParameters"
         ] = request.template.firmware_update_parameters
 
-        return Message(
+        message = Message(
             self.DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT,
             json.dumps(request_dict, ensure_ascii=False)
             .encode("utf-8")
             .decode("utf-8"),
         )
+        self.log.debug(f"Made {message} from {request}")
+        return message
 
     def make_device_registration_response(
         self, message: Message
@@ -218,6 +233,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             response["description"] if "description" in response else ""
         )
 
-        return DeviceRegistrationResponse(
+        device_registration_response = DeviceRegistrationResponse(
             response["payload"]["deviceKey"], result, description
         )
+        self.log.debug(f"Made {device_registration_response} from {message}")
+        return device_registration_response

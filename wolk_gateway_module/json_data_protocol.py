@@ -15,6 +15,7 @@
 
 import json
 
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.actuator_command import (
     ActuatorCommand,
     ActuatorCommandType,
@@ -46,6 +47,10 @@ class JsonDataProtocol(DataProtocol):
     CONFIGURATION_GET = "p2d/configuration_get/"
     CONFIGURATION_STATUS = "d2p/configuration_get/"
 
+    def __init__(self) -> None:
+        """Create object."""
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
     def __repr__(self) -> str:
         """Make string representation of JsonDataProtocol.
 
@@ -63,7 +68,7 @@ class JsonDataProtocol(DataProtocol):
         :returns: inbound_topics
         :rtype: list
         """
-        return [
+        inbound_topics = [
             self.ACTUATOR_SET
             + self.DEVICE_PATH_PREFIX
             + device_key
@@ -77,6 +82,8 @@ class JsonDataProtocol(DataProtocol):
             self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + device_key,
             self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX + device_key,
         ]
+        self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+        return inbound_topics
 
     def is_actuator_get_message(self, message: Message) -> bool:
         """Check if message is actuator get command.
@@ -87,7 +94,11 @@ class JsonDataProtocol(DataProtocol):
         :returns: is_actuator_get_message
         :rtype: bool
         """
-        return message.topic.startswith(self.ACTUATOR_GET)
+        is_actuator_get_message = message.topic.startswith(self.ACTUATOR_GET)
+        self.log.debug(
+            f"Is {message} actuator get message: {is_actuator_get_message}"
+        )
+        return is_actuator_get_message
 
     def is_actuator_set_message(self, message: Message) -> bool:
         """Check if message is actuator set command.
@@ -98,7 +109,11 @@ class JsonDataProtocol(DataProtocol):
         :returns: is_actuator_set_message
         :rtype: bool
         """
-        return message.topic.startswith(self.ACTUATOR_SET)
+        is_actuator_set_message = message.topic.startswith(self.ACTUATOR_SET)
+        self.log.debug(
+            f"Is {message} actuator set message: {is_actuator_set_message}"
+        )
+        return is_actuator_set_message
 
     def is_configuration_get_message(self, message: Message) -> bool:
         """Check if message is configuration get command.
@@ -109,7 +124,14 @@ class JsonDataProtocol(DataProtocol):
         :returns: is_configuration_get_message
         :rtype: bool
         """
-        return message.topic.startswith(self.CONFIGURATION_GET)
+        is_configuration_get_message = message.topic.startswith(
+            self.CONFIGURATION_GET
+        )
+        self.log.debug(
+            f"Is {message} configuration get "
+            f"message: {is_configuration_get_message}"
+        )
+        return is_configuration_get_message
 
     def is_configuration_set_message(self, message: Message) -> bool:
         """Check if message is configuration set command.
@@ -120,7 +142,14 @@ class JsonDataProtocol(DataProtocol):
         :returns: is_configuration_set_message
         :rtype: bool
         """
-        return message.topic.startswith(self.CONFIGURATION_SET)
+        is_configuration_set_message = message.topic.startswith(
+            self.CONFIGURATION_SET
+        )
+        self.log.debug(
+            f"Is {message} configuration set "
+            f"message: {is_configuration_set_message}"
+        )
+        return is_configuration_set_message
 
     def make_actuator_command(self, message: Message) -> ActuatorCommand:
         """Make actuator command from message.
@@ -140,7 +169,9 @@ class JsonDataProtocol(DataProtocol):
             command = ActuatorCommandType.GET
             value = None
 
-        return ActuatorCommand(reference, command, value)
+        actuator_command = ActuatorCommand(reference, command, value)
+        self.log.debug(f"Made {actuator_command} from {message}")
+        return actuator_command
 
     def make_configuration_command(
         self, message: Message
@@ -183,7 +214,9 @@ class JsonDataProtocol(DataProtocol):
             command = ConfigurationCommandType.GET
             values = None
 
-        return ConfigurationCommand(command, values)
+        configuration_command = ConfigurationCommand(command, values)
+        self.log.debug(f"Made {configuration_command} from {message}")
+        return configuration_command
 
     def make_sensor_reading_message(
         self, device_key: str, sensor_reading: SensorReading
@@ -222,7 +255,11 @@ class JsonDataProtocol(DataProtocol):
             }
         )
 
-        return Message(topic, payload)
+        message = Message(topic, payload)
+        self.log.debug(
+            f"Made {message} from {sensor_reading} and {device_key}"
+        )
+        return message
 
     def make_alarm_message(self, device_key: str, alarm: Alarm) -> Message:
         """Make message from alarm for device key.
@@ -244,7 +281,9 @@ class JsonDataProtocol(DataProtocol):
         )
         payload = json.dumps({"data": alarm.active, "utc": alarm.timestamp})
 
-        return Message(topic, payload)
+        message = Message(topic, payload)
+        self.log.debug(f"Made {message} from {alarm} and {device_key}")
+        return message
 
     def make_actuator_status_message(
         self, device_key: str, actuator_status: ActuatorStatus
@@ -283,7 +322,11 @@ class JsonDataProtocol(DataProtocol):
             }
         )
 
-        return Message(topic, payload)
+        message = Message(topic, payload)
+        self.log.debug(
+            f"Made {message} from {actuator_status} and {device_key}"
+        )
+        return message
 
     def make_configuration_message(
         self, device_key: str, configuration: dict
@@ -329,4 +372,6 @@ class JsonDataProtocol(DataProtocol):
 
         payload = json.dumps({"values": configuration})
 
-        return Message(topic, payload)
+        message = Message(topic, payload)
+        self.log.debug(f"Made {message} from {configuration} and {device_key}")
+        return message

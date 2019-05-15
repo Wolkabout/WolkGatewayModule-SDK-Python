@@ -15,6 +15,7 @@
 
 import json
 
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.protocol.firmware_update_protocol import (
     FirmwareUpdateProtocol,
 )
@@ -35,6 +36,10 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
     FIRMWARE_UPDATE_STATUS_TOPIC_ROOT = "d2p/firmware_update_status/"
     FIRMWARE_VERSION_UPDATE_TOPIC_ROOT = "d2p/firmware_version_update/"
 
+    def __init__(self) -> None:
+        """Create object."""
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
     def __repr__(self) -> str:
         """Make string representation of JsonFirmwareUpdateProtocol.
 
@@ -52,7 +57,7 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :returns: inbound_topics
         :rtype: list
         """
-        return [
+        inbound_topics = [
             self.FIRMWARE_UPDATE_INSTALL_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
             + device_key,
@@ -60,6 +65,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
             + self.DEVICE_PATH_PREFIX
             + device_key,
         ]
+        self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+        return inbound_topics
 
     def make_firmware_update_status_message(
         self, device_key: str, status: FirmwareUpdateStatus
@@ -83,7 +90,9 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         if status.error_code:
             payload["error"] = status.error_code.value
 
-        return Message(topic, json.dumps(payload))
+        message = Message(topic, json.dumps(payload))
+        self.log.debug(f"Made {message} from {status} and {device_key}")
+        return message
 
     def make_firmware_version_message(
         self, device_key: str, firmware_verison: str
@@ -105,7 +114,11 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         )
         payload = str(firmware_verison)
 
-        return Message(topic, payload)
+        message = Message(topic, payload)
+        self.log.debug(
+            f"Made {message} from {firmware_verison} and {device_key}"
+        )
+        return message
 
     def is_firmware_install_command(self, message: Message) -> bool:
         """Check if received message is firmware install command.
@@ -116,9 +129,14 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :returns: is_firmware_install_command
         :rtype: bool
         """
-        return message.topic.startswith(
+        is_firmware_install_command = message.topic.startswith(
             self.FIRMWARE_UPDATE_INSTALL_TOPIC_ROOT
         )
+        self.log.debug(
+            f"Is {message} firmware install command "
+            f"message: {is_firmware_install_command}"
+        )
+        return is_firmware_install_command
 
     def is_firmware_abort_command(self, message: Message) -> bool:
         """Check if received message is firmware abort command.
@@ -129,7 +147,14 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :returns: is_firmware_abort_command
         :rtype: bool
         """
-        return message.topic.startswith(self.FIRMWARE_UPDATE_ABORT_TOPIC_ROOT)
+        is_firmware_abort_command = message.topic.startswith(
+            self.FIRMWARE_UPDATE_ABORT_TOPIC_ROOT
+        )
+        self.log.debug(
+            f"Is {message} firmware abort command "
+            f"message: {is_firmware_abort_command}"
+        )
+        return is_firmware_abort_command
 
     def make_firmware_file_path(self, message: Message) -> str:
         """Extract file path from firmware install message.
@@ -141,7 +166,9 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :rtype: str
         """
         payload = json.loads(message.payload)
-        return payload["fileName"]
+        firmware_file_path = payload["fileName"]
+        self.log.debug(f"Made {firmware_file_path} from {message}")
+        return firmware_file_path
 
     def extract_device_key_from_message(self, message: Message) -> str:
         """Return device key from message.
@@ -152,4 +179,6 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :returns: device_key
         :rtype: str
         """
-        return message.topic.split("/")[-1]
+        device_key = message.topic.split("/")[-1]
+        self.log.debug(f"Made {device_key} from {message}")
+        return device_key

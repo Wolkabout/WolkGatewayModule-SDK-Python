@@ -27,6 +27,7 @@ from wolk_gateway_module.json_status_protocol import JsonStatusProtocol
 from wolk_gateway_module.mqtt_connectivity_service import (
     MQTTConnectivityService,
 )
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
 from wolk_gateway_module.model.device_status import DeviceStatus
 from wolk_gateway_module.model.actuator_state import ActuatorState
@@ -133,6 +134,8 @@ class Wolk:
         :param outbound_message_queue: Custom persistent storage implementation
         :type outbound_message_queue: Optional[OutboundMessageQueue]
         """
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
         self.host = host
         self.port = port
         self.module_name = module_name
@@ -304,6 +307,8 @@ class Wolk:
             self._on_inbound_message
         )
 
+        self.log.debug(self.__repr__())
+
     def __repr__(self) -> str:
         """Make string representation or Wolk.
 
@@ -336,7 +341,7 @@ class Wolk:
         :param message: Message received
         :type message: wolk_gateway_module.model.message.Message
         """
-        pass
+        self.log.debug(f"Received message: {message}")
 
     def add_sensor_reading(
         self,
@@ -374,6 +379,10 @@ class Wolk:
 
         :raises RuntimeError: Unable to place in storage
         """
+        self.log.debug(
+            f"Add sensor reading: {device_key} , "
+            f"{reference} , {value} , {timestamp}"
+        )
         reading = SensorReading(reference, value, timestamp)
         message = self.data_protocol.make_sensor_reading_message(
             device_key, reading
@@ -406,6 +415,9 @@ class Wolk:
 
         :raises RuntimeError: Unable to place in storage
         """
+        self.log.debug(
+            f"Add alarm: {device_key} , {reference} , {active} , {timestamp}"
+        )
         alarm = Alarm(reference, active, timestamp)
         message = self.data_protocol.make_alarm_message(device_key, alarm)
         if not self.outbound_message_queue.put(message):
@@ -428,6 +440,7 @@ class Wolk:
 
         :raises RuntimeError: Unable to place in storage or no status provider
         """
+        self.log.debug(f"Publish actuator status: {device_key} , {reference}")
         if not (self.acutator_status_provider and self.actuation_handler):
             raise RuntimeError(
                 "Unable to publish actuator status because "
@@ -435,6 +448,7 @@ class Wolk:
                 "were not provided!"
             )
         state, value = self.acutator_status_provider(device_key, reference)
+        self.log.debug(f"Actuator status provider returned: {state} {value}")
 
         if None in (state, value):
             raise RuntimeError(
@@ -469,6 +483,7 @@ class Wolk:
         :type status: wolk_gateway_module.model.device_status.DeviceStatus
         :raises ValueError: status is not of DeviceStatus
         """
+        self.log.debug(f"Add device status: {device_key} {status}")
         if not isinstance(status, DeviceStatus):
             raise ValueError(f"{status} is not an instance of DeviceStatus")
 
@@ -494,6 +509,7 @@ class Wolk:
 
         :raises RuntimeError: No configuration provider present
         """
+        self.log.debug(f"Publish configuration: {device_key}")
         if not (self.configuration_handler and self.configuration_provider):
             raise RuntimeError(
                 "Unable to publish configuration because "
@@ -502,6 +518,8 @@ class Wolk:
             )
 
         configuration = self.configuration_provider(device_key)
+
+        self.log.debug(f"Configuration provider returned: {configuration}")
 
         if configuration is None:
             raise RuntimeError(

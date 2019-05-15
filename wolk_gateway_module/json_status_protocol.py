@@ -15,6 +15,7 @@
 
 import json
 
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.device_status import DeviceStatus
 from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.protocol.status_protocol import StatusProtocol
@@ -28,6 +29,10 @@ class JsonStatusProtocol(StatusProtocol):
     DEVICE_STATUS_RESPONSE_TOPIC_ROOT = "d2p/subdevice_status_response/"
     DEVICE_STATUS_REQUEST_TOPIC_ROOT = "p2d/subdevice_status_request/"
     LAST_WILL_TOPIC = "lastwill"
+
+    def __init__(self) -> None:
+        """Create object."""
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
         """Make string representation of JsonStatusProtocol.
@@ -46,11 +51,13 @@ class JsonStatusProtocol(StatusProtocol):
         :returns: inbound_topics
         :rtype: list
         """
-        return [
+        inbound_topics = [
             self.DEVICE_STATUS_REQUEST_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
             + device_key
         ]
+        self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+        return inbound_topics
 
     def is_device_status_request_message(self, message: Message) -> bool:
         """Check if message is device status request.
@@ -61,7 +68,14 @@ class JsonStatusProtocol(StatusProtocol):
         :returns: is_device_status_request
         :rtype: bool
         """
-        return message.topic.startswith(self.DEVICE_STATUS_REQUEST_TOPIC_ROOT)
+        is_device_status_request = message.topic.startswith(
+            self.DEVICE_STATUS_REQUEST_TOPIC_ROOT
+        )
+        self.log.debug(
+            f"Is {message} device status request "
+            f"message: {is_device_status_request}"
+        )
+        return is_device_status_request
 
     def make_device_status_response_message(
         self, device_key: str, device_status: DeviceStatus
@@ -76,12 +90,14 @@ class JsonStatusProtocol(StatusProtocol):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        return Message(
+        message = Message(
             self.DEVICE_STATUS_RESPONSE_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
             + device_key,
             json.dumps({"state": device_status.value}),
         )
+        self.log.debug(f"Made {message} from {device_status} and {device_key}")
+        return message
 
     def make_device_status_update_message(
         self, device_key: str, device_status: DeviceStatus
@@ -96,12 +112,14 @@ class JsonStatusProtocol(StatusProtocol):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        return Message(
+        message = Message(
             self.DEVICE_STATUS_UPDATE_TOPIC_ROOT
             + self.DEVICE_PATH_PREFIX
             + device_key,
             json.dumps({"state": device_status.value}),
         )
+        self.log.debug(f"Made {message} from {device_status} and {device_key}")
+        return message
 
     def make_last_will_message(self, device_keys: list) -> Message:
         """Make last will message from list of device keys.
@@ -112,4 +130,6 @@ class JsonStatusProtocol(StatusProtocol):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        return Message(self.LAST_WILL_TOPIC, json.dumps(device_keys))
+        message = Message(self.LAST_WILL_TOPIC, json.dumps(device_keys))
+        self.log.debug(f"Made {message} from {device_keys}")
+        return message

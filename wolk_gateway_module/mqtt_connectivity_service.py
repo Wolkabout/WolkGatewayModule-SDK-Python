@@ -18,6 +18,7 @@ from time import time, sleep
 
 from paho.mqtt import client as mqtt
 
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.connectivity.connectivity_service import (
     ConnectivityService,
 )
@@ -68,6 +69,8 @@ class MQTTConnectivityService(ConnectivityService):
         :param topics: List of topics to subscribe to
         :type topics: list
         """
+        self.log = logger_factory.get_logger(str(self.__class__.__name__))
+
         self.host = host
         self.port = port
         self.client_id = client_id
@@ -77,6 +80,8 @@ class MQTTConnectivityService(ConnectivityService):
         self.inbound_message_listener = None
         self.connected = False
 
+        self.log.debug(self.__repr__())
+
     def set_inbound_message_listener(
         self, on_inbound_message: Callable[[Message], None]
     ) -> None:
@@ -85,6 +90,7 @@ class MQTTConnectivityService(ConnectivityService):
         :param on_inbound_message: Callable that handles inbound messages
         :type on_inbound_message: Callable[wolk_gateway_module.model.message.Message]
         """
+        self.log.debug(f"Set inbound message listener to {on_inbound_message}")
         self.inbound_message_listener = on_inbound_message
 
     def connect(self) -> bool:
@@ -96,6 +102,7 @@ class MQTTConnectivityService(ConnectivityService):
         :raises RuntimeError: Reason for connection being refused
         """
         if self.connected:
+            self.log.debug("Already connected")
             return True
 
         self.client = mqtt.Client(client_id=self.client_id)
@@ -108,6 +115,8 @@ class MQTTConnectivityService(ConnectivityService):
         )
         self.client.connect(self.host, self.port)
         self.client.loop_start()
+
+        self.log.debug(f"Connecting to {self.host} : {self.port} ...")
 
         timeout = round(time()) + 5
 
@@ -145,6 +154,7 @@ class MQTTConnectivityService(ConnectivityService):
             elif self.connected_rc == 5:
                 raise RuntimeError("Connection refused - not authorised")
 
+        self.log.debug(f"Subscribing to topics: {self.topics}")
         for topic in self.topics:
             self.client.subscribe(topic, 2)
 
@@ -158,6 +168,7 @@ class MQTTConnectivityService(ConnectivityService):
 
         :raises RuntimeError: Reason for connection being refused
         """
+        self.log.debug("Attempting reconnect")
         self.connected = False
         try:
             self.client.loop_stop()
@@ -171,6 +182,7 @@ class MQTTConnectivityService(ConnectivityService):
 
     def disconnect(self) -> None:
         """Terminate connection with WolkGateway."""
+        self.log.debug(f"Disconnecting from {self.host} : {self.port}")
         try:
             self.client.publish(
                 self.lastwill_message.topic, self.lastwill_message.payload
@@ -190,11 +202,13 @@ class MQTTConnectivityService(ConnectivityService):
         :rtype: bool
         """
         if not self.connected:
+            self.log.warning(f"Not connected, unable to publish {message}")
             return False
 
         info = self.client.publish(message.topic, message.payload, self.qos)
 
         if info.rc == mqtt.MQTT_ERR_SUCCESS:
+            self.log.debug(f"Published {message}")
             return True
         else:
             return info.is_published()
@@ -228,6 +242,7 @@ class MQTTConnectivityService(ConnectivityService):
         :param rc: Connection result
         :type rc: int
         """
+        self.log.debug(f"CONNACK: {rc}")
         if rc == 0:  # Connection successful
             self.connected = True
             self.connected_rc = 0
@@ -261,6 +276,7 @@ class MQTTConnectivityService(ConnectivityService):
         :type rc: int
         :raises RuntimeError: Unexpected disconnection
         """
+        self.log.debug(f"Disconnect return code: {rc}")
         if rc != 0:
             raise RuntimeError("Unexpected disconnection.")
         self.connected = False
