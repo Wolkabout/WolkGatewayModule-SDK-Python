@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 from inspect import signature
+from reprlib import recursive_repr
 from typing import Callable, Dict, Optional, Tuple, Union
 
 
@@ -175,7 +176,13 @@ class Wolk:
         else:
             self.acutator_status_provider = None
 
-        if not (self.actuation_handler and self.acutator_status_provider):
+        if (
+            self.actuation_handler is None
+            and self.acutator_status_provider is not None
+        ) or (
+            self.actuation_handler is not None
+            and self.acutator_status_provider is None
+        ):
             raise RuntimeError(
                 "Provide actuation_handler and acutator_status_provider"
                 " to enable actuators on your devices!"
@@ -207,7 +214,13 @@ class Wolk:
         else:
             self.configuration_provider = None
 
-        if not (self.configuration_handler and self.configuration_provider):
+        if (
+            self.configuration_handler is None
+            and self.configuration_provider is not None
+        ) or (
+            self.configuration_handler is not None
+            and self.configuration_provider is None
+        ):
             raise RuntimeError(
                 "Provide configuration_handler and configuration_provider"
                 " to enable configuration options on your devices!"
@@ -235,7 +248,13 @@ class Wolk:
         else:
             self.firmware_version_provider = None
 
-        if not (self.firmware_installer and self.firmware_version_provider):
+        if (
+            self.firmware_installer is None
+            and self.firmware_version_provider is not None
+        ) or (
+            self.firmware_installer is not None
+            and self.firmware_version_provider is None
+        ):
             raise RuntimeError(
                 "Provide firmware_installer and firmware_version_provider"
                 " to enable firmware update on your devices!"
@@ -316,6 +335,7 @@ class Wolk:
 
         self.log.debug(self.__repr__())
 
+    @recursive_repr()
     def __repr__(self) -> str:
         """Make string representation or Wolk.
 
