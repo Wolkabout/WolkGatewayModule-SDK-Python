@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
+from typing import List
 
 from wolk_gateway_module.model.device_template import DeviceTemplate
 
@@ -33,3 +34,30 @@ class Device:
     name: str
     key: str
     template: DeviceTemplate = field(default_factory=DeviceTemplate)
+
+    def get_actuator_references(self) -> List[str]:
+        """Get list of actuator references for device.
+
+        :returns: actuator_references
+        :rtype: List[str]
+        """
+        actuator_references = [
+            actuator.reference for actuator in self.template.actuators
+        ]
+        return actuator_references
+
+    def has_configurations(self) -> bool:
+        """Return if device has configuration options.
+
+        :returns: has_configurations
+        :rtype: bool
+        """
+        return bool(self.template.configurations)
+
+    def supports_firmware_update(self) -> bool:
+        """Return if device supports firmware update.
+
+        :returns: supports_firmware_update
+        :rtype: bool
+        """
+        return self.template.supports_firmware_update

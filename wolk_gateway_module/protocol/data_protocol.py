@@ -80,6 +80,18 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
+    def extract_key_from_message(self, message):
+        """Extract device key from message.
+
+        :param message: Message received
+        :type message: wolk_gateway_module.model.message.Message
+
+        :returns: device_key
+        :rtype: str
+        """
+        pass
+
+    @abstractmethod
     def make_actuator_command(self, message):
         """Make actuator command from message.
 

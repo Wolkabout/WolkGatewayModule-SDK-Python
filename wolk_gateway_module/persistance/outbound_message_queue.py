@@ -36,7 +36,7 @@ class OutboundMessageQueue(ABC):
     @abstractmethod
     def get(self):
         """
-        Get the first message from storage.
+        Get the first message from storage without removing it.
 
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message, None

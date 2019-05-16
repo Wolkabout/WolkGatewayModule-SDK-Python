@@ -94,7 +94,7 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         self.log.debug(f"Made {message} from {status} and {device_key}")
         return message
 
-    def make_firmware_version_message(
+    def make_version_message(
         self, device_key: str, firmware_verison: str
     ) -> Message:
         """Make message from device firmware update version.
@@ -170,7 +170,7 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         self.log.debug(f"Made {firmware_file_path} from {message}")
         return firmware_file_path
 
-    def extract_device_key_from_message(self, message: Message) -> str:
+    def extract_key_from_message(self, message: Message) -> str:
         """Return device key from message.
 
         :param message: Message received

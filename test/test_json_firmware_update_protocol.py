@@ -109,7 +109,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
             ),
         )
 
-    def test_make_firmware_version_message(self):
+    def test_make_version_message(self):
         """Test that firmware version message is created correctly."""
         json_firmware_update_protocol = JsonFirmwareUpdateProtocol()
         device_key = "some_key"
@@ -124,7 +124,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
 
         self.assertEqual(
             expected,
-            json_firmware_update_protocol.make_firmware_version_message(
+            json_firmware_update_protocol.make_version_message(
                 device_key, firmware_version
             ),
         )
@@ -163,7 +163,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
             json_firmware_update_protocol.make_firmware_file_path(message),
         )
 
-    def test_extract_device_key_from_message(self):
+    def test_extract_key_from_message(self):
         """Test that device key is correctly extracted from abort message."""
         json_firmware_update_protocol = JsonFirmwareUpdateProtocol()
         device_key = "some_key"
@@ -176,9 +176,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
 
         self.assertEqual(
             device_key,
-            json_firmware_update_protocol.extract_device_key_from_message(
-                message
-            ),
+            json_firmware_update_protocol.extract_key_from_message(message),
         )
 
 

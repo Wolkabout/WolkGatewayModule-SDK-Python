@@ -46,7 +46,7 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_firmware_version_message(self, device_key, firmware_verison):
+    def make_version_message(self, device_key, firmware_verison):
         """Make message from device firmware update version.
 
         :param device_key: Device key to which the firmware update belongs to
@@ -96,7 +96,7 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_device_key_from_message(self, message):
+    def extract_key_from_message(self, message):
         """Return device key from message.
 
         :param message: Message received

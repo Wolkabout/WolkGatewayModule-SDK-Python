@@ -32,7 +32,7 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_device_key_from_message(self, message):
+    def extract_key_from_message(self, message):
         """Return device key from message.
 
         :param message: Message received
@@ -44,7 +44,7 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_device_registration_response_message(self, message):
+    def is_registration_response_message(self, message):
         """Check if message is device registration response.
 
         :param message: Message received
@@ -68,7 +68,7 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_registration_response(self, message):
+    def make_registration_response(self, message):
         """Make device registration response from message.
 
         :param message: Message received

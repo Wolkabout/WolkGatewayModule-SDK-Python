@@ -82,3 +82,15 @@ class StatusProtocol(ABC):
         :rtype: wolk_gateway_module.model.message.Message
         """
         pass
+
+    @abstractmethod
+    def extract_key_from_message(self, message):
+        """Extract device key from message.
+
+        :param message: Message received
+        :type message: wolk_gateway_module.model.message.Message
+
+        :returns: device_key
+        :rtype: str
+        """
+        pass

@@ -75,7 +75,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             ],
         )
 
-    def test_extract_device_key_from_message(self):
+    def test_extract_key_from_message(self):
         """Test that device key is extracted."""
         json_registration_protocol = JsonRegistrationProtocol()
         device_key = "some_device_key"
@@ -87,20 +87,18 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
         )
 
         self.assertEqual(
-            json_registration_protocol.extract_device_key_from_message(
-                message
-            ),
+            json_registration_protocol.extract_key_from_message(message),
             device_key,
         )
 
-    def test_is_device_registration_response_message(self):
+    def test_is_registration_response_message(self):
         """Test that message is device registration response."""
         json_registration_protocol = JsonRegistrationProtocol()
 
         message = Message(self.DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT)
 
         self.assertTrue(
-            json_registration_protocol.is_device_registration_response_message(
+            json_registration_protocol.is_registration_response_message(
                 message
             )
         )
@@ -354,7 +352,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
         self.assertEqual(expected_payload, json.loads(message.payload))
 
 
-def test_make_device_registration_response(self):
+def test_make_registration_response(self):
     """Test for valid response parsing."""
     json_registration_protocol = JsonRegistrationProtocol()
     message = Message(
@@ -365,7 +363,7 @@ def test_make_device_registration_response(self):
         "some_key", DeviceRegistrationResponseResult.OK
     )
 
-    deserialized = json_registration_protocol.make_device_registration_response(
+    deserialized = json_registration_protocol.make_registration_response(
         message
     )
 

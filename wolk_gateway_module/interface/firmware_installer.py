@@ -12,13 +12,20 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from typing import Optional
 
 
-def install_firmware(device_key: str, firmware_file_path: str) -> None:
+def install_firmware(
+    device_key: str, install: bool, firmware_file_path: Optional[str]
+) -> None:
     """
     Handle the installation of the firmware file.
 
+    :param device_key: Device for which the firmware command is intended
+    :type device_key: str
+    :param install: True for install command, False for abort installation
+    :type install: bool
     :param firmware_file_path: Path where the firmware file is located
-    :type firmware_file_path: str
+    :type firmware_file_path: Optional[str]
     """
     pass

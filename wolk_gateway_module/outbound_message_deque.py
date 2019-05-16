@@ -100,13 +100,13 @@ class OutboundMessageDeque(OutboundMessageQueue):
 
     def get(self) -> Optional[Message]:
         """
-        Get the first message from storage.
+        Get the first message from storage without removing it.
 
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message, None
         """
         try:
-            message = self.queue.popleft()
+            message = self.queue[0]
         except IndexError:
             message = None
         self.log.debug(f"Got message from storage: {message}")

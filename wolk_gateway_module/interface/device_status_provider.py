@@ -13,16 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import sys
-import os
 
-
-sys.path.append(".." + os.sep + "..")  # noqa
-
-from wolk_gateway_module.model.device_status import DeviceStatus
-
-
-def get_device_status(device_key: str) -> DeviceStatus:
+def get_device_status(device_key):
     """
     Get current device status.
 

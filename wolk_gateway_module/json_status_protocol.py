@@ -133,3 +133,16 @@ class JsonStatusProtocol(StatusProtocol):
         message = Message(self.LAST_WILL_TOPIC, json.dumps(device_keys))
         self.log.debug(f"Made {message} from {device_keys}")
         return message
+
+    def extract_key_from_message(self, message: Message) -> str:
+        """Extract device key from message.
+
+        :param message: Message received
+        :type message: wolk_gateway_module.model.message.Message
+
+        :returns: device_key
+        :rtype: str
+        """
+        device_key = message.topic.split("/")[-1]
+        self.log.debug(f"Made {device_key} from {message}")
+        return device_key

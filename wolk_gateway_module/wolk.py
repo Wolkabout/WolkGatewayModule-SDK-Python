@@ -38,6 +38,9 @@ from wolk_gateway_module.model.actuator_state import ActuatorState
 from wolk_gateway_module.model.actuator_status import ActuatorStatus
 from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.sensor_reading import SensorReading
+from wolk_gateway_module.model.device_registration_response_result import (
+    DeviceRegistrationResponseResult,
+)
 
 from wolk_gateway_module.protocol.data_protocol import DataProtocol
 from wolk_gateway_module.protocol.firmware_update_protocol import (
@@ -289,10 +292,10 @@ class Wolk:
         else:
             self.outbound_message_queue = OutboundMessageDeque()
 
-        self.device_keys = []
+        self.devices = []
 
         last_will_message = self.status_protocol.make_last_will_message(
-            self.device_keys
+            [device.key for device in self.devices]
         )
 
         if connectivity_service is not None:
@@ -336,7 +339,7 @@ class Wolk:
             f"registration_protocol='{self.registration_protocol}', "
             f"outbound_message_queue='{self.outbound_message_queue}', "
             f"connectivity_service='{self.connectivity_service}', "
-            f"device_keys='{self.device_keys}')"
+            f"devices='{self.devices}')"
         )
 
     def _on_inbound_message(self, message: Message) -> None:
@@ -346,6 +349,178 @@ class Wolk:
         :type message: wolk_gateway_module.model.message.Message
         """
         self.log.debug(f"Received message: {message}")
+
+        if self.data_protocol.is_actuator_set_message(message):
+            if not (self.actuation_handler and self.acutator_status_provider):
+                self.log.warning(
+                    f"Received actuation message {message} , but no "
+                    "actuation handler and actuator status provider present"
+                )
+                return
+            command = self.data_protocol.make_actuator_command(message)
+            device_key = self.data_protocol.extract_key_from_message(message)
+            self.actuation_handler(
+                device_key, command.reference, command.value
+            )
+            try:
+                self.publish_acutator_status(device_key, command.reference)
+            except RuntimeError as e:
+                self.log.error(
+                    "Error occurred during handing"
+                    f" inbound actuation message {message} : {e}"
+                )
+        elif self.data_protocol.is_actuator_get_message(message):
+            if not (self.actuation_handler and self.acutator_status_provider):
+                self.log.warning(
+                    f"Received actuation message {message} , but no "
+                    "actuation handler and actuator status provider present"
+                )
+                return
+            command = self.data_protocol.make_actuator_command(message)
+            device_key = self.data_protocol.extract_key_from_message(message)
+            try:
+                self.publish_acutator_status(device_key, command.reference)
+            except RuntimeError as e:
+                self.log.error(
+                    "Error occurred during handing "
+                    f"inbound actuation message {message} : {e}"
+                )
+        elif self.data_protocol.is_configuration_set_message(message):
+            if not (
+                self.configuration_handler and self.configuration_provider
+            ):
+                self.log.warning(
+                    f"Received configuration message {message} , but no "
+                    "configuration handler and configuration provider present"
+                )
+                return
+            command = self.data_protocol.make_configuration_command(message)
+            device_key = self.data_protocol.extract_key_from_message(message)
+            self.configuration_handler(device_key, command.value)
+            try:
+                self.publish_configuration(device_key)
+            except RuntimeError as e:
+                self.log.error(
+                    "Error occurred during handling "
+                    f"inbound configuration message {message} : {e}"
+                )
+                return
+        elif self.data_protocol.is_configuration_get_message(message):
+            if not (
+                self.configuration_handler and self.configuration_provider
+            ):
+                self.log.warning(
+                    f"Received configuration message {message} , but no "
+                    "configuration handler and configuration provider present"
+                )
+                return
+            device_key = self.data_protocol.extract_key_from_message(message)
+            try:
+                self.publish_configuration(device_key)
+            except RuntimeError as e:
+                self.log.error(
+                    "Error occurred during handling "
+                    f"inbound configuration message {message} : {e}"
+                )
+                return
+        elif self.registration_protocol.is_registration_response_message(
+            message
+        ):
+            response = self.registration_protocol.make_registration_response(
+                message
+            )
+            if response.key not in [device.key for device in self.devices]:
+                self.log.warning(
+                    f"Received unexpected registration response: {message}"
+                )
+                return
+            self.log.info(f"Received registration response: {response}")
+
+            for device in self.devices:
+                if device.key == response.key:
+                    registered_device = device
+                    break
+
+            if registered_device.get_actuator_references():
+                for actuator in registered_device.get_actuator_references():
+                    try:
+                        self.publish_acutator_status(
+                            registered_device.key, actuator.reference
+                        )
+                    except RuntimeError as e:
+                        self.log.error(
+                            "Error occurred when sending actuator status "
+                            f"for device {registered_device.key} with "
+                            f"reference {actuator.reference} : {e}"
+                        )
+            if registered_device.has_configurations():
+                try:
+                    self.publish_configuration(registered_device.key)
+                except RuntimeError as e:
+                    self.log.error(
+                        "Error occurred when sending configuration "
+                        f"for device {registered_device.key} : {e}"
+                    )
+            if registered_device.supports_firmware_update():
+                firmware_version = self.firmware_version_provider(
+                    registered_device.key
+                )
+                if not firmware_version:
+                    self.log.error(
+                        "Did not get firmware version for "
+                        f"device '{registered_device.key}'"
+                    )
+                    return
+                message = self.firmware_update_protocol.make_version_message(
+                    registered_device.key, firmware_version
+                )
+                if not self.connectivity_service.publish(message):
+                    if not self.outbound_message_queue.put(message):
+                        self.log.error(
+                            "Failed to publish or store "
+                            f"firmware version message {message}"
+                        )
+        elif self.status_protocol.is_device_status_request_message(message):
+            device_key = self.status_protocol.extract_key_from_message(message)
+            status = self.device_status_provider(device_key)
+            if not status:
+                self.log.error(
+                    "Device status provider didn't return a "
+                    f"status for device {device_key}"
+                )
+                return
+            message = self.status_protocol.make_device_status_response_message(
+                device_key, status
+            )
+            if not self.connectivity_service.publish(message):
+                if not self.outbound_message_queue.put(message):
+                    self.log.error(
+                        "Failed to publish or store "
+                        f"device status message {message}"
+                    )
+
+        elif self.firmware_update_protocol.is_firmware_install_command(
+            message
+        ):
+            key = self.firmware_update_protocol.extract_key_from_message(
+                message
+            )
+            path = self.firmware_update_protocol.make_firmware_file_path(
+                message
+            )
+            self.log.info(
+                "Received firmware installation command "
+                f"for device {key} with file path: {path}"
+            )
+            self.firmware_installer(key, True, path)
+        elif self.firmware_update_protocol.is_firmware_abort_command(message):
+            key = self.firmware_update_protocol.extract_key_from_message(
+                message
+            )
+            self.log.info(
+                "Received firmware installation abort command for device {key}"
+            )
+            self.firmware_installer(key, False)
 
     def add_sensor_reading(
         self,
@@ -454,7 +629,7 @@ class Wolk:
         state, value = self.acutator_status_provider(device_key, reference)
         self.log.debug(f"Actuator status provider returned: {state} {value}")
 
-        if None in (state, value):
+        if state is None:
             raise RuntimeError(
                 f"{self.acutator_status_provider} did not return anything"
                 f" for device '{device_key}' with reference '{reference}'"
@@ -478,16 +653,18 @@ class Wolk:
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
 
-    def add_device_status(self, device_key: str, status: DeviceStatus) -> None:
-        """Serialize device status and place into storage.
+    def publish_device_status(self, device_key: str) -> None:
+        """Publish current device status to WolkGateway.
 
         :param device_key: Device to which the status belongs to
         :type device_key: str
-        :param status: Current device status
-        :type status: wolk_gateway_module.model.device_status.DeviceStatus
+
         :raises ValueError: status is not of DeviceStatus
+        :raises RuntimeError: Failed to publish and store message
         """
-        self.log.debug(f"Add device status: {device_key} {status}")
+        self.log.debug(f"Publish device status for {device_key}")
+
+        status = self.device_status_provider(device_key)
         if not isinstance(status, DeviceStatus):
             raise ValueError(f"{status} is not an instance of DeviceStatus")
 
@@ -495,8 +672,16 @@ class Wolk:
             device_key, status
         )
 
-        if not self.outbound_message_queue.put(message):
-            raise RuntimeError(f"Unable to store message: {message}")
+        if self.connectivity_service.connected():
+            if not self.connectivity_service.publish(message):
+                if not self.outbound_message_queue.put(message):
+                    raise RuntimeError(
+                        f"Unable to publish and failed "
+                        f"to store message: {message}"
+                    )
+        else:
+            if not self.outbound_message_queue.put(message):
+                raise RuntimeError(f"Unable to store message: {message}")
 
     def publish_configuration(self, device_key: str) -> None:
         """Publish device configuration options to WolkGateway.
@@ -554,15 +739,51 @@ class Wolk:
 
         :param device: Device to be added to module
         :type device: wolk_gateway_module.model.device.Device
+
+        :raises RuntimeError: Unable to store message
+        :raises ValueError: Invalid device given
         """
         self.log.debug(f"Add device: {device}")
         if not isinstance(device, Device):
             raise ValueError(
-                f"Given device is not an instance of Device class!"
+                "Given device is not an instance of Device class!"
             )
-        if device.key in self.device_keys:
+        if device.key in [device.key for device in self.devices]:
             self.log.error(f"Device with key '{device.key}' was already added")
             return
+
+        if device.get_actuator_references():
+            if not (self.actuation_handler and self.acutator_status_provider):
+                self.log.error(
+                    f"Can not add device '{device.key}' with actuators "
+                    "without having an actuation handler and "
+                    "actuator status provider"
+                )
+                return
+
+        if device.has_configurations():
+            if not (
+                self.configuration_handler and self.configuration_provider
+            ):
+                self.log.error(
+                    f"Can not add device '{device.key}' with "
+                    "configuration options without having a "
+                    "configuration handler and configuration provider"
+                )
+                return
+
+        if device.supports_firmware_update():
+            if not (
+                self.firmware_installer and self.firmware_version_provider
+            ):
+                self.log.error(
+                    f"Can not add device '{device.key}' with "
+                    "firmware update support without having a "
+                    "firmware installer and firmware version provider"
+                )
+                return
+
+        self.devices.append(device)
 
         device_topics = []
         device_topics.extend(
@@ -585,7 +806,9 @@ class Wolk:
         self.connectivity_service.add_subscription_topics(device_topics)
 
         self.connectivity_service.set_lastwill_message(
-            self.status_protocol.make_last_will_message(self.device_keys)
+            self.status_protocol.make_last_will_message(
+                [device.key for device in self.devices]
+            )
         )
 
         registration_request = DeviceRegistrationRequest(
@@ -600,6 +823,13 @@ class Wolk:
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
         else:
+            try:
+                if not self.connectivity_service.reconnect():
+                    self.log.error("Failed to reconnect")
+            except RuntimeError as e:
+                self.log.error(f"Failed to reconnect: {e}")
+                if not self.outbound_message_queue.put(message):
+                    raise RuntimeError(f"Unable to store message: {message}")
             if not self.connectivity_service.publish(message):
                 if not self.outbound_message_queue.put(message):
                     raise RuntimeError(f"Unable to store message: {message}")
@@ -614,19 +844,133 @@ class Wolk:
         :type device_key: str
         """
         self.log.debug(f"Removing device: {device_key}")
-        if device_key not in self.device_keys:
+        if device_key not in [device.key for device in self.devices]:
+            self.log.info(f"Device with key '{device_key}' was not stored")
             return
 
-        self.device_keys.remove(device_key)
+        for device in self.devices:
+            if device_key == device.key:
+                self.devices.remove(device)
+                break
 
         self.connectivity_service.remove_topics_for_device(device_key)
 
         self.connectivity_service.set_lastwill_message(
-            self.status_protocol.make_last_will_message(self.device_keys)
+            self.status_protocol.make_last_will_message(
+                [device.key for device in self.devices]
+            )
         )
 
         if self.connectivity_service.connected():
             try:
                 self.connectivity_service.reconnect()
             except RuntimeError as e:
-                raise e
+                self.log.error(f"Failed to reconnect: {e}")
+
+    def publish(self, device_key: Optional[str] = None) -> None:
+        """
+        Publish stored messages to WolkGateway.
+
+        If device_key parameter is provided, will publish messages only
+        for that specific device.
+
+        :param device_key: Device for which to publish stored messages
+        :type device_key: Optional[str]
+        """
+        if device_key:
+            self.log.debug(f"Publishing messages for {device_key}")
+        else:
+            self.log.debug("Publishing all stored messages")
+
+        if self.outbound_message_queue.queue_size() == 0:
+            self.log.info("No messages to publish")
+            return
+
+        if not self.connectivity_service.connected():
+            self.log.warning("Not connected, unable to publish")
+            return
+
+        if device_key is None:
+            while self.outbound_message_queue.queue_size() > 0:
+                message = self.outbound_message_queue.get()
+                if not self.connectivity_service.publish(message):
+                    self.log.info.error(f"Failed to publish {message}")
+                    return
+                self.outbound_message_queue.remove(message)
+        else:
+            messages = self.outbound_message_queue.get_messages_for_device(
+                device_key
+            )
+            if messages is None:
+                self.log.warning(f"No messages stored for {device_key}")
+                return
+            for message in messages:
+                if not self.connectivity_service.publish(message):
+                    self.log.info.error(f"Failed to publish {message}")
+                    return
+                self.outbound_message_queue.remove(message)
+
+    def connect(self):
+        """Establish connection with WolkGateway.
+
+        Will attempt to publish actuator statuses, configuration options,
+        and current firmware version for all added devices.
+
+        :raises RuntimeError: Error publishing actuator status or configuration
+        """
+        self.log.debug("Connecting to WolkGateway")
+        if self.connectivity_service.connected():
+            self.log.info("Already connected")
+        else:
+            try:
+                if not self.connectivity_service.connect():
+                    self.log.error("Failed to connect")
+            except RuntimeError as e:
+                self.log.error(f"Failed to connect: {e}")
+                return
+
+        if self.connectivity_service.connected():
+            for device in self.devices:
+                try:
+                    self.publish_device_status(device.key)
+                except (ValueError, RuntimeError) as e:
+                    raise e
+
+                for reference in device.get_actuator_references():
+                    try:
+                        self.publish_acutator_status(device.key, reference)
+                    except RuntimeError as e:
+                        raise e
+                if device.has_configurations():
+                    try:
+                        self.publish_configuration(device.key)
+                    except RuntimeError as e:
+                        raise e
+                if device.supports_firmware_update():
+                    firmware_version = self.firmware_version_provider(
+                        device.key
+                    )
+                    if not firmware_version:
+                        self.log.error(
+                            "Did not get firmware version for "
+                            f"device '{device.key}'"
+                        )
+                        continue
+                    msg = self.firmware_update_protocol.make_version_message(
+                        device.key, firmware_version
+                    )
+                    if not self.connectivity_service.publish(msg):
+                        if not self.outbound_message_queue.put(msg):
+                            raise RuntimeError(
+                                "Failed to publish or store "
+                                f"firmware version message {msg}"
+                            )
+
+    def disconnect(self):
+        """Terminate connection with WolkGateway."""
+        self.log.debug("Disconnecting from WolkGateway")
+        if not self.connectivity_service.connected():
+            self.log.debug("Not connected")
+            return
+        else:
+            self.connectivity_service.disconnect()

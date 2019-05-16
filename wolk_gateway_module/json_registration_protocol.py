@@ -84,7 +84,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
         return inbound_topics
 
-    def extract_device_key_from_message(self, message: Message) -> str:
+    def extract_key_from_message(self, message: Message) -> str:
         """Return device key from message.
 
         :param message: Message received
@@ -97,9 +97,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         self.log.debug(f"Made {device_key} from {message}")
         return device_key
 
-    def is_device_registration_response_message(
-        self, message: Message
-    ) -> bool:
+    def is_registration_response_message(self, message: Message) -> bool:
         """Check if message is device registration response.
 
         :param message: Message received
@@ -206,7 +204,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         self.log.debug(f"Made {message} from {request}")
         return message
 
-    def make_device_registration_response(
+    def make_registration_response(
         self, message: Message
     ) -> DeviceRegistrationResponse:
         """Make device registration response from message.

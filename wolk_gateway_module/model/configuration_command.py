@@ -31,6 +31,6 @@ class ConfigurationCommand:
     """Configuration command with command and optionally value."""
 
     command: ConfigurationCommandType
-    value: Optional[Dict[str, Union[int, float, str, Tuple]]] = field(
+    value: Optional[Dict[str, Union[bool, int, float, str, Tuple]]] = field(
         default=None
     )
