@@ -28,7 +28,7 @@ class ActuatorStatus:
     :ivar state: Actuator's current state
     :vartype state: wolk_gateway_module.model.actuator_state.ActuatorState
     :ivar value: Current value of actuator, None only for error state
-    :vartype value: bool, int or float or str or None
+    :vartype value: Optional[Union[bool, int, float, str]]
     """
 
     reference: str

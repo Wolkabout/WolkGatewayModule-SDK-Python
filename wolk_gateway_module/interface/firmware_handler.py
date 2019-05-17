@@ -24,6 +24,11 @@ class FirmwareHandler(ABC):
     `on_install_fail` used for reporting the result of
     the firmware update process. Use these callbacks in `install_firmware`
     and `abort_installation` methods.
+
+    :ivar on_install_fail: Installation failure callback method
+    :vartype on_install_fail: Callable[[str, wolk_gateway_module.model.firmware_update_status.FirmwareUpdateStatus], None]
+    :ivar on_install_success: Installation successful callback method
+    :vartype on_install_success: Callable[[str], None]
     """
 
     on_install_success = None

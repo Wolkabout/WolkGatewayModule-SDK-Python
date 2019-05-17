@@ -19,7 +19,17 @@ from enum import Enum, unique
 
 @unique
 class FirmwareUpdateState(Enum):
-    """Enumeration of available firmware update states."""
+    """Enumeration of available firmware update states.
+
+    :ivar ABORTED: Firmware installation aborted
+    :vartype ABORTED: str
+    :ivar COMPLETED: Firmware installation completed
+    :vartype COMPLETED: str
+    :ivar ERROR: Firmware installation error
+    :vartype ERROR: str
+    :ivar INSTALLATION: Firmware installation in progress
+    :vartype INSTALLATION: str
+    """
 
     INSTALLATION = "INSTALLATION"
     COMPLETED = "COMPLETED"
@@ -29,7 +39,19 @@ class FirmwareUpdateState(Enum):
 
 @unique
 class FirmwareUpdateErrorCode(Enum):
-    """Enumeration of possible firmware update errors."""
+    """Enumeration of possible firmware update errors.
+
+    :ivar DEVICE_NOT_PRESENT: Unable to pass firmware install command to device
+    :vartype DEVICE_NOT_PRESENT: int
+    :ivar FILE_NOT_PRESENT: Firmware file was not present at specified location
+    :vartype FILE_NOT_PRESENT: int
+    :ivar FILE_SYSTEM_ERROR: File system error occurred
+    :vartype FILE_SYSTEM_ERROR: int
+    :ivar INSTALLATION_FAILED: Firmware installation failed
+    :vartype INSTALLATION_FAILED: int
+    :ivar UNSPECIFIED_ERROR: Unspecified error occurred
+    :vartype UNSPECIFIED_ERROR: int
+    """
 
     UNSPECIFIED_ERROR = 0
     FILE_NOT_PRESENT = 1
@@ -40,7 +62,13 @@ class FirmwareUpdateErrorCode(Enum):
 
 @dataclass
 class FirmwareUpdateStatus:
-    """Holds information about current firmware update status."""
+    """Holds information about current firmware update status.
+
+    :ivar status: Firmware update status
+    :vartype status: wolk_gateway_module.model.firmware_update_status.FirmwareUpdateState
+    :ivar error_code: Description of error that occured
+    :vartype error_code: Optional[wolk_gateway_module.model.firmware_update_status.FirmwareUpdateErrorCode]
+    """
 
     status: FirmwareUpdateState
     error_code: FirmwareUpdateErrorCode = field(default=None)

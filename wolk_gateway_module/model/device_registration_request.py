@@ -29,7 +29,7 @@ class DeviceRegistrationRequest:
     :ivar template: Device template
     :vartype template: wolk_gateway_module.model.device_template.DeviceTemplate
     :ivar default_binding: Create semantic group for device on Platform
-    :vartype : bool
+    :vartype default_binding: bool
     """
 
     name: str

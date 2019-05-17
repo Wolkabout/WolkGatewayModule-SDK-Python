@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional
+from typing import Optional, Union
 
 from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.reading_type_measurement_unit import (
@@ -36,25 +36,25 @@ class ReadingType:
     for the name and measurement unit.
 
     :ivar name: Name of reading type
-    :vartype name: wolk_gateway_module.model.reading_type_name.ReadingTypeName or str
+    :vartype name: Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]
     :ivar unit: Measurement unit of reading type
-    :vartype unit: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit or str
+    :vartype unit: Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]
     """
 
     def __init__(
         self,
         data_type: Optional[DataType] = None,
-        name: Optional[Name] = None,
-        unit: Optional[Unit] = None,
+        name: Optional[Union[Name, str]] = None,
+        unit: Optional[Union[Unit, str]] = None,
     ):
         """Reading type used for registering device's sensors.
 
         :param data_type: Data type for generic reading type
-        :type data_type: wolk_gateway_module.model.data_type.DataType or None
+        :type data_type: Optional[wolk_gateway_module.model.data_type.DataType]
         :param name: Reading type name from defined enumeration or string for custom
-        :type name: wolk_gateway_module.model.reading_type_name.ReadingTypeName or str or None
+        :type name: Optional[Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]]
         :param unit: Reading type measurement unit from defined enumeration or string for custom
-        :type unit: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit or str or None
+        :type unit: Optional[Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]]
 
         :raises ValueError: Unable to create a reading type from given input
         """
@@ -93,13 +93,13 @@ class ReadingType:
         return f"ReadingType(name='{self.name}', unit='{self.unit}')"
 
     @staticmethod
-    def validate(name, unit) -> bool:
+    def validate(name: Union[Name, str], unit: Union[Unit, str]) -> bool:
         """Validate reading type name and measurement unit.
 
         :param name: Reading type name
-        :type name: wolk_gateway_module.model.reading_type_name.ReadingTypeName or str
+        :type name: Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]
         :param unit: Reading type measurement unit
-        :type unit: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit or str
+        :type unit: Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]
 
         :returns: valid
         :rtype: bool

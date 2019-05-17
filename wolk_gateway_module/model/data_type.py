@@ -24,11 +24,11 @@ from enum import Enum, unique
 class DataType(Enum):
     """Use to create a generic reading type.
 
-    :ivar BOOLEAN: Generic boolean value
+    :ivar BOOLEAN: Generic boolean reading type
     :vartype BOOLEAN: int
-    :ivar NUMERIC: Generic numeric value
+    :ivar NUMERIC: Generic numeric reading type
     :vartype NUMERIC: int
-    :ivar STRING: Generic string value
+    :ivar STRING: Generic string reading type
     :vartype STRING: int
     """
 

@@ -16,7 +16,7 @@
 from collections import deque
 from typing import Optional, List
 
-from wolk_gateway_module.persistance.outbound_message_queue import (
+from wolk_gateway_module.persistence.outbound_message_queue import (
     OutboundMessageQueue,
 )
 from wolk_gateway_module.logger_factory import logger_factory

@@ -20,7 +20,13 @@ from typing import Optional, Union
 
 @unique
 class ActuatorCommandType(Enum):
-    """Actuator command type."""
+    """Actuator command type.
+
+    :ivar GET: Get current actuator value
+    :vartype GET: int
+    :ivar SET: Set actuator to value
+    :vartype SET: int
+    """
 
     GET = auto()
     SET = auto()
@@ -28,7 +34,15 @@ class ActuatorCommandType(Enum):
 
 @dataclass
 class ActuatorCommand:
-    """Actuator command for reference with command and optionally value."""
+    """Actuator command for reference with command and optionally value.
+
+    :ivar reference: What actuator is the command for
+    :vartype reference: str
+    :ivar command: Type of command received
+    :vartype command: wolk_gateway_module.model.actuator_command.ActuatorCommandType
+    :ivar value: Value to be set
+    :vartype value: Optional[Union[int, float, str]]
+    """
 
     reference: str
     command: ActuatorCommandType

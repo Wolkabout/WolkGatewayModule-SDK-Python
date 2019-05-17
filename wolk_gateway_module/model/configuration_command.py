@@ -20,7 +20,13 @@ from typing import Dict, Optional, Tuple, Union
 
 @unique
 class ConfigurationCommandType(Enum):
-    """Configuration command type."""
+    """Configuration command type.
+
+    :ivar GET: Get current configuration options
+    :vartype GET: int
+    :ivar SET: Set configuration to value
+    :vartype SET: int
+    """
 
     GET = auto()
     SET = auto()
@@ -28,7 +34,27 @@ class ConfigurationCommandType(Enum):
 
 @dataclass
 class ConfigurationCommand:
-    """Configuration command with command and optionally value."""
+    """Configuration command with command and optionally value.
+
+    :ivar command: Configuration command received
+    :vartype command: int
+    :ivar value: Set configuration to value
+    :vartype value: Optional[Dict[
+        str,
+        Union[
+            int,
+            float,
+            bool,
+            str,
+            Tuple[int, int],
+            Tuple[int, int, int],
+            Tuple[float, float],
+            Tuple[float, float, float],
+            Tuple[str, str],
+            Tuple[str, str, str]
+        ]
+    ]
+    """
 
     command: ConfigurationCommandType
     value: Optional[Dict[str, Union[bool, int, float, str, Tuple]]] = field(

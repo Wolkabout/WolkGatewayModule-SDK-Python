@@ -25,7 +25,14 @@ class DeviceRegistrationResponse:
     """Response for device registration request.
 
     Identified by device key and result,
-    with an optional description of the error that occured.
+    with an optional description of the error that occurred.
+
+    :ivar key: Unique device key
+    :vartype key: str
+    :ivar result: Result of the registration process
+    :vartype result: wolk_gateway_module.model.device_registration_response_result.DeviceRegistrationResponseResult
+    :ivar description: Description of error that occurred
+    :vartype description: str
     """
 
     key: str
