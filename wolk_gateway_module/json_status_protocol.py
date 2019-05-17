@@ -57,6 +57,7 @@ class JsonStatusProtocol(StatusProtocol):
             + device_key
         ]
         self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+
         return inbound_topics
 
     def is_device_status_request_message(self, message: Message) -> bool:
@@ -75,6 +76,7 @@ class JsonStatusProtocol(StatusProtocol):
             f"Is {message} device status request "
             f"message: {is_device_status_request}"
         )
+
         return is_device_status_request
 
     def make_device_status_response_message(
@@ -97,6 +99,7 @@ class JsonStatusProtocol(StatusProtocol):
             json.dumps({"state": device_status.value}),
         )
         self.log.debug(f"Made {message} from {device_status} and {device_key}")
+
         return message
 
     def make_device_status_update_message(
@@ -119,6 +122,7 @@ class JsonStatusProtocol(StatusProtocol):
             json.dumps({"state": device_status.value}),
         )
         self.log.debug(f"Made {message} from {device_status} and {device_key}")
+
         return message
 
     def make_last_will_message(self, device_keys: list) -> Message:
@@ -132,6 +136,7 @@ class JsonStatusProtocol(StatusProtocol):
         """
         message = Message(self.LAST_WILL_TOPIC, json.dumps(device_keys))
         self.log.debug(f"Made {message} from {device_keys}")
+
         return message
 
     def extract_key_from_message(self, message: Message) -> str:
@@ -145,4 +150,5 @@ class JsonStatusProtocol(StatusProtocol):
         """
         device_key = message.topic.split("/")[-1]
         self.log.debug(f"Made {device_key} from {message}")
+
         return device_key

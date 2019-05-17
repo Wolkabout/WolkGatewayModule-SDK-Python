@@ -83,6 +83,7 @@ class JsonDataProtocol(DataProtocol):
             self.CONFIGURATION_GET + self.DEVICE_PATH_PREFIX + device_key,
         ]
         self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+
         return inbound_topics
 
     def is_actuator_get_message(self, message: Message) -> bool:
@@ -98,6 +99,7 @@ class JsonDataProtocol(DataProtocol):
         self.log.debug(
             f"Is {message} actuator get message: {is_actuator_get_message}"
         )
+
         return is_actuator_get_message
 
     def is_actuator_set_message(self, message: Message) -> bool:
@@ -113,6 +115,7 @@ class JsonDataProtocol(DataProtocol):
         self.log.debug(
             f"Is {message} actuator set message: {is_actuator_set_message}"
         )
+
         return is_actuator_set_message
 
     def is_configuration_get_message(self, message: Message) -> bool:
@@ -131,6 +134,7 @@ class JsonDataProtocol(DataProtocol):
             f"Is {message} configuration get "
             f"message: {is_configuration_get_message}"
         )
+
         return is_configuration_get_message
 
     def is_configuration_set_message(self, message: Message) -> bool:
@@ -149,6 +153,7 @@ class JsonDataProtocol(DataProtocol):
             f"Is {message} configuration set "
             f"message: {is_configuration_set_message}"
         )
+
         return is_configuration_set_message
 
     def extract_key_from_message(self, message: Message) -> str:
@@ -162,6 +167,7 @@ class JsonDataProtocol(DataProtocol):
         """
         device_key = message.topic.split("/")[-1]
         self.log.debug(f"Made {device_key} from {message}")
+
         return device_key
 
     def make_actuator_command(self, message: Message) -> ActuatorCommand:
@@ -184,6 +190,7 @@ class JsonDataProtocol(DataProtocol):
 
         actuator_command = ActuatorCommand(reference, command, value)
         self.log.debug(f"Made {actuator_command} from {message}")
+
         return actuator_command
 
     def make_configuration_command(
@@ -229,6 +236,7 @@ class JsonDataProtocol(DataProtocol):
 
         configuration_command = ConfigurationCommand(command, values)
         self.log.debug(f"Made {configuration_command} from {message}")
+
         return configuration_command
 
     def make_sensor_reading_message(
@@ -253,13 +261,7 @@ class JsonDataProtocol(DataProtocol):
         )
 
         if isinstance(sensor_reading.value, tuple):
-            delimiter = ","
-            values_list = list()
-            for value in sensor_reading.value:
-                values_list.append(value)
-                values_list.append(delimiter)
-            values_list.pop()
-            sensor_reading.value = "".join(map(str, values_list))
+            sensor_reading.value = ",".join(map(str, sensor_reading.value))
 
         payload = json.dumps(
             {
@@ -272,6 +274,7 @@ class JsonDataProtocol(DataProtocol):
         self.log.debug(
             f"Made {message} from {sensor_reading} and {device_key}"
         )
+
         return message
 
     def make_alarm_message(self, device_key: str, alarm: Alarm) -> Message:
@@ -296,6 +299,7 @@ class JsonDataProtocol(DataProtocol):
 
         message = Message(topic, payload)
         self.log.debug(f"Made {message} from {alarm} and {device_key}")
+
         return message
 
     def make_actuator_status_message(
@@ -320,13 +324,7 @@ class JsonDataProtocol(DataProtocol):
         )
 
         if isinstance(actuator_status.value, tuple):
-            delimiter = ","
-            values_list = list()
-            for value in actuator_status.value:
-                values_list.append(value)
-                values_list.append(delimiter)
-            values_list.pop()
-            actuator_status.value = "".join(map(str, values_list))
+            actuator_status.value = ",".join(map(str, actuator_status.value))
 
         payload = json.dumps(
             {
@@ -339,6 +337,7 @@ class JsonDataProtocol(DataProtocol):
         self.log.debug(
             f"Made {message} from {actuator_status} and {device_key}"
         )
+
         return message
 
     def make_configuration_message(
@@ -360,31 +359,34 @@ class JsonDataProtocol(DataProtocol):
 
         for reference, config_value in configuration.items():
             if isinstance(config_value, tuple):
-                delimiter = ","
                 values_list = list()
                 for value in config_value:
                     if value is True:
                         value = "true"
                     elif value is False:
                         value = "false"
+
                     if "\n" in str(value):
                         value = value.replace("\n", "\\n")
                         value = value.replace("\r", "")
+
                     if '"' in str(value):
                         value = value.replace('"', '\\"')
+
                     values_list.append(value)
-                    values_list.append(delimiter)
-                values_list.pop()
-                configuration[reference] = "".join(map(str, values_list))
+
+                configuration[reference] = ",".join(map(str, values_list))
             else:
                 if config_value is True:
                     config_value = "true"
                 elif config_value is False:
                     config_value = "false"
+
                 configuration[reference] = str(config_value)
 
         payload = json.dumps({"values": configuration})
 
         message = Message(topic, payload)
         self.log.debug(f"Made {message} from {configuration} and {device_key}")
+
         return message

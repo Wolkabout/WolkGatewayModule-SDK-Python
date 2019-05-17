@@ -82,6 +82,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             + device_key
         ]
         self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
+
         return inbound_topics
 
     def extract_key_from_message(self, message: Message) -> str:
@@ -95,6 +96,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """
         device_key = message.topic.split("/")[-1]
         self.log.debug(f"Made {device_key} from {message}")
+
         return device_key
 
     def is_registration_response_message(self, message: Message) -> bool:
@@ -113,6 +115,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             f"Is {message} device registration response "
             f"message: {is_device_registration_response}"
         )
+
         return is_device_registration_response
 
     def make_registration_message(
@@ -126,15 +129,23 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         :returns: message
         :rtype: wolk_gateway_module.model.message.Message
         """
-        request_dict = dict()
-        request_dict["name"] = request.name
-        request_dict["deviceKey"] = request.key
-        request_dict["defaultBinding"] = request.default_binding
-        request_dict["sensors"] = list()
+        request_dict = {
+            "name": request.name,
+            "deviceKey": request.key,
+            "defaultBinding": request.default_binding,
+            "typeParameters": request.template.type_parameters,
+            "connectivityParameters": request.template.connectivity_parameters,
+        }
+
+        request_dict["sensors"] = []
         for sensor in request.template.sensors:
-            sensor_dict = dict()
-            sensor_dict["name"] = sensor.name
-            sensor_dict["reference"] = sensor.reference
+            sensor_dict = {
+                "name": sensor.name,
+                "reference": sensor.reference,
+                "description": sensor.description,
+                "minimum": sensor.minimum,
+                "maximum": sensor.maximum,
+            }
             sensor_dict["unit"] = (
                 {
                     "readingTypeName": sensor.unit.name.value,
@@ -151,37 +162,30 @@ class JsonRegistrationProtocol(RegistrationProtocol):
                     "symbol": sensor.unit.unit,
                 }
             )
-            sensor_dict["description"] = sensor.description
-            sensor_dict["minimum"] = sensor.minimum
-            sensor_dict["maximum"] = sensor.maximum
             request_dict["sensors"].append(sensor_dict)
 
-        request_dict["actuators"] = list()
-        for actuator in request.template.actuators:
-            request_dict["actuators"].append(actuator.__dict__)
+        request_dict["actuators"] = [
+            actuator.__dict__ for actuator in request.template.actuators
+        ]
 
-        request_dict["alarms"] = list()
-        for alarm in request.template.alarms:
-            request_dict["alarms"].append(alarm.__dict__)
+        request_dict["alarms"] = [
+            alarm.__dict__ for alarm in request.template.alarms
+        ]
 
-        request_dict["configurations"] = list()
-        for configuration in request.template.configurations:
-            configuration_dict = dict()
-            configuration_dict["name"] = configuration.name
-            configuration_dict["reference"] = configuration.reference
-            configuration_dict["description"] = configuration.description
-            configuration_dict["defaultValue"] = configuration.default_value
-            configuration_dict["size"] = configuration.size
-            configuration_dict["labels"] = configuration.labels
-            configuration_dict["minimum"] = configuration.minimum
-            configuration_dict["maximum"] = configuration.maximum
-            configuration_dict["dataType"] = configuration.data_type.name
-            request_dict["configurations"].append(configuration_dict)
-
-        request_dict["typeParameters"] = request.template.type_parameters
-        request_dict[
-            "connectivityParameters"
-        ] = request.template.connectivity_parameters
+        request_dict["configurations"] = [
+            {
+                "name": configuration.name,
+                "reference": configuration.reference,
+                "description": configuration.description,
+                "defaultValue": configuration.default_value,
+                "size": configuration.size,
+                "labels": configuration.labels,
+                "minimum": configuration.minimum,
+                "maximum": configuration.maximum,
+                "dataType": configuration.data_type.name,
+            }
+            for configuration in request.template.configurations
+        ]
 
         if (
             "supportsFirmwareUpdate"
@@ -202,6 +206,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             .decode("utf-8"),
         )
         self.log.debug(f"Made {message} from {request}")
+
         return message
 
     def make_registration_response(
@@ -217,16 +222,12 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """
         response = json.loads(message.payload)
 
-        if response["result"] in [
-            enumeration.value
-            for enumeration in DeviceRegistrationResponseResult
-        ]:
-            for enumeration in DeviceRegistrationResponseResult:
-                if response["result"] == enumeration.value:
-                    result = enumeration
-                    break
-        else:
-            result = DeviceRegistrationResponseResult.ERROR_UNKNOWN
+        result = DeviceRegistrationResponseResult.ERROR_UNKNOWN
+
+        for enumeration in DeviceRegistrationResponseResult:
+            if response["result"] == enumeration.value:
+                result = enumeration
+                break
 
         description = (
             response["description"] if "description" in response else ""
@@ -236,4 +237,5 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             response["payload"]["deviceKey"], result, description
         )
         self.log.debug(f"Made {device_registration_response} from {message}")
+
         return device_registration_response
