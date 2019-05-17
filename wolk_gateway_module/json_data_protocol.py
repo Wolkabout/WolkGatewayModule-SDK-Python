@@ -39,7 +39,7 @@ class JsonDataProtocol(DataProtocol):
     REFERENCE_PATH_PREFIX = "r/"
     CHANNEL_WILDCARD = "#"
     SENSOR_READING = "d2p/sensor_reading/"
-    AlARM = "d2p/events/"
+    ALARM = "d2p/events/"
     ACTUATOR_SET = "p2d/actuator_set/"
     ACTUATOR_GET = "p2d/actuator_get/"
     ACTUATOR_STATUS = "d2p/actuator_status/"
@@ -286,7 +286,7 @@ class JsonDataProtocol(DataProtocol):
         :rtype: wolk_gateway_module.model.message.Message
         """
         topic = (
-            self.AlARM
+            self.ALARM
             + self.DEVICE_PATH_PREFIX
             + device_key
             + self.REFERENCE_PATH_PREFIX
