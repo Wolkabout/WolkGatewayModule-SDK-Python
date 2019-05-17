@@ -42,6 +42,11 @@ from wolk_gateway_module.model.sensor_reading import SensorReading
 from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
+from wolk_gateway_module.model.firmware_update_status import (
+    FirmwareUpdateStatus,
+    FirmwareUpdateState,
+    FirmwareUpdateErrorCode,
+)
 
 from wolk_gateway_module.protocol.data_protocol import DataProtocol
 from wolk_gateway_module.protocol.firmware_update_protocol import (
@@ -58,6 +63,7 @@ from wolk_gateway_module.connectivity.connectivity_service import (
     ConnectivityService,
 )
 from wolk_gateway_module.model.message import Message
+from wolk_gateway_module.interface.firmware_handler import FirmwareHandler
 
 
 class Wolk:
@@ -98,8 +104,7 @@ class Wolk:
                 ],
             ]
         ] = None,
-        firmware_installer: Optional[Callable[[str, str], None]] = None,
-        firmware_version_provider: Optional[Callable[[str], str]] = None,
+        firmware_handler: Optional[FirmwareHandler] = None,
         connectivity_service: Optional[ConnectivityService] = None,
         data_protocol: Optional[DataProtocol] = None,
         firmware_update_protocol: Optional[FirmwareUpdateProtocol] = None,
@@ -125,10 +130,8 @@ class Wolk:
         :type configuration_handler: Optional[Callable[[str, Dict[str, str]], None]]
         :param configuration_provider: Provider of device's configuration options
         :type configuration_provider: Optional[Callable[[str], Dict[str, Union[int, float, bool, str, Tuple[int, int], Tuple[int, int, int], Tuple[float, float], Tuple[float, float, float], Tuple[str, str], Tuple[str, str, str], ], ], ]]
-        :param firmware_installer: Handling of firmware installation
-        :type firmware_installer: Optional[Callable[[str, str], None]]
-        :param firmware_version_provider: Provider of device's current firmware version
-        :type firmware_version_provider: Optional[Callable[[str], str]]
+        :param install_firmware: Handling of firmware installation
+        :type install_firmware: Optional[Callable[[str, str], None]]
         :param connectivity_service: Custom connectivity service implementation
         :type connectivity_service: Optional[ConnectivityService]
         :param data_protocol: Custom data protocol implementation
@@ -226,39 +229,16 @@ class Wolk:
                 " to enable configuration options on your devices!"
             )
 
-        if firmware_installer is not None:
-            if not callable(firmware_installer):
-                raise RuntimeError(f"{firmware_installer} is not a callable!")
-            if len(signature(firmware_installer).parameters) != 2:
-                raise RuntimeError(f"{firmware_installer} invalid signature!")
-            self.firmware_installer = firmware_installer
-        else:
-            self.firmware_installer = None
-
-        if firmware_version_provider is not None:
-            if not callable(firmware_version_provider):
+        if firmware_handler is not None:
+            if not isinstance(firmware_handler, FirmwareHandler):
                 raise RuntimeError(
-                    f"{firmware_version_provider} is not a callable!"
+                    f"{firmware_handler} isn't an instance of FirmwareHandler!"
                 )
-            if len(signature(firmware_version_provider).parameters) != 1:
-                raise RuntimeError(
-                    f"{firmware_version_provider} invalid signature!"
-                )
-            self.firmware_version_provider = firmware_version_provider
+            self.firmware_handler = firmware_handler
+            self.firmware_handler.on_install_success = self._on_install_success
+            self.firmware_handler.on_install_fail = self._on_install_fail
         else:
-            self.firmware_version_provider = None
-
-        if (
-            self.firmware_installer is None
-            and self.firmware_version_provider is not None
-        ) or (
-            self.firmware_installer is not None
-            and self.firmware_version_provider is None
-        ):
-            raise RuntimeError(
-                "Provide firmware_installer and firmware_version_provider"
-                " to enable firmware update on your devices!"
-            )
+            self.firmware_handler = None
 
         if data_protocol is not None:
             if not isinstance(data_protocol, DataProtocol):
@@ -351,8 +331,7 @@ class Wolk:
             f"acutator_status_provider='{self.acutator_status_provider}', "
             f"configuration_handler='{self.configuration_handler}', "
             f"configuration_provider='{self.configuration_provider}', "
-            f"firmware_installer='{self.firmware_installer}', "
-            f"firmware_version_provider='{self.firmware_version_provider}', "
+            f"firmware_handler='{self.firmware_handler}', "
             f"data_protocol='{self.data_protocol}', "
             f"firmware_update_protocol='{self.firmware_update_protocol}', "
             f"status_protocol='{self.status_protocol}', "
@@ -361,6 +340,73 @@ class Wolk:
             f"connectivity_service='{self.connectivity_service}', "
             f"devices='{self.devices}')"
         )
+
+    def _on_install_success(self, device_key: str) -> None:
+        """Handle firmware installation message from firmware_handler.
+
+        :param device_key: Device that completed firmware update
+        :type device_key: str
+        """
+        self.log.info(
+            f"Received firmware installation success for device '{device_key}'"
+        )
+        status = FirmwareUpdateStatus(FirmwareUpdateState.COMPLETED)
+        message = self.firmware_update_protocol.make_update_message(
+            device_key, status
+        )
+        if not self.connectivity_service.publish(message):
+            if not self.outbound_message_queue.put(message):
+                self.log.error(
+                    "Failed to publish or store "
+                    f"firmware version message {message}"
+                )
+                return
+        version = self.firmware_handler.get_firmware_version(device_key)
+        if not version:
+            self.log.error(
+                "Did not get firmware version for " f"device '{device_key}'"
+            )
+            return
+        message = self.firmware_update_protocol.make_version_message(
+            device_key, version
+        )
+        if not self.connectivity_service.publish(message):
+            if not self.outbound_message_queue.put(message):
+                self.log.error(
+                    "Failed to publish or store "
+                    f"firmware version message {message}"
+                )
+
+    def _on_install_fail(
+        self, device_key: str, status: FirmwareUpdateStatus
+    ) -> None:
+        """Handle firmware installation failiure from firmware_handler.
+
+        :param device_key: Device that reported firmware installation error
+        :type device_key: str
+        :param status: Firware update status information
+        :type status: wolk_gateway_module.model.firmware_update_status.FirmwareUpdateStatus
+        """
+        self.log.info(
+            "Received firmware installation status "
+            f"message '{status}' for device '{device_key}'"
+        )
+        if not isinstance(status, FirmwareUpdateStatus):
+            self.log.error(
+                f"Received status {status} is not "
+                "an instance of FirmwareUpdateStatus!"
+            )
+            return
+
+        message = self.firmware_update_protocol.make_update_message(
+            device_key, status
+        )
+        if not self.connectivity_service.publish(message):
+            if not self.outbound_message_queue.put(message):
+                self.log.error(
+                    "Failed to publish or store "
+                    f"firmware version message {message}"
+                )
 
     def _on_inbound_message(self, message: Message) -> None:
         """Handle messages received from WolkGateway.
@@ -482,7 +528,7 @@ class Wolk:
                         f"for device {registered_device.key} : {e}"
                     )
             if registered_device.supports_firmware_update():
-                firmware_version = self.firmware_version_provider(
+                firmware_version = self.firmware_handler.get_firmware_version(
                     registered_device.key
                 )
                 if not firmware_version:
@@ -532,7 +578,19 @@ class Wolk:
                 "Received firmware installation command "
                 f"for device {key} with file path: {path}"
             )
-            self.firmware_installer(key, True, path)
+            firmware_status = FirmwareUpdateStatus(
+                FirmwareUpdateState.INSTALLATION
+            )
+            update_message = self.firmware_update_protocol.make_update_message(
+                key, firmware_status
+            )
+            if not self.connectivity_service.publish(update_message):
+                if not self.outbound_message_queue.put(update_message):
+                    self.log.error(
+                        "Failed to publish or store "
+                        f"firmware update status message {update_message}"
+                    )
+            self.firmware_handler.install_firmware(key, path)
         elif self.firmware_update_protocol.is_firmware_abort_command(message):
             key = self.firmware_update_protocol.extract_key_from_message(
                 message
@@ -540,7 +598,7 @@ class Wolk:
             self.log.info(
                 "Received firmware installation abort command for device {key}"
             )
-            self.firmware_installer(key, False)
+            self.firmware_handler.abort_installation(key)
 
     def add_sensor_reading(
         self,
@@ -794,7 +852,8 @@ class Wolk:
 
         if device.supports_firmware_update():
             if not (
-                self.firmware_installer and self.firmware_version_provider
+                self.install_firmware
+                and self.firmware_handler.get_firmware_version
             ):
                 self.log.error(
                     f"Can not add device '{device.key}' with "
@@ -967,17 +1026,17 @@ class Wolk:
                     except RuntimeError as e:
                         raise e
                 if device.supports_firmware_update():
-                    firmware_version = self.firmware_version_provider(
+                    version = self.firmware_handler.get_firmware_version(
                         device.key
                     )
-                    if not firmware_version:
+                    if not version:
                         self.log.error(
                             "Did not get firmware version for "
                             f"device '{device.key}'"
                         )
                         continue
                     msg = self.firmware_update_protocol.make_version_message(
-                        device.key, firmware_version
+                        device.key, version
                     )
                     if not self.connectivity_service.publish(msg):
                         if not self.outbound_message_queue.put(msg):

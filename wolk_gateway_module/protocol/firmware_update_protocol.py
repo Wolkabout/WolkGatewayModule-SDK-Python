@@ -32,7 +32,7 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_firmware_update_status_message(self, device_key, status):
+    def make_update_message(self, device_key, status):
         """Make message from device firmware update status.
 
         :param device_key: Device key to which the firmware update belongs to

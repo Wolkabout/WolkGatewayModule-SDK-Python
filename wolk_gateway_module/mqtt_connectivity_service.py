@@ -79,6 +79,7 @@ class MQTTConnectivityService(ConnectivityService):
         self.lastwill_message = lastwill_message
         self.inbound_message_listener = None
         self._connected = False
+        self.connected_rc = None
 
         self.log.debug(self.__repr__())
 

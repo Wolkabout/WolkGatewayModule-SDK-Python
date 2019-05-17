@@ -68,7 +68,7 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         self.log.debug(f"Inbound topics for {device_key} : {inbound_topics}")
         return inbound_topics
 
-    def make_firmware_update_status_message(
+    def make_update_message(
         self, device_key: str, status: FirmwareUpdateStatus
     ) -> Message:
         """Make message from device firmware update status.

@@ -76,7 +76,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
 
         self.assertEqual(
             expected,
-            json_firmware_update_protocol.make_firmware_update_status_message(
+            json_firmware_update_protocol.make_update_message(
                 device_key, status
             ),
         )
@@ -104,7 +104,7 @@ class JsonFirmwareUpdateProtocolTests(unittest.TestCase):
 
         self.assertEqual(
             expected,
-            json_firmware_update_protocol.make_firmware_update_status_message(
+            json_firmware_update_protocol.make_update_message(
                 device_key, status
             ),
         )
