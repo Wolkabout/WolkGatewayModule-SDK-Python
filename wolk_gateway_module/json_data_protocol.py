@@ -213,13 +213,26 @@ class JsonDataProtocol(DataProtocol):
         if self.is_configuration_set_message(message):
             command = ConfigurationCommandType.SET
             payload = json.loads(message.payload)
-            values = payload["values"]
-            for reference, value in values.items():
+            for reference, value in payload.items():
                 if "\n" in str(value):
                     value = value.replace("\n", "\\n")
                     value = value.replace("\r", "")
 
-                if isinstance(value, bool):
+                if "true" == str(value):
+                    payload[reference] = bool(value)
+                elif "false" == str(value):
+                    payload[reference] = bool(value)
+
+                else:
+                    try:
+                        if any("." in char for char in value):
+                            payload[reference] = float(value)
+                        else:
+                            payload[reference] = int(value)
+                    except ValueError:
+                        pass
+
+                if isinstance(payload[reference], (int, float, bool)):
                     pass
                 else:
                     if "," in value:
@@ -235,7 +248,9 @@ class JsonDataProtocol(DataProtocol):
                                 ]
                         except ValueError:
                             pass
-                        values[reference] = tuple(values_list)
+                        payload[reference] = tuple(values_list)
+                values = payload
+
         elif self.is_configuration_get_message(message):
             command = ConfigurationCommandType.GET
             values = None
