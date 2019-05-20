@@ -12,6 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+
 from inspect import signature
 from reprlib import recursive_repr
 from typing import Callable, Dict, Optional, Tuple, Union
@@ -459,6 +460,7 @@ class Wolk:
                     "actuation handler and actuator status provider present"
                 )
                 return
+            self.log.info(f"Received actuator set command: {message}")
             command = self.data_protocol.make_actuator_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
             self.actuation_handler(
@@ -478,6 +480,7 @@ class Wolk:
                     "actuation handler and actuator status provider present"
                 )
                 return
+            self.log.info(f"Received actuator get command: {message}")
             command = self.data_protocol.make_actuator_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
             try:
@@ -496,6 +499,7 @@ class Wolk:
                     "configuration handler and configuration provider present"
                 )
                 return
+            self.log.info(f"Received configuration set command: {message}")
             command = self.data_protocol.make_configuration_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
             self.configuration_handler(device_key, command.value)
@@ -516,6 +520,7 @@ class Wolk:
                     "configuration handler and configuration provider present"
                 )
                 return
+            self.log.info(f"Received configuration get command: {message}")
             device_key = self.data_protocol.extract_key_from_message(message)
             try:
                 self.publish_configuration(device_key)
@@ -583,6 +588,7 @@ class Wolk:
                             f"firmware version message {message}"
                         )
         elif self.status_protocol.is_device_status_request_message(message):
+            self.log.info(f"Received device status request: {message}")
             device_key = self.status_protocol.extract_key_from_message(message)
             status = self.device_status_provider(device_key)
             if not status:
@@ -612,7 +618,7 @@ class Wolk:
             )
             self.log.info(
                 "Received firmware installation command "
-                f"for device {key} with file path: {path}"
+                f"for device '{key}' with file path: {path}"
             )
             firmware_status = FirmwareUpdateStatus(
                 FirmwareUpdateState.INSTALLATION
@@ -764,6 +770,10 @@ class Wolk:
                         f"to store message: {message}"
                     )
         else:
+            self.log.warning(
+                "Not connected, unable to publish "
+                f"actuator status message {message}"
+            )
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
 
@@ -794,6 +804,10 @@ class Wolk:
                         f"to store message: {message}"
                     )
         else:
+            self.log.warning(
+                "Not connected, unable to publish "
+                f"device status message {message}"
+            )
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
 
@@ -810,7 +824,7 @@ class Wolk:
         :param device_key: Device to which the configuration belongs to
         :type device_key: str
 
-        :raises RuntimeError: No configuration provider present
+        :raises RuntimeError: No configuration provider present or no data returned
         """
         self.log.debug(f"Publish configuration: {device_key}")
         if not (self.configuration_handler and self.configuration_provider):
@@ -841,6 +855,10 @@ class Wolk:
                         f"to store message: {message}"
                     )
         else:
+            self.log.warning(
+                "Not connected, unable to publish "
+                f"configuration status message {message}"
+            )
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
 
