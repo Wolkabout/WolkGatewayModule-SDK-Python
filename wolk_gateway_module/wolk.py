@@ -652,7 +652,7 @@ class Wolk:
             Tuple[str, str],
             Tuple[str, str, str],
         ],
-        timestamp: Optional[int],
+        timestamp: Optional[int] = None,
     ) -> None:
         """Serialize sensor reading and put into storage.
 
@@ -688,7 +688,7 @@ class Wolk:
         device_key: str,
         reference: str,
         active: bool,
-        timestamp: Optional[int],
+        timestamp: Optional[int] = None,
     ) -> None:
         """Serialize alarm event and put into storage.
 
