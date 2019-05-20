@@ -157,7 +157,7 @@ class JsonDataProtocolTests(unittest.TestCase):
 
         message = Message(
             self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + "some_key",
-            '{"values": {"config_1": false}}',
+            '{"config_1": "false"}',
         )
 
         expected = ConfigurationCommand(
@@ -174,7 +174,7 @@ class JsonDataProtocolTests(unittest.TestCase):
 
         message = Message(
             self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + "some_key",
-            '{"values": {"config_1": "2.3,3.4,4.4"}}',
+            '{"config_1": "2.3,3.4,4.4"}',
         )
 
         expected = ConfigurationCommand(

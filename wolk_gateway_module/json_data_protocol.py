@@ -219,9 +219,9 @@ class JsonDataProtocol(DataProtocol):
                     value = value.replace("\r", "")
 
                 if "true" == str(value):
-                    payload[reference] = bool(value)
+                    payload[reference] = True
                 elif "false" == str(value):
-                    payload[reference] = bool(value)
+                    payload[reference] = False
 
                 else:
                     try:
@@ -229,7 +229,7 @@ class JsonDataProtocol(DataProtocol):
                             payload[reference] = float(value)
                         else:
                             payload[reference] = int(value)
-                    except ValueError:
+                    except (ValueError, TypeError):
                         pass
 
                 if isinstance(payload[reference], (int, float, bool)):
