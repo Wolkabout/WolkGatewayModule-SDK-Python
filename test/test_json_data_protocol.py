@@ -256,7 +256,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
-            '{"data": true, "utc": 1557150524022}',
+            '{"data": "true", "utc": 1557150524022}',
         )
 
         serialized = json_data_protocol.make_alarm_message("some_key", reading)

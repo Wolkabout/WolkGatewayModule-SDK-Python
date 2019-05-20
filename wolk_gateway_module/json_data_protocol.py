@@ -266,6 +266,8 @@ class JsonDataProtocol(DataProtocol):
 
         if isinstance(sensor_reading.value, tuple):
             sensor_reading.value = ",".join(map(str, sensor_reading.value))
+        elif isinstance(sensor_reading.value, bool):
+            sensor_reading.value = str(sensor_reading.value).lower()
 
         payload = json.dumps(
             {
@@ -300,7 +302,9 @@ class JsonDataProtocol(DataProtocol):
             + self.REFERENCE_PATH_PREFIX
             + alarm.reference
         )
-        payload = json.dumps({"data": alarm.active, "utc": alarm.timestamp})
+        payload = json.dumps(
+            {"data": str(alarm.active).lower(), "utc": alarm.timestamp}
+        )
 
         message = Message(topic, payload)
         self.log.debug(f"Made {message} from {alarm} and {device_key}")
@@ -331,6 +335,8 @@ class JsonDataProtocol(DataProtocol):
 
         if isinstance(actuator_status.value, tuple):
             actuator_status.value = ",".join(map(str, actuator_status.value))
+        elif isinstance(actuator_status.value, bool):
+            actuator_status.value = str(actuator_status.value).lower()
 
         payload = json.dumps(
             {
@@ -365,13 +371,8 @@ class JsonDataProtocol(DataProtocol):
 
         for reference, config_value in configuration.items():
             if isinstance(config_value, tuple):
-                values_list = list()
+                values_list = []
                 for value in config_value:
-                    if value is True:
-                        value = "true"
-                    elif value is False:
-                        value = "false"
-
                     if "\n" in str(value):
                         value = value.replace("\n", "\\n")
                         value = value.replace("\r", "")
@@ -383,10 +384,8 @@ class JsonDataProtocol(DataProtocol):
 
                 configuration[reference] = ",".join(map(str, values_list))
             else:
-                if config_value is True:
-                    config_value = "true"
-                elif config_value is False:
-                    config_value = "false"
+                if isinstance(config_value, bool):
+                    config_value = str(config_value).lower()
 
                 configuration[reference] = str(config_value)
 
