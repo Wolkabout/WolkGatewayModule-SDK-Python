@@ -33,7 +33,6 @@ from wolk_gateway_module.model.configuration_command import (
 )
 from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.model.sensor_reading import SensorReading
-from wolk_gateway_module.protocol.data_protocol import DataProtocol
 
 
 class JsonDataProtocolTests(unittest.TestCase):
@@ -42,6 +41,7 @@ class JsonDataProtocolTests(unittest.TestCase):
     DEVICE_PATH_PREFIX = "d/"
     REFERENCE_PATH_PREFIX = "r/"
     CHANNEL_WILDCARD = "#"
+    CHANNEL_DELIMITER = "/"
     SENSOR_READING = "d2p/sensor_reading/"
     ALARM = "d2p/events/"
     ACTUATOR_SET = "p2d/actuator_set/"
@@ -62,11 +62,13 @@ class JsonDataProtocolTests(unittest.TestCase):
                 self.ACTUATOR_SET
                 + self.DEVICE_PATH_PREFIX
                 + device_key
+                + self.CHANNEL_DELIMITER
                 + self.REFERENCE_PATH_PREFIX
                 + self.CHANNEL_WILDCARD,
                 self.ACTUATOR_GET
                 + self.DEVICE_PATH_PREFIX
                 + device_key
+                + self.CHANNEL_DELIMITER
                 + self.REFERENCE_PATH_PREFIX
                 + self.CHANNEL_WILDCARD,
                 self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + device_key,
@@ -118,6 +120,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.ACTUATOR_SET
             + self.DEVICE_PATH_PREFIX
             + "some_key"
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
             '{"value": "test"}',
@@ -137,6 +140,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.ACTUATOR_GET
             + self.DEVICE_PATH_PREFIX
             + "some_key"
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF"
         )
@@ -205,6 +209,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.SENSOR_READING
             + self.DEVICE_PATH_PREFIX
             + "some_key"
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
             '{"data": "value", "utc": null}',
@@ -226,6 +231,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.SENSOR_READING
             + self.DEVICE_PATH_PREFIX
             + "some_key"
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
             '{"data": "1,2,3", "utc": null}',
@@ -247,6 +253,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.ALARM
             + self.DEVICE_PATH_PREFIX
             + "some_key"
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
             '{"data": true, "utc": 1557150524022}',
@@ -268,6 +275,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.ACTUATOR_STATUS
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + reference,
             json.dumps({"status": "READY", "value": "15"}),
@@ -293,6 +301,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             self.ACTUATOR_STATUS
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + reference,
             json.dumps({"status": "READY", "value": "15,12"}),

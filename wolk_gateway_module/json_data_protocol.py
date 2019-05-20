@@ -38,6 +38,7 @@ class JsonDataProtocol(DataProtocol):
     DEVICE_PATH_PREFIX = "d/"
     REFERENCE_PATH_PREFIX = "r/"
     CHANNEL_WILDCARD = "#"
+    CHANNEL_DELIMITER = "/"
     SENSOR_READING = "d2p/sensor_reading/"
     ALARM = "d2p/events/"
     ACTUATOR_SET = "p2d/actuator_set/"
@@ -72,11 +73,13 @@ class JsonDataProtocol(DataProtocol):
             self.ACTUATOR_SET
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + self.CHANNEL_WILDCARD,
             self.ACTUATOR_GET
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + self.CHANNEL_WILDCARD,
             self.CONFIGURATION_SET + self.DEVICE_PATH_PREFIX + device_key,
@@ -256,6 +259,7 @@ class JsonDataProtocol(DataProtocol):
             self.SENSOR_READING
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + sensor_reading.reference
         )
@@ -292,6 +296,7 @@ class JsonDataProtocol(DataProtocol):
             self.ALARM
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + alarm.reference
         )
@@ -319,6 +324,7 @@ class JsonDataProtocol(DataProtocol):
             self.ACTUATOR_STATUS
             + self.DEVICE_PATH_PREFIX
             + device_key
+            + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + actuator_status.reference
         )
