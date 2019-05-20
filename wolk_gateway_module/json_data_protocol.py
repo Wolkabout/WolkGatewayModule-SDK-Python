@@ -168,7 +168,10 @@ class JsonDataProtocol(DataProtocol):
         :returns: device_key
         :rtype: str
         """
-        device_key = message.topic.split("/")[-1]
+        if self.REFERENCE_PATH_PREFIX in message.topic:
+            device_key = message.topic.split("/")[-3]
+        else:
+            device_key = message.topic.split("/")[-1]
         self.log.debug(f"Made {device_key} from {message}")
 
         return device_key
