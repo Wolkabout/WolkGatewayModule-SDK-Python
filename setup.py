@@ -14,13 +14,17 @@ setuptools.setup(
     license="Apache License 2.0",
     author="WolkAbout",
     author_email="info@wolkabout.com",
-    description="SDK for gateway communication modules that connect to WolkAbout IoT Platform",
+    description=(
+        "SDK for gateway communication modules "
+        "that connect to WolkAbout IoT Platform"
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords=["IoT", "WolkAbout", "Internet of Things"],
-    url="https://github.com/Wolkabout/WolkGatewayModule-Python",
-    packages=setuptools.find_packages(),
-    classifiers=(
+    url="https://github.com/Wolkabout/WolkGatewayModule-SDK-Python",
+    packages=setuptools.find_packages(exclude=("test",)),
+    test_suite="unittest",
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
@@ -31,5 +35,5 @@ setuptools.setup(
         "Topic :: Internet",
         "Topic :: Communications",
         "Topic :: Software Development :: Embedded Systems",
-    ),
+    ],
 )
