@@ -905,14 +905,11 @@ class Wolk:
                 return
 
         if device.supports_firmware_update():
-            if not (
-                self.install_firmware
-                and self.firmware_handler.get_firmware_version
-            ):
+            if not self.firmware_handler:
                 self.log.error(
                     f"Can not add device '{device.key}' with "
                     "firmware update support without having a "
-                    "firmware installer and firmware version provider"
+                    "firmware handler"
                 )
                 return
 
