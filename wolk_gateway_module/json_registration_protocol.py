@@ -135,6 +135,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             "defaultBinding": request.default_binding,
             "typeParameters": request.template.type_parameters,
             "connectivityParameters": request.template.connectivity_parameters,
+            # TEMPORARY
+            "firmwareUpdateType": "",
         }
 
         request_dict["sensors"] = []
@@ -200,7 +202,9 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         ] = request.template.firmware_update_parameters
 
         message = Message(
-            self.DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT,
+            self.DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT
+            + self.DEVICE_PATH_PREFIX
+            + request.key,
             json.dumps(request_dict, ensure_ascii=False)
             .encode("utf-8")
             .decode("utf-8"),

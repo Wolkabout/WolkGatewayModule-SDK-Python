@@ -287,12 +287,15 @@ class JsonDataProtocol(DataProtocol):
         elif isinstance(sensor_reading.value, bool):
             sensor_reading.value = str(sensor_reading.value).lower()
 
-        payload = json.dumps(
-            {
-                "data": str(sensor_reading.value),
-                "utc": sensor_reading.timestamp,
-            }
-        )
+        if sensor_reading.timestamp is not None:
+            payload = json.dumps(
+                {
+                    "data": str(sensor_reading.value),
+                    "utc": int(sensor_reading.timestamp),
+                }
+            )
+        else:
+            payload = json.dumps({"data": str(sensor_reading.value)})
 
         message = Message(topic, payload)
         self.log.debug(
@@ -320,9 +323,16 @@ class JsonDataProtocol(DataProtocol):
             + self.REFERENCE_PATH_PREFIX
             + alarm.reference
         )
-        payload = json.dumps(
-            {"data": str(alarm.active).lower(), "utc": alarm.timestamp}
-        )
+
+        if alarm.timestamp is not None:
+            payload = json.dumps(
+                {
+                    "data": str(alarm.active).lower(),
+                    "utc": int(alarm.timestamp),
+                }
+            )
+        else:
+            payload = json.dumps({"data": str(alarm.active).lower()})
 
         message = Message(topic, payload)
         self.log.debug(f"Made {message} from {alarm} and {device_key}")

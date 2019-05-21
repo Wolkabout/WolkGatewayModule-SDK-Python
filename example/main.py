@@ -13,7 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import json
-from time import sleep
+from time import sleep, time
+from random import randint
 
 import wolk_gateway_module as wolk
 
@@ -45,7 +46,7 @@ def get_device_status(device_key: str) -> wolk.DeviceStatus:
         return wolk.DeviceStatus.CONNECTED
 
 
-wolk = wolk.Wolk(
+wolk_module = wolk.Wolk(
     configuration["host"],
     configuration["port"],
     configuration["module_name"],
@@ -53,10 +54,18 @@ wolk = wolk.Wolk(
 )
 
 
-wolk.add_device(device)
+wolk_module.add_device(device)
 
-wolk.connect()
+wolk_module.connect()
 
-wolk.add_sensor_reading("module_device_1", "T", 17.6)
+wolk_module.publish()
 
-wolk.publish()
+while True:
+    try:
+        sleep(3)
+        wolk_module.add_sensor_reading(
+            "module_device_1", "T", randint(-20, 85), int(round(time() * 1000))
+        )
+        wolk_module.publish()
+    except KeyboardInterrupt:
+        break
