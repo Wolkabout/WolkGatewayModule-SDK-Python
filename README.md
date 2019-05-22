@@ -1,6 +1,6 @@
 # WolkGatewayModule-SDK-Python
 
-Python 3.7 package for connecting devices to WolkAbout IoT Platform through [WolkGateway](https://github.com/Wolkabout/WolkGateway).
+Python 3 package for connecting devices to WolkAbout IoT Platform through [WolkGateway](https://github.com/Wolkabout/WolkGateway).
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
