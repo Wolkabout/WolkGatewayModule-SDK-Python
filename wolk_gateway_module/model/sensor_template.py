@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 
 from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.reading_type import ReadingType
@@ -119,3 +119,31 @@ class SensorTemplate:
             f" description='{self.description}', unit='{self.unit}', "
             f"minimum='{self.minimum}', maximum='{self.maximum}')"
         )
+
+    def to_dto(self) -> Dict[str, Union[str, int, float]]:
+        """Create data transfer object used for registration.
+
+        :returns: dto
+        :rtype: dict
+        """
+        dto = {"name": self.name, "reference": self.reference}
+
+        dto["description"] = self.description if self.description else ""
+
+        dto["unit"] = (
+            {
+                "readingTypeName": self.unit.name.value,
+                "symbol": self.unit.unit.value,
+            }
+            if (
+                isinstance(self.unit.name, Name)
+                and isinstance(self.unit.unit, Unit)
+            )
+            else {"readingTypeName": self.unit.name, "symbol": self.unit.unit}
+        )
+
+        if self.minimum and self.maximum:
+            dto["minimum"] = self.minimum
+            dto["maximum"] = self.maximum
+
+        return dto

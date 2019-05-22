@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 
 from wolk_gateway_module.model.data_type import DataType
 
@@ -112,3 +112,23 @@ class ActuatorTemplate:
             f"unit='{self.unit}', "
             f"minimum='{self.minimum}', maximum='{self.maximum}')"
         )
+
+    def to_dto(self) -> Dict[str, Union[int, float, str]]:
+        """Create data transfer object used for registration.
+
+        :returns: dto
+        :rtype: dict
+        """
+        dto = {
+            "name": self.name,
+            "reference": self.reference,
+            "unit": self.unit,
+        }
+
+        dto["description"] = self.description if self.description else ""
+
+        if self.minimum and self.maximum:
+            dto["minimum"] = self.minimum
+            dto["maximum"] = self.maximum
+
+        return dto

@@ -12,9 +12,12 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from typing import Union
 
 
-def handle_actuation(device_key: str, reference: str, value: str) -> None:
+def handle_actuation(
+    device_key: str, reference: str, value: Union[bool, int, float, str]
+) -> None:
     """
     Set device actuator identified by reference to value.
 

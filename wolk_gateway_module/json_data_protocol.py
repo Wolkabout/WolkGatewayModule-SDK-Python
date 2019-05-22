@@ -190,6 +190,23 @@ class JsonDataProtocol(DataProtocol):
             command = ActuatorCommandType.SET
             payload = json.loads(message.payload)
             value = payload["value"]
+            if "\n" in str(value):
+                value = value.replace("\n", "\\n")
+                value = value.replace("\r", "")
+
+            if "true" == str(value):
+                value = True
+            elif "false" == str(value):
+                value = False
+
+            else:
+                try:
+                    if any("." in char for char in value):
+                        value = float(value)
+                    else:
+                        value = int(value)
+                except (ValueError, TypeError):
+                    pass
         elif self.is_actuator_get_message(message):
             command = ActuatorCommandType.GET
             value = None

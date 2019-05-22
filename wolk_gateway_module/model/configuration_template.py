@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Union
+from typing import Dict, Optional, Union, List
 
 from wolk_gateway_module.model.data_type import DataType
 
@@ -48,8 +48,8 @@ class ConfigurationTemplate:
         data_type: DataType,
         description: Optional[str] = None,
         size: int = 1,
-        labels: Optional[str] = None,
-        default_value: Optional[Union[int, float]] = None,
+        labels: Optional[List[str]] = None,
+        default_value: Optional[str] = None,
         minimum: Optional[Union[int, float]] = None,
         maximum: Optional[Union[int, float]] = None,
     ):
@@ -109,3 +109,30 @@ class ConfigurationTemplate:
             f"size='{self.size}', "
             f"labels='{self.labels}')"
         )
+
+    def to_dto(self) -> Dict[str, Union[str, int, float, List[str]]]:
+        """Create data transfer object used for registration.
+
+        :returns: dto
+        :rtype: dict
+        """
+        dto = {
+            "name": self.name,
+            "reference": self.reference,
+            "dataType": self.data_type.name,
+        }
+
+        if self.size != 1:
+            dto["size"] = self.size
+            dto["labels"] = self.labels
+        else:
+            dto["labels"] = []
+
+        if self.minimum and self.maximum:
+            dto["minimum"] = self.minimum
+            dto["maximum"] = self.maximum
+
+        if self.default_value:
+            dto["defaultValue"] = str(self.default_value)
+
+        return dto

@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Dict
 
 
 @dataclass
@@ -32,3 +32,15 @@ class AlarmTemplate:
     name: str
     reference: str
     description: Optional[str] = field(default="")
+
+    def to_dto(self) -> Dict[str, str]:
+        """Create data transfer object used for registration.
+
+        :returns: dto
+        :rtype: dict
+        """
+        return {
+            "name": self.name,
+            "reference": self.reference,
+            "description": self.description if self.description else "",
+        }

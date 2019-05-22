@@ -135,57 +135,27 @@ class JsonRegistrationProtocol(RegistrationProtocol):
             "defaultBinding": request.default_binding,
             "typeParameters": request.template.type_parameters,
             "connectivityParameters": request.template.connectivity_parameters,
-            # TEMPORARY
-            "firmwareUpdateType": "",
         }
 
-        request_dict["sensors"] = []
-        for sensor in request.template.sensors:
-            sensor_dict = {
-                "name": sensor.name,
-                "reference": sensor.reference,
-                "description": sensor.description,
-                "minimum": sensor.minimum,
-                "maximum": sensor.maximum,
-            }
-            sensor_dict["unit"] = (
-                {
-                    "readingTypeName": sensor.unit.name.value,
-                    "symbol": sensor.unit.unit.value,
-                }
-                if (
-                    isinstance(sensor.unit.name, ReadingTypeName)
-                    and isinstance(
-                        sensor.unit.unit, ReadingTypeMeasurementUnit
-                    )
-                )
-                else {
-                    "readingTypeName": sensor.unit.name,
-                    "symbol": sensor.unit.unit,
-                }
-            )
-            request_dict["sensors"].append(sensor_dict)
+        if request.template.supports_firmware_update:
+            request_dict["firmwareUpdateType"] = "DFU"
+        else:
+            request_dict["firmwareUpdateType"] = ""
+
+        request_dict["sensors"] = [
+            sensor.to_dto() for sensor in request.template.sensors
+        ]
 
         request_dict["actuators"] = [
-            actuator.__dict__ for actuator in request.template.actuators
+            actuator.to_dto() for actuator in request.template.actuators
         ]
 
         request_dict["alarms"] = [
-            alarm.__dict__ for alarm in request.template.alarms
+            alarm.to_dto() for alarm in request.template.alarms
         ]
 
         request_dict["configurations"] = [
-            {
-                "name": configuration.name,
-                "reference": configuration.reference,
-                "description": configuration.description,
-                "defaultValue": configuration.default_value,
-                "size": configuration.size,
-                "labels": configuration.labels,
-                "minimum": configuration.minimum,
-                "maximum": configuration.maximum,
-                "dataType": configuration.data_type.name,
-            }
+            configuration.to_dto()
             for configuration in request.template.configurations
         ]
 
