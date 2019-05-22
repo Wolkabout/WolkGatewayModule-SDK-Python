@@ -152,7 +152,7 @@ wolk_module.add_alarm("DEVICE_KEY", "HH", active=True, timestamp=None)
 
 ### Actuators
 
-In order to control a device's actuator, provide an `actuation_handler` and `actuator_status_provider`.
+In order to control device actuators, provide an `actuation_handler` and `actuator_status_provider`.
 
 ```python
 switch_actuator = wolk.ActuatorTemplate(
@@ -236,7 +236,7 @@ wolk_module.publish_acutator_status("DEVICE_KEY", "SL")
 
 ### Configurations
 
-Similar to actuators, using device configuration options requires providing a `configuration_handler` and a `configuration_provider` to the Wolk instance.
+Similar to actuators, using device configuration options requires providing a `configuration_handler` and a `configuration_provider` to the `Wolk` instance.
 
 ```python
 logging_level_configuration = wolk.ConfigurationTemplate(
@@ -450,5 +450,5 @@ wolk_module = wolk.Wolk(
     module_name="Python module",
     device_status_provider=get_device_status,
     outbound_message_queue=CustomPersistence()
-	)
+)
 ```
