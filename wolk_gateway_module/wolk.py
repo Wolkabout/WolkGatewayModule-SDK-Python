@@ -454,15 +454,29 @@ class Wolk:
         self.log.debug(f"Received message: {message}")
 
         if self.data_protocol.is_actuator_set_message(message):
+
             if not (self.actuation_handler and self.acutator_status_provider):
                 self.log.warning(
                     f"Received actuation message {message} , but no "
                     "actuation handler and actuator status provider present"
                 )
                 return
+
             self.log.info(f"Received actuator set command: {message}")
-            command = self.data_protocol.make_actuator_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
+            device_status = self.device_status_provider(device_key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{device_key}' returned '{device_status.value}' "
+                    "status, not forwarding command"
+                )
+                self.publish_device_status(device_key)
+                return
+
+            command = self.data_protocol.make_actuator_command(message)
             self.actuation_handler(
                 device_key, command.reference, command.value
             )
@@ -473,16 +487,31 @@ class Wolk:
                     "Error occurred during handing"
                     f" inbound actuation message {message} : {e}"
                 )
+
         elif self.data_protocol.is_actuator_get_message(message):
+
             if not (self.actuation_handler and self.acutator_status_provider):
                 self.log.warning(
                     f"Received actuation message {message} , but no "
                     "actuation handler and actuator status provider present"
                 )
                 return
+
             self.log.info(f"Received actuator get command: {message}")
-            command = self.data_protocol.make_actuator_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
+            device_status = self.device_status_provider(device_key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{device_key}' returned '{device_status.value}' "
+                    "status, not forwarding command"
+                )
+                self.publish_device_status(device_key)
+                return
+
+            command = self.data_protocol.make_actuator_command(message)
             try:
                 self.publish_acutator_status(device_key, command.reference)
             except RuntimeError as e:
@@ -490,7 +519,9 @@ class Wolk:
                     "Error occurred during handing "
                     f"inbound actuation message {message} : {e}"
                 )
+
         elif self.data_protocol.is_configuration_set_message(message):
+
             if not (
                 self.configuration_handler and self.configuration_provider
             ):
@@ -499,9 +530,22 @@ class Wolk:
                     "configuration handler and configuration provider present"
                 )
                 return
+
             self.log.info(f"Received configuration set command: {message}")
-            command = self.data_protocol.make_configuration_command(message)
             device_key = self.data_protocol.extract_key_from_message(message)
+            device_status = self.device_status_provider(device_key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{device_key}' returned '{device_status.value}' "
+                    "status, not forwarding command"
+                )
+                self.publish_device_status(device_key)
+                return
+
+            command = self.data_protocol.make_configuration_command(message)
             self.configuration_handler(device_key, command.value)
             try:
                 self.publish_configuration(device_key)
@@ -511,7 +555,9 @@ class Wolk:
                     f"inbound configuration message {message} : {e}"
                 )
                 return
+
         elif self.data_protocol.is_configuration_get_message(message):
+
             if not (
                 self.configuration_handler and self.configuration_provider
             ):
@@ -520,8 +566,21 @@ class Wolk:
                     "configuration handler and configuration provider present"
                 )
                 return
+
             self.log.info(f"Received configuration get command: {message}")
             device_key = self.data_protocol.extract_key_from_message(message)
+            device_status = self.device_status_provider(device_key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{device_key}' returned '{device_status.value}' "
+                    "status, not forwarding command"
+                )
+                self.publish_device_status(device_key)
+                return
+
             try:
                 self.publish_configuration(device_key)
             except RuntimeError as e:
@@ -530,9 +589,11 @@ class Wolk:
                     f"inbound configuration message {message} : {e}"
                 )
                 return
+
         elif self.registration_protocol.is_registration_response_message(
             message
         ):
+
             response = self.registration_protocol.make_registration_response(
                 message
             )
@@ -541,12 +602,26 @@ class Wolk:
                     f"Received unexpected registration response: {message}"
                 )
                 return
+
             self.log.info(f"Received registration response: {response}")
 
             for device in self.devices:
                 if device.key == response.key:
                     registered_device = device
                     break
+
+            device_status = self.device_status_provider(registered_device.key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{registered_device.key}' returned "
+                    f"'{device_status.value}' "
+                    "status, not getting device data"
+                )
+                self.publish_device_status(device_key)
+                return
 
             if registered_device.get_actuator_references():
                 for actuator in registered_device.get_actuator_references():
@@ -560,6 +635,7 @@ class Wolk:
                             f"for device {registered_device.key} with "
                             f"reference {actuator.reference} : {e}"
                         )
+
             if registered_device.has_configurations():
                 try:
                     self.publish_configuration(registered_device.key)
@@ -568,6 +644,7 @@ class Wolk:
                         "Error occurred when sending configuration "
                         f"for device {registered_device.key} : {e}"
                     )
+
             if registered_device.supports_firmware_update():
                 firmware_version = self.firmware_handler.get_firmware_version(
                     registered_device.key
@@ -578,6 +655,7 @@ class Wolk:
                         f"device '{registered_device.key}'"
                     )
                     return
+
                 message = self.firmware_update_protocol.make_version_message(
                     registered_device.key, firmware_version
                 )
@@ -587,14 +665,16 @@ class Wolk:
                             "Failed to publish or store "
                             f"firmware version message {message}"
                         )
+
         elif self.status_protocol.is_device_status_request_message(message):
+
             self.log.info(f"Received device status request: {message}")
             device_key = self.status_protocol.extract_key_from_message(message)
             status = self.device_status_provider(device_key)
             if not status:
                 self.log.error(
                     "Device status provider didn't return a "
-                    f"status for device {device_key}"
+                    f"status for device '{device_key}'"
                 )
                 return
             message = self.status_protocol.make_device_status_response_message(
@@ -610,9 +690,22 @@ class Wolk:
         elif self.firmware_update_protocol.is_firmware_install_command(
             message
         ):
+
             key = self.firmware_update_protocol.extract_key_from_message(
                 message
             )
+            device_status = self.device_status_provider(key)
+            if device_status not in [
+                DeviceStatus.CONNECTED,
+                DeviceStatus.SLEEP,
+            ]:
+                self.log.warning(
+                    f"Device '{key}' returned '{device_status.value}' "
+                    "status, not forwarding command"
+                )
+                self.publish_device_status(key)
+                return
+
             path = self.firmware_update_protocol.make_firmware_file_path(
                 message
             )
@@ -632,8 +725,11 @@ class Wolk:
                         "Failed to publish or store "
                         f"firmware update status message {update_message}"
                     )
+
             self.firmware_handler.install_firmware(key, path)
+
         elif self.firmware_update_protocol.is_firmware_abort_command(message):
+
             key = self.firmware_update_protocol.extract_key_from_message(
                 message
             )
@@ -1062,7 +1158,21 @@ class Wolk:
         if self.connectivity_service.connected():
             for device in self.devices:
                 try:
+                    device_status = self.device_status_provider(device.key)
+                    if device_status not in [
+                        DeviceStatus.CONNECTED,
+                        DeviceStatus.SLEEP,
+                    ]:
+                        self.log.warning(
+                            f"Device '{device.key}' returned "
+                            f"'{device_status.value}' "
+                            "status, not getting device data"
+                        )
+                        self.publish_device_status(device.key)
+                        continue
+
                     self.publish_device_status(device.key)
+
                 except (ValueError, RuntimeError) as e:
                     raise e
 
@@ -1071,11 +1181,13 @@ class Wolk:
                         self.publish_acutator_status(device.key, reference)
                     except RuntimeError as e:
                         raise e
+
                 if device.has_configurations():
                     try:
                         self.publish_configuration(device.key)
                     except RuntimeError as e:
                         raise e
+
                 if device.supports_firmware_update():
                     version = self.firmware_handler.get_firmware_version(
                         device.key
