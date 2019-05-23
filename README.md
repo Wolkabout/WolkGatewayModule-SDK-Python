@@ -77,6 +77,7 @@ device = wolk.Device(
 def get_device_status(device_key: str) -> wolk.DeviceStatus:
     """Return current device status."""
     if device_key == "DEVICE_KEY":
+        # Handle getting current device status here
         return wolk.DeviceStatus.CONNECTED
 
 

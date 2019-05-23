@@ -21,7 +21,7 @@ from wolk_gateway_module.model.data_type import DataType
 class ActuatorTemplate:
     """Actuator template for registering device on Platform.
 
-    :ivar description: Description
+    :ivar description: Description detailing this actuator
     :vartype description: str or None
     :ivar maximum: Maximum actuator value
     :vartype maximum: int or float or None
@@ -29,7 +29,7 @@ class ActuatorTemplate:
     :vartype minimum: int of float or None
     :ivar name: Name of actuator
     :vartype name: str
-    :ivar reference: Actuator reference
+    :ivar reference: Unique actuator reference
     :vartype reference: str
     :ivar unit: Actuator reading type measurement name and unit
     :vartype unit: dict
@@ -48,22 +48,27 @@ class ActuatorTemplate:
     ):
         """Actuator template for device registration request.
 
+        Define a reading type either by using the ``data_type`` to select a
+        generic type (boolean, numeric, string) or use ``reading_type_name``
+        and ``unit`` to use a custom reading type that was previously defined
+        on WolkAbout IoT Platform.
+
         :param name: Actuator name
         :type name: str
         :param reference: Actuator reference
         :type reference: str
         :param data_type: Actuator data type
-        :type data_type: wolk_gateway_module.model.data_type.DataType or None
+        :type data_type: Optional[wolk_gateway_module.model.data_type.DataType]
         :param reading_type_name: Custom reading type name
-        :type reading_type_name: str or None
+        :type reading_type_name: Optional[str]
         :param unit: Custom reading type measurement unit
-        :type unit: str or None
-        :param description: Description
-        :type description: str or None
+        :type unit: Optional[str]
+        :param description: Description detailing the actuator
+        :type description: Optional[str]
         :param minimum: Actuator minimum value
-        :type minimum: int or float or None
+        :type minimum: Optional[Union[int,float]]
         :param maximum: Actuator maximum value
-        :type maximum: int or float or None
+        :type maximum: Optional[Union[int,float]]
         """
         self.name = name
         self.reference = reference
@@ -117,7 +122,7 @@ class ActuatorTemplate:
         """Create data transfer object used for registration.
 
         :returns: dto
-        :rtype: dict
+        :rtype: Dict[str, Union[int, float, str]]
         """
         dto = {
             "name": self.name,

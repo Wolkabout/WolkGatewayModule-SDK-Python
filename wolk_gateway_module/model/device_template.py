@@ -28,22 +28,32 @@ from wolk_gateway_module.model.sensor_template import SensorTemplate
 class DeviceTemplate:
     """Contains information required for registering device on Platform.
 
+    A device template consists of lists of templates (actuator, alarm, sensor, configuration)
+    that represent what data the device is expected to send and receive.
+    All references of a device must be unique.
+
+    Other than data feed templates, there is a ``supports_firmware_update`` parameter
+    that specifies if this device has the capability to perform firmware updates.
+
+    Finally, there are type, connectivity and firmware update parameters that are dictionaries
+    that will contain more attributes to group together devices, but are unused at this moment.
+
     :ivar actuators: List of actuators on device
-    :vartype actuators: list(wolk_gateway_module.model.actuator_template.ActuatorTemplate)
+    :vartype actuators: List[wolk_gateway_module.model.actuator_template.ActuatorTemplate]
     :ivar alarms: List of alarms on device
-    :vartype alarms: list(wolk_gateway_module.model.alarm_template.AlarmTemplate)
+    :vartype alarms: List[wolk_gateway_module.model.alarm_template.AlarmTemplate]
     :ivar configurations: List of configurations on device
-    :vartype configurations: list(wolk_gateway_module.model.configuration_template.ConfigurationTemplate)
+    :vartype configurations: List[wolk_gateway_module.model.configuration_template.ConfigurationTemplate]
     :ivar connectivity_parameters: Device's connectivity parameters
-    :vartype connectivity_parameters: dict
+    :vartype connectivity_parameters: Dict[str, Union[str, int, float, bool]]
     :ivar supports_firmware_update: Is firmware update enabled for this device
     :vartype supports_firmware_update: bool
     :ivar sensors: List of sensors on device
-    :vartype sensors: list(wolk_gateway_module.model.sensor_template.SensorTemplate)
+    :vartype sensors: List[wolk_gateway_module.model.sensor_template.SensorTemplate]
     :ivar type_parameters: Device's type parameters
-    :vartype type_parameters: dict
+    :vartype type_parameters: Dict[str, Union[str, int, float, bool]]
     :ivar firmware_update_parameters: Device's firmware update parameters
-    :vartype firmware_update_parameters: dict
+    :vartype firmware_update_parameters: Dict[str, Union[str, int, float, bool]]
     """
 
     actuators: List[ActuatorTemplate] = field(default_factory=list)

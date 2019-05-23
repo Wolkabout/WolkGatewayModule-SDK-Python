@@ -1,6 +1,11 @@
 from .wolk import Wolk
 from .logger_factory import logging_config
 from .interface.firmware_handler import FirmwareHandler
+from .interface.actuation_handler import handle_actuation
+from .interface.actuator_status_provider import get_actuator_status
+from .interface.configuration_handler import handle_configuration
+from .interface.configuration_provider import get_configuration
+from .interface.device_status_provider import get_device_status
 from .connectivity.connectivity_service import ConnectivityService
 from .protocol.data_protocol import DataProtocol
 from .protocol.registration_protocol import RegistrationProtocol
@@ -36,6 +41,11 @@ from .model.device_registration_response import DeviceRegistrationResponse
 __all__ = [
     "Wolk",
     "logging_config",
+    "handle_actuation",
+    "get_actuator_status",
+    "handle_configuration",
+    "get_configuration",
+    "get_device_status",
     "ActuatorState",
     "FirmwareHandler",
     "FirmwareUpdateState",

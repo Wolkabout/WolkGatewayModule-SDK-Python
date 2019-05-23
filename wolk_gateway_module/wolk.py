@@ -166,7 +166,7 @@ class Wolk:
         :param configuration_handler: Setter of new device configuration values
         :type configuration_handler: Optional[Callable[[str, Dict[str, str]], None]]
         :param configuration_provider: Provider of device's configuration options
-        :type configuration_provider: Optional[Callable[[str], Dict[str, Union[int, float, bool, str, Tuple[int, int], Tuple[int, int, int], Tuple[float, float], Tuple[float, float, float], Tuple[str, str], Tuple[str, str, str], ], ], ]]
+        :type configuration_provider: Optional[Callable[[str], Dict[str, Union[int, float, bool, str, Tuple[int, int], Tuple[int, int, int], Tuple[float, float], Tuple[float, float, float], Tuple[str, str], Tuple[str, str, str]]]]]
         :param install_firmware: Handling of firmware installation
         :type install_firmware: Optional[Callable[[str, str], None]]
         :param connectivity_service: Custom connectivity service implementation
@@ -761,7 +761,7 @@ class Wolk:
         Storing readings without Unix timestamp will result
         in all sent messages being treated as live readings and
         will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via `int(round(time.time() * 1000))`
+        history add timestamps to readings via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -797,7 +797,7 @@ class Wolk:
         Storing alarms without Unix timestamp will result
         in all sent messages being treated as live and
         will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to alarms via `int(round(time.time() * 1000))`
+        history add timestamps to alarms via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -824,9 +824,9 @@ class Wolk:
         If message is unable to be sent, it will be placed in storage.
 
         Getting the actuator status is achieved by calling the user's
-        implementation of acutator_status_provider.
+        implementation of ``acutator_status_provider``.
 
-        If no acutator_status_provider is present, will raise exception.
+        If no ``acutator_status_provider`` is present, will raise exception.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -876,10 +876,13 @@ class Wolk:
     def publish_device_status(self, device_key: str) -> None:
         """Publish current device status to WolkGateway.
 
+        Getting the current device status is achieved by calling the user's
+        provided ``device_status_provider``.
+
         :param device_key: Device to which the status belongs to
         :type device_key: str
 
-        :raises ValueError: status is not of DeviceStatus
+        :raises ValueError: status is not of ``DeviceStatus``
         :raises RuntimeError: Failed to publish and store message
         """
         self.log.debug(f"Publish device status for {device_key}")
@@ -913,9 +916,9 @@ class Wolk:
         If message is unable to be sent, it will be placed in storage.
 
         Getting the current configuration is achieved by calling the user's
-        implementation of configuration_provider.
+        implementation of ``configuration_provider``.
 
-        If no configuration_provider is present, will raise exception.
+        If no ``configuration_provider`` is present, will raise exception.
 
         :param device_key: Device to which the configuration belongs to
         :type device_key: str

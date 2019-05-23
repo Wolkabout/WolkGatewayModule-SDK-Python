@@ -37,7 +37,7 @@ class AlarmTemplate:
         """Create data transfer object used for registration.
 
         :returns: dto
-        :rtype: dict
+        :rtype: Dict[str, str]
         """
         return {
             "name": self.name,

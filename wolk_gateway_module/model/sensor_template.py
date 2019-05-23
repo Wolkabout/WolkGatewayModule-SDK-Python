@@ -26,7 +26,7 @@ from wolk_gateway_module.model.reading_type_name import ReadingTypeName as Name
 class SensorTemplate:
     """Sensor template for registering device on Platform.
 
-    :ivar description: Description
+    :ivar description: Description detailing this sensor
     :vartype description: str or None
     :ivar maximum: Maximum sensor value
     :vartype maximum: int or float or None
@@ -34,7 +34,7 @@ class SensorTemplate:
     :vartype minimum: int or float or None
     :ivar name: Name of sensor
     :vartype name: str
-    :ivar reference: Sensor reference
+    :ivar reference: Unique sensor reference
     :vartype reference: str
     :ivar unit: Sensor reading type measurement name and unit
     :vartype unit: wolk_gateway_module.model.reading_type.ReadingType
@@ -55,12 +55,13 @@ class SensorTemplate:
 
         Define a reading type for sensors,
         either a generic type by specifying
-        a `DataType`_ (numeric, boolean or string) or entering
+        a ``DataType`` (numeric, boolean or string) or entering
         a predefined one by using the enumerations provided in
-        `ReadingTypeName`_ and `ReadingTypeMeasurementUnit`_ .
+        ``ReadingTypeName`` and ``ReadingTypeMeasurementUnit``.
 
-        Custom reading types can be used by passing string values
-        for the name and measurement unit.
+        Custom reading types that have been previously defined
+        on WolkAbout IoT Platform can be used by passing string values
+        for ``reading_type_name`` and ``unit``.
 
         :param name: Sensor name
         :type name: str
@@ -68,16 +69,18 @@ class SensorTemplate:
         :type reference: str
         :param data_type: Sensor data type for generic reading type
         :type data_type: wolk_gateway_module.model.data_type.DataType or None
-        :param reading_type_name: Reading type name from defined enumeration or string for custom
-        :type reading_type_name: wolk_gateway_module.model.reading_type_name.ReadingTypeName or str or None
-        :param unit: Reading type measurement unit from defined enumeration or string for custom
-        :type unit: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit or str or None
-        :param description: Description
-        :type description: str or None
+        :param reading_type_name: Reading type name from defined enumeration or
+         string for custom
+        :type reading_type_name: Optional[Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]]
+        :param unit: Reading type measurement unit from defined enumeration
+         or string for custom
+        :type unit: Optional[Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]]
+        :param description: Description detailing the sensor's specification
+        :type description: Optional[str]
         :param minimum: Minimum sensor value
-        :type minimum: int or float or None
+        :type minimum: Optional[Union[int, float]]
         :param maximum: Maximum sensor value
-        :type maximum: int or float or None
+        :type maximum: Optional[Union[int, float]]
         """
         self.name = name
         self.reference = reference
@@ -124,7 +127,7 @@ class SensorTemplate:
         """Create data transfer object used for registration.
 
         :returns: dto
-        :rtype: dict
+        :rtype: Dict[str, Union[str, int, float]]
         """
         dto = {"name": self.name, "reference": self.reference}
 

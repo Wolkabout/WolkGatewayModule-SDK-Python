@@ -24,18 +24,18 @@ class ConfigurationTemplate:
     :ivar data_type: Configuration data type
     :vartype data_type: wolk_gateway_module.model.data_type.DataType
     :ivar default_value: Default value of configuration
-    :vartype default_value: str
+    :vartype default_value: str or None
     :ivar description: Description of configuration
-    :vartype description: str
+    :vartype description: str or None
     :ivar labels: Labels of fields when data size > 1
-    :vartype labels: str
+    :vartype labels: List[str] or None
     :ivar maximum: Maximum configuration value
     :vartype maximum: int
     :ivar minimum: Minimum configuration value
     :vartype minimum: int
     :ivar name: Configuration name
     :vartype name: str
-    :ivar reference: Configuration reference
+    :ivar reference: Unique configuration reference
     :vartype reference: str
     :ivar size: Data size
     :vartype size: int
@@ -62,17 +62,17 @@ class ConfigurationTemplate:
         :param data_type: Configuration data type
         :type data_type: wolk_gateway_module.model.data_type.DataType
         :param description: Configuration description
-        :type description: str or None
-        :param size: Configuration data size
-        :type size: int
-        :param labels: Comma separated data labels when data size > 1
-        :type labels: str or None
+        :type description: Optional[str]
+        :param size: Configuration data size (max 3)
+        :type size: Optional[int]
+        :param labels: List of string lables when data size > 1
+        :type labels: Optional[List[str]]
         :param default_value: Default configuration value
-        :type default_value: str or None
+        :type default_value: Optional[str]
         :param minimum: Minimum configuration value
-        :type minimum: int or None
+        :type minimum: Optional[Union[int, float]]
         :param maximum: Maximum configuration value
-        :type maximum: int or None
+        :type maximum: Optional[Union[int, float]]
         """
         self.name = name
         self.reference = reference
@@ -114,7 +114,7 @@ class ConfigurationTemplate:
         """Create data transfer object used for registration.
 
         :returns: dto
-        :rtype: dict
+        :rtype: Dict[str, Union[str, int, float, List[str]]]
         """
         dto = {
             "name": self.name,
