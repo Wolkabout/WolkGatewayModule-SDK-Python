@@ -39,7 +39,7 @@ class ActuatorCommand:
     :ivar reference: What actuator is the command for
     :vartype reference: str
     :ivar command: Type of command received
-    :vartype command: wolk_gateway_module.model.actuator_command.ActuatorCommandType
+    :vartype command: ActuatorCommandType
     :ivar value: Value to be set
     :vartype value: Optional[Union[bool, int, float, str]]
     """

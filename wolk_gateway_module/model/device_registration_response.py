@@ -30,7 +30,7 @@ class DeviceRegistrationResponse:
     :ivar key: Unique device key
     :vartype key: str
     :ivar result: Result of the registration process
-    :vartype result: wolk_gateway_module.model.device_registration_response_result.DeviceRegistrationResponseResult
+    :vartype result: DeviceRegistrationResponseResult
     :ivar description: Description of error that occurred
     :vartype description: str
     """

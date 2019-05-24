@@ -39,21 +39,7 @@ class ConfigurationCommand:
     :ivar command: Configuration command received
     :vartype command: int
     :ivar value: Set configuration to value
-    :vartype value: Optional[Dict[
-        str,
-        Union[
-            int,
-            float,
-            bool,
-            str,
-            Tuple[int, int],
-            Tuple[int, int, int],
-            Tuple[float, float],
-            Tuple[float, float, float],
-            Tuple[str, str],
-            Tuple[str, str, str]
-        ]
-    ]
+    :vartype value: Optional[dict]
     """
 
     command: ConfigurationCommandType

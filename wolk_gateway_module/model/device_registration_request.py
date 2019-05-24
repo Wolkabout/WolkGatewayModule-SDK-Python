@@ -27,7 +27,7 @@ class DeviceRegistrationRequest:
     :ivar key: Unique device key
     :vartype key: str
     :ivar template: Device template
-    :vartype template: wolk_gateway_module.model.device_template.DeviceTemplate
+    :vartype template: DeviceTemplate
     :ivar default_binding: Create semantic group for device on Platform
     :vartype default_binding: bool
     """

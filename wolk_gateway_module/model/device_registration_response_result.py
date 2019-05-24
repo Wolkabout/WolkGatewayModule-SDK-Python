@@ -18,7 +18,29 @@ from enum import Enum, unique
 
 @unique
 class DeviceRegistrationResponseResult(Enum):
-    """Enumeration of possible registration response results."""
+    """Enumeration of possible registration response results.
+
+    :ivar OK: Device was successfully registered
+    :vartype OK: str
+    :ivar ERROR_GATEWAY_NOT_FOUND: Gateway that sent the registration request was not found
+    :vartype ERROR_GATEWAY_NOT_FOUND: str
+    :ivar ERROR_NOT_A_GATEWAY: Sender of request is not a gateway
+    :vartype ERROR_NOT_A_GATEWAY: str
+    :ivar ERROR_KEY_CONFLICT: Device with that key already exists
+    :vartype ERROR_KEY_CONFLICT: str
+    :ivar ERROR_MAXIMUM_NUMBER_OF_DEVICES_EXCEEDED: Reached limit for number of devices
+    :vartype ERROR_MAXIMUM_NUMBER_OF_DEVICES_EXCEEDED: str
+    :ivar ERROR_VALIDATION_ERROR: Some data in the registration request was not valid
+    :vartype ERROR_VALIDATION_ERROR: str
+    :ivar ERROR_INVALID_DTO: The request was not valid - faulty JSON
+    :vartype ERROR_INVALID_DTO: str
+    :ivar ERROR_KEY_MISSING: Device key was not provided
+    :vartype ERROR_KEY_MISSING: str
+    :ivar ERROR_SUBDEVICE_MANAGEMENT_FORBIDDEN: Gateway is not able to register devices
+    :vartype ERROR_SUBDEVICE_MANAGEMENT_FORBIDDEN: str
+    :ivar ERROR_UNKNOWN: Unknown error occurred
+    :vartype ERROR_UNKNOWN: str
+    """
 
     OK = "OK"
     ERROR_GATEWAY_NOT_FOUND = "ERROR_GATEWAY_NOT_FOUND"
