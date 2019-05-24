@@ -26,7 +26,7 @@ class FirmwareHandler(ABC):
     and `abort_installation` methods.
 
     :ivar on_install_fail: Installation failure callback method
-    :vartype on_install_fail: Callable[[str, wolk_gateway_module.model.firmware_update_status.FirmwareUpdateStatus], None]
+    :vartype on_install_fail: Callable[[str, FirmwareUpdateStatus], None]
     :ivar on_install_success: Installation successful callback method
     :vartype on_install_success: Callable[[str], None]
     """
@@ -41,16 +41,20 @@ class FirmwareHandler(ABC):
         """
         Handle the installation of the firmware file.
 
-        Call `self.on_install_success(device_key)` to report success.
+        Call ``self.on_install_success(device_key)`` to report success.
         Reporting success will also get new firmware version.
 
-        If installation fails, call `self.on_install_fail(device_key, status)`
+        If installation fails, call ``self.on_install_fail(device_key, status)``
         where:
-        `status = FirmwareUpdateStatus(
-            FirmwareUpdateState.ERROR,
-            FirmwareUpdateErrorCode.INSTALLATION_FAILED
-        )`
-        or use other values from `FirmwareUpdateErrorCode` if they fit better.
+
+        .. code-block:: python
+
+                status = FirmwareUpdateStatus(
+                    FirmwareUpdateState.ERROR,
+                    FirmwareUpdateErrorCode.INSTALLATION_FAILED
+                )
+
+        or use other values from ``FirmwareUpdateErrorCode`` if they fit better.
 
         :param device_key: Device for which the firmware command is intended
         :type device_key: str
@@ -64,9 +68,9 @@ class FirmwareHandler(ABC):
         """
         Attempt to abort the firmware installation process for device.
 
-        Call `self.on_install_fail(device_key, status)` to report if
+        Call ``self.on_install_fail(device_key, status)`` to report if
         the installation process was able to be aborted with
-        `status = FirmwareUpdateStatus(FirmwareUpdateState.ABORTED)`
+        ``status = FirmwareUpdateStatus(FirmwareUpdateState.ABORTED)``.
         If unable to stop the installation process, no action is required.
 
         :param device_key: Device for which to abort installation

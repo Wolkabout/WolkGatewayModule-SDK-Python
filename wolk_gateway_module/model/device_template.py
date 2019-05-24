@@ -39,17 +39,17 @@ class DeviceTemplate:
     that will contain more attributes to group together devices, but are unused at this moment.
 
     :ivar actuators: List of actuators on device
-    :vartype actuators: List[wolk_gateway_module.model.actuator_template.ActuatorTemplate]
+    :vartype actuators: List[ActuatorTemplate]
     :ivar alarms: List of alarms on device
-    :vartype alarms: List[wolk_gateway_module.model.alarm_template.AlarmTemplate]
+    :vartype alarms: List[AlarmTemplate]
     :ivar configurations: List of configurations on device
-    :vartype configurations: List[wolk_gateway_module.model.configuration_template.ConfigurationTemplate]
+    :vartype configurations: List[ConfigurationTemplate]
     :ivar connectivity_parameters: Device's connectivity parameters
     :vartype connectivity_parameters: Dict[str, Union[str, int, float, bool]]
     :ivar supports_firmware_update: Is firmware update enabled for this device
     :vartype supports_firmware_update: bool
     :ivar sensors: List of sensors on device
-    :vartype sensors: List[wolk_gateway_module.model.sensor_template.SensorTemplate]
+    :vartype sensors: List[SensorTemplate]
     :ivar type_parameters: Device's type parameters
     :vartype type_parameters: Dict[str, Union[str, int, float, bool]]
     :ivar firmware_update_parameters: Device's firmware update parameters

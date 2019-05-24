@@ -28,7 +28,7 @@ class Device:
     :ivar key: Device's unique key
     :vartype key: str
     :ivar template: Device template that defines data the device will send and receive.
-    :vartype template: wolk_gateway_module.model.device_template.DeviceTemplate
+    :vartype template: DeviceTemplate
     """
 
     name: str

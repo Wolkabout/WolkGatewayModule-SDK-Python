@@ -260,6 +260,7 @@ def handle_actuation(
     """
     if device_key == "module_device_1":
         if reference == "SW":
+            # Handle setting the actuator value here
             global switch
             switch = value
 
@@ -381,6 +382,7 @@ def handle_configuration(
     :type configuration: dict
     """
     if device_key == "module_device_1":
+        # Handle setting configuration values here
         global device_1_configuration_1
         global device_1_configuration_2
 

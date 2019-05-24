@@ -79,17 +79,17 @@ class Wolk:
     :ivar configuration_provider: Get device's current configuration options
     :vartype configuration_provider: Optional[Callable[[str],Dict[]]
     :ivar connectivity_service: Service that enables connection to WolkGateway
-    :vartype connectivity_service: wolk_gateway_module.connectivity.connectivity_service.ConnectivityService
+    :vartype connectivity_service: ConnectivityService
     :ivar data_protocol: Parse messages related to device data
-    :vartype data_protocol: wolk_gateway_module.protocol.data_protocol.DataProtocol
+    :vartype data_protocol: DataProtocol
     :ivar device_status_provider: Get device's current status
     :vartype device_status_provider: Callable[[str], DeviceStatus]
     :ivar devices: List of devices added to module
-    :vartype devices: List[wolk_gateway_module.model.device.Device]
+    :vartype devices: List[Device]
     :ivar firmware_handler: Handle commands related to firmware update
-    :vartype firmware_handler: Optional[wolk_gateway_module.interface.firmware_handler.FirmwareHandler]
+    :vartype firmware_handler: Optional[FirmwareHandler]
     :ivar firmware_update_protocol: Parse messages related to firmware update
-    :vartype firmware_update_protocol: wolk_gateway_module.protocol.firmware_update_protocol.FirmwareUpdateProtocol
+    :vartype firmware_update_protocol: FirmwareUpdateProtocol
     :ivar host: WolkGateway's host address
     :vartype host: str
     :ivar log: Logger instance
@@ -97,13 +97,13 @@ class Wolk:
     :ivar module_name: Name of module used for identification on WolkGateway
     :vartype module_name: str
     :ivar outbound_message_queue: Means of storing messages
-    :vartype outbound_message_queue: wolk_gateway_module.persistence.outbound_message_queue.OutboundMessageQueue
+    :vartype outbound_message_queue: OutboundMessageQueue
     :ivar port: WolkGateway's connectivity port
     :vartype port: int
     :ivar registration_protocol: Parse messages related to device registration
-    :vartype registration_protocol: wolk_gateway_module.protocol.registration_protocol.RegistrationProtocol
+    :vartype registration_protocol: RegistrationProtocol
     :ivar status_protocol: Parse messages related to device status
-    :vartype status_protocol: wolk_gateway_module.protocol.status_protocol.StatusProtocol
+    :vartype status_protocol: StatusProtocol
     """
 
     def __init__(
@@ -422,7 +422,7 @@ class Wolk:
         :param device_key: Device that reported firmware installation error
         :type device_key: str
         :param status: Firware update status information
-        :type status: wolk_gateway_module.model.firmware_update_status.FirmwareUpdateStatus
+        :type status: FirmwareUpdateStatus
         """
         self.log.info(
             "Received firmware installation status "
@@ -449,7 +449,7 @@ class Wolk:
         """Handle messages received from WolkGateway.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
         """
         self.log.debug(f"Received message: {message}")
 
@@ -969,7 +969,7 @@ class Wolk:
         update list of subscribed topics.
 
         :param device: Device to be added to module
-        :type device: wolk_gateway_module.model.device.Device
+        :type device: Device
 
         :raises RuntimeError: Unable to store message
         :raises ValueError: Invalid device given

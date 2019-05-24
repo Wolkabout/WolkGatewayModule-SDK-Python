@@ -28,17 +28,17 @@ class ReadingType:
 
     Define a reading type for sensors,
     either a generic type by specifying
-    a `DataType`_ (numeric, boolean or string) or entering
+    a ``DataType`` (numeric, boolean or string) or entering
     a predefined one by using the enumerations provided in
-    `ReadingTypeName`_ and `ReadingTypeMeasurementUnit`_ .
+    ``ReadingTypeName`` and ``ReadingTypeMeasurementUnit`` .
 
     Custom reading types can be used by passing string values
     for the name and measurement unit.
 
     :ivar name: Name of reading type
-    :vartype name: Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]
+    :vartype name: Union[ReadingTypeName, str]
     :ivar unit: Measurement unit of reading type
-    :vartype unit: Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]
+    :vartype unit: Union[ReadingTypeMeasurementUnit, str]
     """
 
     def __init__(
@@ -50,11 +50,11 @@ class ReadingType:
         """Reading type used for registering device's sensors.
 
         :param data_type: Data type for generic reading type
-        :type data_type: Optional[wolk_gateway_module.model.data_type.DataType]
+        :type data_type: Optional[DataType]
         :param name: Reading type name from defined enumeration or string for custom
-        :type name: Optional[Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]]
+        :type name: Optional[Union[ReadingTypeName, str]]
         :param unit: Reading type measurement unit from defined enumeration or string for custom
-        :type unit: Optional[Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]]
+        :type unit: Optional[Union[ReadingTypeMeasurementUnit, str]]
 
         :raises ValueError: Unable to create a reading type from given input
         """
@@ -97,9 +97,9 @@ class ReadingType:
         """Validate reading type name and measurement unit.
 
         :param name: Reading type name
-        :type name: Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]
+        :type name: Union[ReadingTypeName, str]
         :param unit: Reading type measurement unit
-        :type unit: Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]
+        :type unit: Union[ReadingTypeMeasurementUnit, str]
 
         :returns: valid
         :rtype: bool

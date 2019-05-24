@@ -27,6 +27,23 @@ Sensors
 
     .. automethod:: wolk_gateway_module.model.sensor_template.SensorTemplate.__init__
 
+.. autoclass:: wolk_gateway_module.model.data_type.DataType
+    :members:
+
+Reading types
+^^^^^^^^^^^^^
+.. autoclass:: wolk_gateway_module.model.reading_type.ReadingType
+
+  .. automethod:: wolk_gateway_module.model.reading_type.ReadingType.__init__
+
+To view all available reading type names, view source
+
+.. autoclass:: wolk_gateway_module.model.reading_type_name.ReadingTypeName
+
+To view all available reading type measurement units and their symbols, view source
+
+.. autoclass:: wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit
+
 
 Alarms
 ------

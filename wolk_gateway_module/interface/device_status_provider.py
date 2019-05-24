@@ -21,6 +21,6 @@ def get_device_status(device_key):
     :param device_key: Device identifier
     :type device_key: str
     :returns: status
-    :rtype: wolk_gateway_module.model.device_status.DeviceStatus
+    :rtype: DeviceStatus
     """
     pass

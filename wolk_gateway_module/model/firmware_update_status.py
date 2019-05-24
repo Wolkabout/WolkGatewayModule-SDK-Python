@@ -65,9 +65,9 @@ class FirmwareUpdateStatus:
     """Holds information about current firmware update status.
 
     :ivar status: Firmware update status
-    :vartype status: wolk_gateway_module.model.firmware_update_status.FirmwareUpdateState
+    :vartype status: FirmwareUpdateState
     :ivar error_code: Description of error that occured
-    :vartype error_code: Optional[wolk_gateway_module.model.firmware_update_status.FirmwareUpdateErrorCode]
+    :vartype error_code: Optional[FirmwareUpdateErrorCode]
     """
 
     status: FirmwareUpdateState

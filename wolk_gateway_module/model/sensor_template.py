@@ -37,7 +37,7 @@ class SensorTemplate:
     :ivar reference: Unique sensor reference
     :vartype reference: str
     :ivar unit: Sensor reading type measurement name and unit
-    :vartype unit: wolk_gateway_module.model.reading_type.ReadingType
+    :vartype unit: ReadingType
     """
 
     def __init__(
@@ -68,13 +68,13 @@ class SensorTemplate:
         :param reference: Sensor reference
         :type reference: str
         :param data_type: Sensor data type for generic reading type
-        :type data_type: wolk_gateway_module.model.data_type.DataType or None
+        :type data_type: Optional[DataType]
         :param reading_type_name: Reading type name from defined enumeration or
          string for custom
-        :type reading_type_name: Optional[Union[wolk_gateway_module.model.reading_type_name.ReadingTypeName, str]]
+        :type reading_type_name: Optional[Union[ReadingTypeName, str]]
         :param unit: Reading type measurement unit from defined enumeration
          or string for custom
-        :type unit: Optional[Union[wolk_gateway_module.model.reading_type_measurement_unit.ReadingTypeMeasurementUnit, str]]
+        :type unit: Optional[Union[ReadingTypeMeasurementUnit, str]]
         :param description: Description detailing the sensor's specification
         :type description: Optional[str]
         :param minimum: Minimum sensor value

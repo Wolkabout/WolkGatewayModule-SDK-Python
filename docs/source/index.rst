@@ -1,14 +1,17 @@
 WolkGatewayModule-SDK-Python documentation
 ==========================================
 
+TODO: Intro, maybe a picture or gif
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   wolk
    device_creation
    interfaces
+   wolk
 
 
 

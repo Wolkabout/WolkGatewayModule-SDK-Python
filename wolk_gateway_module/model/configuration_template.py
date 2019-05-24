@@ -22,7 +22,7 @@ class ConfigurationTemplate:
     """Configuration template for registering device on Platform.
 
     :ivar data_type: Configuration data type
-    :vartype data_type: wolk_gateway_module.model.data_type.DataType
+    :vartype data_type: DataType
     :ivar default_value: Default value of configuration
     :vartype default_value: str or None
     :ivar description: Description of configuration
@@ -60,7 +60,7 @@ class ConfigurationTemplate:
         :param reference: Configuration reference
         :type reference: str
         :param data_type: Configuration data type
-        :type data_type: wolk_gateway_module.model.data_type.DataType
+        :type data_type: DataType
         :param description: Configuration description
         :type description: Optional[str]
         :param size: Configuration data size (max 3)

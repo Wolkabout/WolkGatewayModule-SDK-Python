@@ -58,7 +58,7 @@ class ActuatorTemplate:
         :param reference: Actuator reference
         :type reference: str
         :param data_type: Actuator data type
-        :type data_type: Optional[wolk_gateway_module.model.data_type.DataType]
+        :type data_type: Optional[DataType]
         :param reading_type_name: Custom reading type name
         :type reading_type_name: Optional[str]
         :param unit: Custom reading type measurement unit
