@@ -36,7 +36,7 @@ class StatusProtocol(ABC):
         """Check if message is device status request.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_device_status_request
         :rtype: bool
@@ -48,12 +48,12 @@ class StatusProtocol(ABC):
         """Make message from device status response.
 
         :param device_status: Device's current status
-        :type device_status: wolk_gateway_module.model.device_status.DeviceStatus
+        :type device_status: DeviceStatus
         :param device_key: Device to which the status belongs to
         :type device_key: str
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -62,12 +62,12 @@ class StatusProtocol(ABC):
         """Make message from device status update.
 
         :param device_status: Device's current status
-        :type device_status: wolk_gateway_module.model.device_status.DeviceStatus
+        :type device_status: DeviceStatus
         :param device_key: Device to which the status belongs to
         :type device_key: str
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -79,7 +79,7 @@ class StatusProtocol(ABC):
         :type device_keys: list(str)
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -88,7 +88,7 @@ class StatusProtocol(ABC):
         """Extract device key from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: device_key
         :rtype: str

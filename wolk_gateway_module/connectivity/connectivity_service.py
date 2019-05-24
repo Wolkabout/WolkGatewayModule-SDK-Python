@@ -34,7 +34,7 @@ class ConnectivityService(ABC):
         """Send offline state for module devices on disconnect.
 
         :param message: Message to be published
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
         """
         pass
 
@@ -85,7 +85,7 @@ class ConnectivityService(ABC):
         """Publish serialized data to WolkGateway.
 
         :param message: Message to be published
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
         :returns: result
         :rtype: bool
         """

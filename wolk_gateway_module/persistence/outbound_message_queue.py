@@ -26,7 +26,7 @@ class OutboundMessageQueue(ABC):
         Place a message in storage.
 
         :param message: Message to be stored
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: result
         :rtype: bool
@@ -39,7 +39,7 @@ class OutboundMessageQueue(ABC):
         Get the first message from storage without removing it.
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message, None
+        :rtype: Message, None
         """
         pass
 

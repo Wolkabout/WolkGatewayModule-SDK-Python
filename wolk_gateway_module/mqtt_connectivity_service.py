@@ -89,7 +89,7 @@ class MQTTConnectivityService(ConnectivityService):
         """Set the callback function ot handle inbound messages.
 
         :param on_inbound_message: Callable that handles inbound messages
-        :type on_inbound_message: Callable[wolk_gateway_module.model.message.Message]
+        :type on_inbound_message: Callable[Message]
         """
         self.log.debug(f"Set inbound message listener to {on_inbound_message}")
         self.inbound_message_listener = on_inbound_message
@@ -240,7 +240,7 @@ class MQTTConnectivityService(ConnectivityService):
         """Publish serialized data to WolkGateway.
 
         :param message: Message to be published
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
         :returns: result
         :rtype: bool
         """

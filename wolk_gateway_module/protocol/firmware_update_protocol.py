@@ -38,10 +38,10 @@ class FirmwareUpdateProtocol(ABC):
         :param device_key: Device key to which the firmware update belongs to
         :type device_key: str
         :param status: Device firmware update status
-        :type status: wolk_gateway_module.model.firmware_update_status.FirmwareUpdateStatus
+        :type status: FirmwareUpdateStatus
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -55,7 +55,7 @@ class FirmwareUpdateProtocol(ABC):
         :type firmware_verison: str
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -64,7 +64,7 @@ class FirmwareUpdateProtocol(ABC):
         """Check if received message is firmware install command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_firmware_install_command
         :rtype: bool
@@ -76,7 +76,7 @@ class FirmwareUpdateProtocol(ABC):
         """Check if received message is firmware abort command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_firmware_abort_command
         :rtype: bool
@@ -88,7 +88,7 @@ class FirmwareUpdateProtocol(ABC):
         """Extract file path from firmware install message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: firmware_file_path
         :rtype: str
@@ -100,7 +100,7 @@ class FirmwareUpdateProtocol(ABC):
         """Return device key from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: device_key
         :rtype: str

@@ -36,17 +36,7 @@ from wolk_gateway_module.protocol.registration_protocol import (
 
 
 class JsonRegistrationProtocol(RegistrationProtocol):
-    """Send device registration requests and handle their responses.
-
-    :ivar CHANNEL_WILDCARD: Wildcard for subscribing to inbound messages
-    :vartype CHANNEL_WILDCARD: str
-    :ivar DEVICE_PATH_PREFIX: Indicator that the message is for a device
-    :vartype DEVICE_PATH_PREFIX: str
-    :ivar DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT: Device registration request topic
-    :vartype DEVICE_REGISTRATION_REQUEST_TOPIC_ROOT: str
-    :ivar DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT: Device registration response topic
-    :vartype DEVICE_REGISTRATION_RESPONSE_TOPIC_ROOT: str
-    """
+    """Send device registration requests and handle their responses."""
 
     DEVICE_PATH_PREFIX = "d/"
     CHANNEL_WILDCARD = "#"
@@ -89,7 +79,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """Return device key from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: device_key
         :rtype: str
@@ -103,7 +93,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """Check if message is device registration response.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_device_registration_response
         :rtype: bool
@@ -124,10 +114,10 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """Make message from device registration request.
 
         :param request: Device registration request
-        :type request: wolk_gateway_module.model.device_registration_request.DeviceRegistrationRequest
+        :type request: DeviceRegistrationRequest
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         request_dict = {
             "name": request.name,
@@ -189,10 +179,10 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         """Make device registration response from message.
 
         :param message: Message received
-        :rtype message: wolk_gateway_module.model.message.Message
+        :rtype message: Message
 
         :returns: device_registration_response
-        :rtype: wolk_gateway_module.model.device_registration_response.DeviceRegistrationResponse
+        :rtype: DeviceRegistrationResponse
         """
         response = json.loads(message.payload)
 

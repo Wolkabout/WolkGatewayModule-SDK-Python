@@ -36,7 +36,7 @@ class DataProtocol(ABC):
         """Check if message is actuator get command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_actuator_get_message
         :rtype: bool
@@ -48,7 +48,7 @@ class DataProtocol(ABC):
         """Check if message is actuator set command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_actuator_set_message
         :rtype: bool
@@ -60,7 +60,7 @@ class DataProtocol(ABC):
         """Check if message is configuration get command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_configuration_get_message
         :rtype: bool
@@ -72,7 +72,7 @@ class DataProtocol(ABC):
         """Check if message is configuration set command.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_configuration_set_message
         :rtype: bool
@@ -84,7 +84,7 @@ class DataProtocol(ABC):
         """Extract device key from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: device_key
         :rtype: str
@@ -96,10 +96,10 @@ class DataProtocol(ABC):
         """Make actuator command from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: actuator_command
-        :rtype: wolk_gateway_module.model.actuator_command.ActuatorCommand
+        :rtype: ActuatorCommand
         """
         pass
 
@@ -108,10 +108,10 @@ class DataProtocol(ABC):
         """Make configuration command from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: configuration_command
-        :rtype: wolk_gateway_module.model.configuration_command.ConfigurationCommand
+        :rtype: ConfigurationCommand
         """
         pass
 
@@ -122,10 +122,10 @@ class DataProtocol(ABC):
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
         :param sensor_reading: Sensor reading data
-        :type sensor_reading: wolk_gateway_module.model.sensor_reading.SensorReading
+        :type sensor_reading: SensorReading
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -136,10 +136,10 @@ class DataProtocol(ABC):
         :param device_key: Device on which the alarm occurred
         :type device_key: str
         :param alarm: Alarm data
-        :type alarm: wolk_gateway_module.model.alarm.Alarm
+        :type alarm: Alarm
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -150,10 +150,10 @@ class DataProtocol(ABC):
         :param device_key: Device on which the actuator status occurred
         :type device_key: str
         :param actuator_status: Actuator status data
-        :type actuator_status: wolk_gateway_module.model.actuator_status.ActuatorStatus
+        :type actuator_status: ActuatorStatus
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -167,6 +167,6 @@ class DataProtocol(ABC):
         :type configuration: dict
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass

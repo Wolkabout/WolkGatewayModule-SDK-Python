@@ -36,7 +36,7 @@ class RegistrationProtocol(ABC):
         """Return device key from message.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: device_key
         :rtype: str
@@ -48,7 +48,7 @@ class RegistrationProtocol(ABC):
         """Check if message is device registration response.
 
         :param message: Message received
-        :type message: wolk_gateway_module.model.message.Message
+        :type message: Message
 
         :returns: is_device_registration_response
         :rtype: bool
@@ -60,10 +60,10 @@ class RegistrationProtocol(ABC):
         """Make message from device registration request.
 
         :param request: Device registration request
-        :type request: wolk_gateway_module.model.device_registration_request.DeviceRegistrationRequest
+        :type request: DeviceRegistrationRequest
 
         :returns: message
-        :rtype: wolk_gateway_module.model.message.Message
+        :rtype: Message
         """
         pass
 
@@ -72,9 +72,9 @@ class RegistrationProtocol(ABC):
         """Make device registration response from message.
 
         :param message: Message received
-        :rtpe message: wolk_gateway_module.model.message.Message
+        :rtpe message: Message
 
         :returns: device_registration_response
-        :rtype: wolk_gateway_module.model.device_registration_response.DeviceRegistrationResponse
+        :rtype: DeviceRegistrationResponse
         """
         pass
