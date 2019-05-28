@@ -2,8 +2,7 @@
 
 Python 3 package for connecting devices to WolkAbout IoT Platform through [WolkGateway](https://github.com/Wolkabout/WolkGateway).
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)  [![Documentation Status](https://readthedocs.org/projects/wolkgatewaymodule-sdk-python/badge/?version=latest)](https://wolkgatewaymodule-sdk-python.readthedocs.io/en/latest/?badge=latest)  [![PyPI version](https://badge.fury.io/py/wolk-gateway-module.svg)](https://badge.fury.io/py/wolk-gateway-module)  ![GitHub](https://img.shields.io/github/license/Wolkabout/WolkGatewayModule-SDK-Python.svg?style=flat-square)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wolk-gateway-module.svg?style=flat-square)
 
 ## Requirements
 
