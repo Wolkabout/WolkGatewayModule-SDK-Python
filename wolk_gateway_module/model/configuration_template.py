@@ -128,7 +128,7 @@ class ConfigurationTemplate:
         else:
             dto["labels"] = []
 
-        if self.minimum and self.maximum:
+        if self.minimum is not None and self.maximum is not None:
             dto["minimum"] = self.minimum
             dto["maximum"] = self.maximum
 

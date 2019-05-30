@@ -145,7 +145,7 @@ class SensorTemplate:
             else {"readingTypeName": self.unit.name, "symbol": self.unit.unit}
         )
 
-        if self.minimum and self.maximum:
+        if self.minimum is not None and self.maximum is not None:
             dto["minimum"] = self.minimum
             dto["maximum"] = self.maximum
 
