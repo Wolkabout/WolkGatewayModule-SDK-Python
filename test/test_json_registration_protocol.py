@@ -126,7 +126,8 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '"configurations": [],'
             + '"typeParameters": {},'
             + '"connectivityParameters": {},'
-            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": false}'
+            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": false},'
+            + '"firmwareUpdateType": ""'
             + "}"
         )
 
@@ -177,7 +178,8 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '"configurations": [],'
             + '"typeParameters": {},'
             + '"connectivityParameters": {},'
-            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": false}'
+            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": false},'
+            + '"firmwareUpdateType": ""'
             + "}"
         )
 
@@ -295,53 +297,115 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '"name": "full_device",'
             + '"deviceKey": "full_key",'
             + '"defaultBinding": true,'
-            + '"sensors": ['
-            + '{"name": "Temperature", '
-            + '"reference": "T", '
-            + '"unit": {"readingTypeName": "TEMPERATURE", "symbol": "℃"}, '
-            + '"description": "A temperature sensor", '
-            + '"minimum": 0, '
-            + '"maximum": 100},'
-            + '{"name": "Pressure", "reference": "P", '
-            + '"unit": {"readingTypeName": "PRESSURE", "symbol": "mb"}, '
-            + '"description": "A pressure sensor", '
-            + '"minimum": 300, "maximum": 1200}, '
-            + '{"name": "Humidity", "reference": "H", '
-            + '"unit": {"readingTypeName": "HUMIDITY", "symbol": "%"}, '
-            + '"description": "A humidity sensor", '
-            + '"minimum": 0, "maximum": 100}, '
-            + '{"name": "Accelerometer", "reference": "ACL", '
-            + '"unit": {"readingTypeName": "ACCELEROMETER", "symbol":"m/s²"},'
-            + '"description": "An accelerometer sensor", '
-            + '"minimum": 0, "maximum": 100}],'
-            + '"actuators": [{"name": "Switch", "reference": "SW", '
-            + '"description": null, "minimum": null, "maximum": null, '
-            + '"unit": {"readingTypeName": "SWITCH(ACTUATOR)", "symbol": ""}},'
-            + '{"name": "Slider", "reference": "SL", "description": null, '
-            + '"minimum": 0, "maximum": 100, '
-            + '"unit": {"readingTypeName": "COUNT(ACTUATOR)", '
-            + '"symbol": "count"}}],'
-            + '"alarms": [{"name": "High Humidity", "reference": "HH", '
-            + '"description": "High humidity has been detected"}],'
-            + '"configurations": [{"name": "configuration_1", '
-            + '"reference": "config_1", "description": null, '
-            + '"defaultValue": null, "size": 1, "labels": null, "minimum": 0,'
-            + '"maximum": 100, "dataType": "NUMERIC"}, '
-            + '{"name": "configuration_2", "reference": "config_2", '
-            + '"description": null, "defaultValue": null, "size": 1, '
-            + '"labels": null, "minimum": null, "maximum": null, '
-            + '"dataType": "BOOLEAN"}, '
-            + '{"name": "configuration_3", "reference": "config_3", '
-            + '"description": null, "defaultValue": null, "size": 1, '
-            + '"labels": null, "minimum": null, "maximum": null, '
-            + '"dataType": "STRING"}, '
-            + '{"name": "configuration_4", "reference": "config_4", '
-            + '"description": null, "defaultValue": null, "size": 3, '
-            + '"labels": "a,b,c", "minimum": null, "maximum": null, '
-            + '"dataType": "STRING"}],'
             + '"typeParameters": {},'
             + '"connectivityParameters": {},'
-            + '"firmwareUpdateParameters": {"supportsFirmwareUpdate": true}'
+            + '"firmwareUpdateType": "DFU",'
+            + '"sensors": ['
+            + "  {"
+            + '    "name": "Temperature",'
+            + '    "reference": "T",'
+            + '    "description": "A temperature sensor",'
+            + '    "unit": {'
+            + '      "readingTypeName": "TEMPERATURE",'
+            + '      "symbol": "℃"'
+            + "    },"
+            + '    "minimum": 0,'
+            + '    "maximum": 100'
+            + "  },"
+            + "  {"
+            + '    "name": "Pressure",'
+            + '    "reference": "P",'
+            + '    "description": "A pressure sensor",'
+            + '    "unit": {'
+            + '      "readingTypeName": "PRESSURE",'
+            + '      "symbol": "mb"'
+            + "    },"
+            + '    "minimum": 300,'
+            + '    "maximum": 1200'
+            + "  },"
+            + "  {"
+            + '    "name": "Humidity",'
+            + '    "reference": "H",'
+            + '    "description": "A humidity sensor",'
+            + '    "unit": {'
+            + '      "readingTypeName": "HUMIDITY",'
+            + '      "symbol": "%"'
+            + "    },"
+            + '    "minimum": 0,'
+            + '    "maximum": 100'
+            + "  },"
+            + "  {"
+            + '    "name": "Accelerometer",'
+            + '    "reference": "ACL",'
+            + '    "description": "An accelerometer sensor",'
+            + '    "unit": {'
+            + '      "readingTypeName": "ACCELEROMETER",'
+            + '      "symbol": "m/s²"'
+            + "    },"
+            + '    "minimum": 0,'
+            + '    "maximum": 100'
+            + "  }"
+            + "],"
+            + '"actuators": ['
+            + "  {"
+            + '    "name": "Switch",'
+            + '    "reference": "SW",'
+            + '    "unit": {'
+            + '      "readingTypeName": "SWITCH(ACTUATOR)",'
+            + '      "symbol": ""'
+            + "    },"
+            + '    "description": ""'
+            + "  },"
+            + "  {"
+            + '    "name": "Slider",'
+            + '    "reference": "SL",'
+            + '    "unit": {'
+            + '      "readingTypeName": "COUNT(ACTUATOR)",'
+            + '      "symbol": "count"'
+            + "    },"
+            + '    "description": "",'
+            + '    "minimum": 0,'
+            + '    "maximum": 100'
+            + "  }"
+            + "],"
+            + '"alarms": ['
+            + "  {"
+            + '    "name": "High Humidity",'
+            + '    "reference": "HH",'
+            + '    "description": "High humidity has been detected"'
+            + "  }"
+            + "],"
+            + '"configurations": ['
+            + "  {"
+            + '    "name": "configuration_1",'
+            + '    "reference": "config_1",'
+            + '    "dataType": "NUMERIC",'
+            + '    "labels": [],'
+            + '    "minimum": 0,'
+            + '    "maximum": 100'
+            + "  },"
+            + "  {"
+            + '    "name": "configuration_2",'
+            + '    "reference": "config_2",'
+            + '    "dataType": "BOOLEAN",'
+            + '    "labels": []'
+            + "  },"
+            + "  {"
+            + '    "name": "configuration_3",'
+            + '    "reference": "config_3",'
+            + '    "dataType": "STRING",'
+            + '    "labels": []'
+            + "  },"
+            + "  {"
+            + '    "name": "configuration_4",'
+            + '    "reference": "config_4",'
+            + '    "dataType": "STRING",'
+            + '    "size": 3,'
+            + '    "labels": "a,b,c"'
+            + "  }"
+            + "],"
+            + '"firmwareUpdateParameters": {'
+            + '  "supportsFirmwareUpdate": true}'
             + "}"
         )
 

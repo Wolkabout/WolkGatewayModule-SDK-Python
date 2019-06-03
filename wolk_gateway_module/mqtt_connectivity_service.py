@@ -159,7 +159,7 @@ class MQTTConnectivityService(ConnectivityService):
         self.client.connect(self.host, self.port)
         self.client.loop_start()
 
-        self.log.debug(f"Connecting to {self.host} : {self.port} ...")
+        self.log.info(f"Connecting to {self.host}:{self.port} ...")
 
         timeout = round(time()) + 5
 

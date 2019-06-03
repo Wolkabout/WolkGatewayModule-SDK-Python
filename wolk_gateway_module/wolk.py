@@ -873,23 +873,37 @@ class Wolk:
             if not self.outbound_message_queue.put(message):
                 raise RuntimeError(f"Unable to store message: {message}")
 
-    def publish_device_status(self, device_key: str) -> None:
+    def publish_device_status(
+        self, device_key: str, status: Optional[DeviceStatus] = None
+    ) -> None:
         """Publish current device status to WolkGateway.
 
         Getting the current device status is achieved by calling the user's
-        provided ``device_status_provider``.
+        provided ``device_status_provider`` or a device status can be published
+        explicitly by passing a ``DeviceStatus`` as the ``status`` parameter.
 
         :param device_key: Device to which the status belongs to
         :type device_key: str
+        :param status: Current device status
+        :type status: Optional[DeviceStatus]
 
         :raises ValueError: status is not of ``DeviceStatus``
         :raises RuntimeError: Failed to publish and store message
         """
         self.log.debug(f"Publish device status for {device_key}")
 
-        status = self.device_status_provider(device_key)
-        if not isinstance(status, DeviceStatus):
-            raise ValueError(f"{status} is not an instance of DeviceStatus")
+        if status is not None:
+            if not isinstance(status, DeviceStatus):
+                raise ValueError(
+                    f"{status} is not an instance of DeviceStatus"
+                )
+
+        else:
+            status = self.device_status_provider(device_key)
+            if not isinstance(status, DeviceStatus):
+                raise ValueError(
+                    f"{status} is not an instance of DeviceStatus"
+                )
 
         message = self.status_protocol.make_device_status_update_message(
             device_key, status
@@ -1159,6 +1173,7 @@ class Wolk:
                 return
 
         if self.connectivity_service.connected():
+            self.log.info("Connection to gateway established")
             for device in self.devices:
                 try:
                     device_status = self.device_status_provider(device.key)

@@ -212,7 +212,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
-            '{"data": "value", "utc": null}',
+            '{"data": "value"}',
         )
 
         serialized = json_data_protocol.make_sensor_reading_message(
@@ -234,7 +234,7 @@ class JsonDataProtocolTests(unittest.TestCase):
             + self.CHANNEL_DELIMITER
             + self.REFERENCE_PATH_PREFIX
             + "REF",
-            '{"data": "1,2,3", "utc": null}',
+            '{"data": "1,2,3"}',
         )
 
         serialized = json_data_protocol.make_sensor_reading_message(
