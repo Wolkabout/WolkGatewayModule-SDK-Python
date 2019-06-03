@@ -260,7 +260,7 @@ class WolkTests(unittest.TestCase):
             "host",
             1883,
             "module_name",
-            lambda a: a,
+            lambda a: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
             actuation_handler=mock_actuator_handler,
             acutator_status_provider=mock_actuator_status_provider,
@@ -270,7 +270,7 @@ class WolkTests(unittest.TestCase):
         wolk._on_inbound_message(message)
 
         global actuator_2
-        self.assertEqual("3", actuator_2)
+        self.assertEqual(3, actuator_2)
 
     def test_publish_configuration(self):
         """Test publishing configuration."""
@@ -295,7 +295,7 @@ class WolkTests(unittest.TestCase):
             "host",
             1883,
             "module_name",
-            lambda a: a,
+            lambda a: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
             configuration_handler=mock_configuration_handler,
             configuration_provider=mock_configuration_provider,
@@ -328,6 +328,21 @@ class WolkTests(unittest.TestCase):
             connectivity_service=MockConnectivityService(),
         )
         wolk.publish_device_status("key1")
+        self.assertEqual(1, wolk.outbound_message_queue.queue_size())
+        wolk.connectivity_service._connected = True
+        wolk.publish()
+        self.assertEqual(0, wolk.outbound_message_queue.queue_size())
+
+    def test_publish_device_status_explicit(self):
+        """Test sending explicit device status."""
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda device_key: DeviceStatus.CONNECTED,
+            connectivity_service=MockConnectivityService(),
+        )
+        wolk.publish_device_status("key1", DeviceStatus.OFFLINE)
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
         wolk.publish()
