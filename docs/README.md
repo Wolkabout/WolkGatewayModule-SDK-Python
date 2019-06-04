@@ -3,7 +3,7 @@ Documentation
 
 Project documentation is built using [Sphinx docs](http://sphinx-doc.org/), which uses [ReST](http://docutils.sourceforge.net/rst.html) for markup.  This allows the docs to cover a vast amount of topics without using a thousand-line README file.
 
-Sphinx docs is pip-installable via `pip install sphinx`.  Once installed, open a command line in the docs folder and run the following commands:
+Sphinx docs is pip-installable via `python3.7 -m pip install sphinx`.  Once installed, open a command line in the docs folder and run the following commands:
 
 ```console
 sudo python3.7 -m pip install -r requirements.txt
@@ -16,3 +16,5 @@ make html
 ```
 
 The docs will be generated, the output files will be placed in the `build/html/` directory, and can be browsed (locally) with any browser.
+
+Alternatively, you can see browse the generated documentation hosted on Read the Docs [here](https://wolkgatewaymodule-sdk-python.readthedocs.io/en/latest/).
