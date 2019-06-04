@@ -818,13 +818,22 @@ class Wolk:
         if not self.outbound_message_queue.put(message):
             raise RuntimeError(f"Unable to store message: {message}")
 
-    def publish_acutator_status(self, device_key: str, reference: str) -> None:
+    def publish_acutator_status(
+        self,
+        device_key: str,
+        reference: str,
+        state: Optional[ActuatorState] = None,
+        value: Optional[Union[bool, int, float, str]] = None,
+    ) -> None:
         """Publish device actuator status to WolkGateway.
 
-        If message is unable to be sent, it will be placed in storage.
-
         Getting the actuator status is achieved by calling the user's
-        implementation of ``acutator_status_provider``.
+        implementation of ``acutator_status_provider`` or optionally an
+        actuator status can be published explicitly
+        by providing ``ActuatorState`` as ``state`` parameter and the
+        current actuator value via ``value`` parameter
+
+        If message is unable to be sent, it will be placed in storage.
 
         If no ``acutator_status_provider`` is present, will raise exception.
 
@@ -832,7 +841,12 @@ class Wolk:
         :type device_key: str
         :param reference: Alarm reference (unique per device)
         :type reference: str
+        :param state: Current actuator state for explicitly publishing status
+        :type state: Optional[ActuatorState]
+        :param value: Current actuator value for explicitly publishing status
+        :type value: Optional[Union[bool, int, float, str]]
 
+        :raises ValueError: Provided state is not an instance of ActuatorState
         :raises RuntimeError: Unable to place in storage or no status provider
         """
         self.log.debug(f"Publish actuator status: {device_key} , {reference}")
@@ -842,17 +856,32 @@ class Wolk:
                 "acutator_status_provider and actuation_handler "
                 "were not provided!"
             )
-        state, value = self.acutator_status_provider(device_key, reference)
-        self.log.debug(f"Actuator status provider returned: {state} {value}")
-
-        if state is None:
-            raise RuntimeError(
-                f"{self.acutator_status_provider} did not return anything"
-                f" for device '{device_key}' with reference '{reference}'"
+        if state is not None:
+            if not isinstance(state, ActuatorState):
+                raise ValueError(
+                    f"{state} is not an instance of ActuatorState"
+                )
+            if state != ActuatorState.ERROR and value is None:
+                raise ValueError(
+                    f"Value must be provided for actuator state"
+                    f" '{state.value}' !"
+                )
+        else:
+            state, value = self.acutator_status_provider(device_key, reference)
+            self.log.debug(
+                f"Actuator status provider returned: {state} {value}"
             )
 
-        if not isinstance(state, ActuatorState):
-            raise RuntimeError(f"{state} is not a member of ActuatorState!")
+            if state is None:
+                raise RuntimeError(
+                    f"{self.acutator_status_provider} did not return anything"
+                    f" for device '{device_key}' with reference '{reference}'"
+                )
+
+            if not isinstance(state, ActuatorState):
+                raise RuntimeError(
+                    f"{state} is not a member of ActuatorState!"
+                )
 
         status = ActuatorStatus(reference, state, value)
         message = self.data_protocol.make_actuator_status_message(
