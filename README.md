@@ -4,6 +4,15 @@ Python 3 package for connecting devices to WolkAbout IoT Platform through [WolkG
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)  [![Documentation Status](https://readthedocs.org/projects/wolkgatewaymodule-sdk-python/badge/?version=latest)](https://wolkgatewaymodule-sdk-python.readthedocs.io/en/latest/?badge=latest)  [![PyPI version](https://badge.fury.io/py/wolk-gateway-module.svg)](https://badge.fury.io/py/wolk-gateway-module)  ![GitHub](https://img.shields.io/github/license/Wolkabout/WolkGatewayModule-SDK-Python.svg?style=flat-square)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wolk-gateway-module.svg?style=flat-square)
 
+----
+This package is meant to be used for developing WolkGateway modules that enable devices without IP connectivity to send their data to WolkAbout IoT Platform.
+
+![WolkGateway Architecture](https://github.com/Wolkabout/WolkGatewayModule-SDK-Python/blob/master/docs/source/wolkabout_gateway_module.gif)
+
+The user is responsible for providing the custom implementation that usually contains the device’s network communication protocol, as well as for providing the business logic and everything related to the used hardware and the specifics of their particular use case.
+
+However, all the communication that is directed towards the gateway through WolkConnect - BUS Handler is already provided with this package, an open source implementation written in Python 3.7 that uses the MQTT protocol over TCP/IP to communicate with [WolkGateway](https://github.com/Wolkabout/WolkGateway).
+
 ## Requirements
 
 * Python 3.7
