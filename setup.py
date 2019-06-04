@@ -8,7 +8,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setuptools.setup(
     name="wolk-gateway-module",
-    version="1.0.2",
+    version="1.0.3",
     install_requires=["paho_mqtt==1.4.0"],
     include_package_data=True,
     license="Apache License 2.0",
@@ -25,7 +25,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=("test",)),
     test_suite="unittest",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",

@@ -254,6 +254,23 @@ class WolkTests(unittest.TestCase):
         wolk.publish()
         self.assertEqual(0, wolk.outbound_message_queue.queue_size())
 
+    def test_publish_actuator_explicit(self):
+        """Test publishing explicit actuator status."""
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            connectivity_service=MockConnectivityService(),
+            actuation_handler=mock_actuator_handler,
+            acutator_status_provider=mock_actuator_status_provider,
+        )
+        wolk.publish_acutator_status("key1", "REF1", ActuatorState.READY, True)
+        self.assertEqual(1, wolk.outbound_message_queue.queue_size())
+        wolk.connectivity_service._connected = True
+        wolk.publish()
+        self.assertEqual(0, wolk.outbound_message_queue.queue_size())
+
     def test_receive_actuation(self):
         """Test receiving actuator set command."""
         wolk = Wolk(
