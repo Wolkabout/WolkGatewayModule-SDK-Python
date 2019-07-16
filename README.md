@@ -230,7 +230,7 @@ wolk_module = wolk.Wolk(
     module_name="Python module",
     device_status_provider=get_device_status,
     actuation_handler=handle_actuation,
-    acutator_status_provider=get_actuator_status,
+    actuator_status_provider=get_actuator_status,
 )
 
 wolk_module.add_device(device)
@@ -239,8 +239,8 @@ wolk_module.connect()
 
 # This method will call the provided actuator_status_provider function
 # and publish the state immediately or store message if unable to publish
-wolk_module.publish_acutator_status("DEVICE_KEY", "SW")
-wolk_module.publish_acutator_status("DEVICE_KEY", "SL")
+wolk_module.publish_actuator_status("DEVICE_KEY", "SW")
+wolk_module.publish_actuator_status("DEVICE_KEY", "SL")
 ```
 
 ### Configurations

@@ -246,9 +246,9 @@ class WolkTests(unittest.TestCase):
             lambda a: a,
             connectivity_service=MockConnectivityService(),
             actuation_handler=mock_actuator_handler,
-            acutator_status_provider=mock_actuator_status_provider,
+            actuator_status_provider=mock_actuator_status_provider,
         )
-        wolk.publish_acutator_status("key1", "REF1")
+        wolk.publish_actuator_status("key1", "REF1")
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
         wolk.publish()
@@ -263,9 +263,9 @@ class WolkTests(unittest.TestCase):
             lambda a: a,
             connectivity_service=MockConnectivityService(),
             actuation_handler=mock_actuator_handler,
-            acutator_status_provider=mock_actuator_status_provider,
+            actuator_status_provider=mock_actuator_status_provider,
         )
-        wolk.publish_acutator_status("key1", "REF1", ActuatorState.READY, True)
+        wolk.publish_actuator_status("key1", "REF1", ActuatorState.READY, True)
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
         wolk.publish()
@@ -280,7 +280,7 @@ class WolkTests(unittest.TestCase):
             lambda a: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
             actuation_handler=mock_actuator_handler,
-            acutator_status_provider=mock_actuator_status_provider,
+            actuator_status_provider=mock_actuator_status_provider,
         )
         wolk.connectivity_service._connected = True
         message = Message("p2d/actuator_set/d/key1/r/REF2", '{"value": "3"}')

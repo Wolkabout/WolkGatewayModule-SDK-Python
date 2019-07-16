@@ -72,8 +72,8 @@ class Wolk:
 
     :ivar actuation_handler: Set new actuator values for your devices
     :vartype actuation_handler: Optional[Callable[[str, str,str], None]]
-    :ivar acutator_status_provider: Get device's current actuator state
-    :vartype acutator_status_provider: Optional[Callable[[str, str], Tuple[ActuatorState, Union[bool, int, float, str]]]]
+    :ivar actuator_status_provider: Get device's current actuator state
+    :vartype actuator_status_provider: Optional[Callable[[str, str], Tuple[ActuatorState, Union[bool, int, float, str]]]]
     :ivar configuration_handler: Set new configuration values for your devices
     :vartype configuration_handler: Optional[Callable[[str, Dict[str, str]], None]]
     :ivar configuration_provider: Get device's current configuration options
@@ -113,7 +113,7 @@ class Wolk:
         module_name: str,
         device_status_provider: Callable[[str], DeviceStatus],
         actuation_handler: Optional[Callable[[str, str, str], None]] = None,
-        acutator_status_provider: Optional[
+        actuator_status_provider: Optional[
             Callable[
                 [str, str], Tuple[ActuatorState, Union[bool, int, float, str]]
             ]
@@ -161,8 +161,8 @@ class Wolk:
         :type device_status_provider: Callable[[str], DeviceStatus]
         :param actuation_handler: Setter of new device actuator values
         :type actuation_handler: Optional[Callable[[str, str, str], None]]
-        :param acutator_status_provider: Provider of device's current actuator status
-        :type acutator_status_provider: Optional[Callable[[str, str], Tuple[ActuatorState, Union[bool, int, float, str]]]]
+        :param actuator_status_provider: Provider of device's current actuator status
+        :type actuator_status_provider: Optional[Callable[[str, str], Tuple[ActuatorState, Union[bool, int, float, str]]]]
         :param configuration_handler: Setter of new device configuration values
         :type configuration_handler: Optional[Callable[[str, Dict[str, str]], None]]
         :param configuration_provider: Provider of device's configuration options
@@ -203,28 +203,28 @@ class Wolk:
         else:
             self.actuation_handler = None
 
-        if acutator_status_provider is not None:
-            if not callable(acutator_status_provider):
+        if actuator_status_provider is not None:
+            if not callable(actuator_status_provider):
                 raise RuntimeError(
-                    f"{acutator_status_provider} is not a callable!"
+                    f"{actuator_status_provider} is not a callable!"
                 )
-            if len(signature(acutator_status_provider).parameters) != 2:
+            if len(signature(actuator_status_provider).parameters) != 2:
                 raise RuntimeError(
-                    f"{acutator_status_provider} invalid signature!"
+                    f"{actuator_status_provider} invalid signature!"
                 )
-            self.acutator_status_provider = acutator_status_provider
+            self.actuator_status_provider = actuator_status_provider
         else:
-            self.acutator_status_provider = None
+            self.actuator_status_provider = None
 
         if (
             self.actuation_handler is None
-            and self.acutator_status_provider is not None
+            and self.actuator_status_provider is not None
         ) or (
             self.actuation_handler is not None
-            and self.acutator_status_provider is None
+            and self.actuator_status_provider is None
         ):
             raise RuntimeError(
-                "Provide actuation_handler and acutator_status_provider"
+                "Provide actuation_handler and actuator_status_provider"
                 " to enable actuators on your devices!"
             )
 
@@ -365,7 +365,7 @@ class Wolk:
             f"module_name='{self.module_name}', "
             f"device_status_provider='{self.device_status_provider}', "
             f"actuation_handler='{self.actuation_handler}', "
-            f"acutator_status_provider='{self.acutator_status_provider}', "
+            f"actuator_status_provider='{self.actuator_status_provider}', "
             f"configuration_handler='{self.configuration_handler}', "
             f"configuration_provider='{self.configuration_provider}', "
             f"firmware_handler='{self.firmware_handler}', "
@@ -455,7 +455,7 @@ class Wolk:
 
         if self.data_protocol.is_actuator_set_message(message):
 
-            if not (self.actuation_handler and self.acutator_status_provider):
+            if not (self.actuation_handler and self.actuator_status_provider):
                 self.log.warning(
                     f"Received actuation message {message} , but no "
                     "actuation handler and actuator status provider present"
@@ -481,7 +481,7 @@ class Wolk:
                 device_key, command.reference, command.value
             )
             try:
-                self.publish_acutator_status(device_key, command.reference)
+                self.publish_actuator_status(device_key, command.reference)
             except RuntimeError as e:
                 self.log.error(
                     "Error occurred during handing"
@@ -490,7 +490,7 @@ class Wolk:
 
         elif self.data_protocol.is_actuator_get_message(message):
 
-            if not (self.actuation_handler and self.acutator_status_provider):
+            if not (self.actuation_handler and self.actuator_status_provider):
                 self.log.warning(
                     f"Received actuation message {message} , but no "
                     "actuation handler and actuator status provider present"
@@ -513,7 +513,7 @@ class Wolk:
 
             command = self.data_protocol.make_actuator_command(message)
             try:
-                self.publish_acutator_status(device_key, command.reference)
+                self.publish_actuator_status(device_key, command.reference)
             except RuntimeError as e:
                 self.log.error(
                     "Error occurred during handing "
@@ -626,7 +626,7 @@ class Wolk:
             if registered_device.get_actuator_references():
                 for actuator in registered_device.get_actuator_references():
                     try:
-                        self.publish_acutator_status(
+                        self.publish_actuator_status(
                             registered_device.key, actuator.reference
                         )
                     except RuntimeError as e:
@@ -818,7 +818,7 @@ class Wolk:
         if not self.outbound_message_queue.put(message):
             raise RuntimeError(f"Unable to store message: {message}")
 
-    def publish_acutator_status(
+    def publish_actuator_status(
         self,
         device_key: str,
         reference: str,
@@ -828,14 +828,14 @@ class Wolk:
         """Publish device actuator status to WolkGateway.
 
         Getting the actuator status is achieved by calling the user's
-        implementation of ``acutator_status_provider`` or optionally an
+        implementation of ``actuator_status_provider`` or optionally an
         actuator status can be published explicitly
         by providing ``ActuatorState`` as ``state`` parameter and the
         current actuator value via ``value`` parameter
 
         If message is unable to be sent, it will be placed in storage.
 
-        If no ``acutator_status_provider`` is present, will raise exception.
+        If no ``actuator_status_provider`` is present, will raise exception.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -850,10 +850,10 @@ class Wolk:
         :raises RuntimeError: Unable to place in storage or no status provider
         """
         self.log.debug(f"Publish actuator status: {device_key} , {reference}")
-        if not (self.acutator_status_provider and self.actuation_handler):
+        if not (self.actuator_status_provider and self.actuation_handler):
             raise RuntimeError(
                 "Unable to publish actuator status because "
-                "acutator_status_provider and actuation_handler "
+                "actuator_status_provider and actuation_handler "
                 "were not provided!"
             )
         if state is not None:
@@ -867,14 +867,14 @@ class Wolk:
                     f" '{state.value}' !"
                 )
         else:
-            state, value = self.acutator_status_provider(device_key, reference)
+            state, value = self.actuator_status_provider(device_key, reference)
             self.log.debug(
                 f"Actuator status provider returned: {state} {value}"
             )
 
             if state is None:
                 raise RuntimeError(
-                    f"{self.acutator_status_provider} did not return anything"
+                    f"{self.actuator_status_provider} did not return anything"
                     f" for device '{device_key}' with reference '{reference}'"
                 )
 
@@ -1027,7 +1027,7 @@ class Wolk:
             return
 
         if device.get_actuator_references():
-            if not (self.actuation_handler and self.acutator_status_provider):
+            if not (self.actuation_handler and self.actuator_status_provider):
                 self.log.error(
                     f"Can not add device '{device.key}' with actuators "
                     "without having an actuation handler and "
@@ -1225,7 +1225,7 @@ class Wolk:
 
                 for reference in device.get_actuator_references():
                     try:
-                        self.publish_acutator_status(device.key, reference)
+                        self.publish_actuator_status(device.key, reference)
                     except RuntimeError as e:
                         raise e
 
