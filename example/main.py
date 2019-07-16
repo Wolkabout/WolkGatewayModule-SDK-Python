@@ -406,7 +406,7 @@ wolk_module = wolk.Wolk(
     module_name=configuration["module_name"],
     device_status_provider=get_device_status,
     actuation_handler=handle_actuation,
-    acutator_status_provider=get_actuator_status,
+    actuator_status_provider=get_actuator_status,
     configuration_handler=handle_configuration,
     configuration_provider=get_configuration,
     firmware_handler=FirmwareHandlerImplementation(),
@@ -423,9 +423,9 @@ wolk_module.publish()
 wolk_module.publish_configuration("module_device_1")
 wolk_module.publish_configuration("module_device_2")
 
-wolk_module.publish_acutator_status("module_device_1", "SW")
-wolk_module.publish_acutator_status("module_device_1", "MSG")
-wolk_module.publish_acutator_status("module_device_2", "SL")
+wolk_module.publish_actuator_status("module_device_1", "SW")
+wolk_module.publish_actuator_status("module_device_1", "MSG")
+wolk_module.publish_actuator_status("module_device_2", "SL")
 
 wolk_module.publish_device_status("module_device_1")
 wolk_module.publish_device_status("module_device_2")
