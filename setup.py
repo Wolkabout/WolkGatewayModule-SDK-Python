@@ -24,7 +24,7 @@ setuptools.setup(
     url="https://github.com/Wolkabout/WolkGatewayModule-SDK-Python",
     packages=setuptools.find_packages(exclude=("test",)),
     test_suite="unittest",
-    python_requires=">=3.7.0"
+    python_requires=">=3.7.0",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
