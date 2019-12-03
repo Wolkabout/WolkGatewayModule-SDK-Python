@@ -16,6 +16,7 @@
 from inspect import signature
 from reprlib import recursive_repr
 from typing import Callable, Dict, Optional, Tuple, Union
+from time import sleep
 
 
 from wolk_gateway_module.json_data_protocol import JsonDataProtocol
@@ -40,13 +41,9 @@ from wolk_gateway_module.model.actuator_state import ActuatorState
 from wolk_gateway_module.model.actuator_status import ActuatorStatus
 from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.sensor_reading import SensorReading
-from wolk_gateway_module.model.device_registration_response_result import (
-    DeviceRegistrationResponseResult,
-)
 from wolk_gateway_module.model.firmware_update_status import (
     FirmwareUpdateStatus,
     FirmwareUpdateState,
-    FirmwareUpdateErrorCode,
 )
 
 from wolk_gateway_module.protocol.data_protocol import DataProtocol
@@ -1166,8 +1163,12 @@ class Wolk:
             while self.outbound_message_queue.queue_size() > 0:
                 message = self.outbound_message_queue.get()
                 if not self.connectivity_service.publish(message):
-                    self.log.info.error(f"Failed to publish {message}")
-                    return
+                    self.log.error(f"Failed to publish {message}")
+                    sleep(0.2)
+                    self.log.info(f"Retrying publish {message}")
+                    if not self.connectivity_service.publish(message):
+                        self.log.error(f"Failed to publish {message}")
+                        return
                 self.outbound_message_queue.remove(message)
         else:
             messages = self.outbound_message_queue.get_messages_for_device(
@@ -1178,8 +1179,12 @@ class Wolk:
                 return
             for message in messages:
                 if not self.connectivity_service.publish(message):
-                    self.log.info.error(f"Failed to publish {message}")
-                    return
+                    self.log.error(f"Failed to publish {message}")
+                    sleep(0.2)
+                    self.log.info(f"Retrying publish {message}")
+                    if not self.connectivity_service.publish(message):
+                        self.log.error(f"Failed to publish {message}")
+                        return
                 self.outbound_message_queue.remove(message)
 
     def connect(self):
