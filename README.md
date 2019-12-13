@@ -2,7 +2,7 @@
 
 Python 3 package for connecting devices to WolkAbout IoT Platform through [WolkGateway](https://github.com/Wolkabout/WolkGateway).
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)  [![Documentation Status](https://readthedocs.org/projects/wolkgatewaymodule-sdk-python/badge/?version=latest)](https://wolkgatewaymodule-sdk-python.readthedocs.io/en/latest/?badge=latest)  [![PyPI version](https://badge.fury.io/py/wolk-gateway-module.svg)](https://badge.fury.io/py/wolk-gateway-module)  ![GitHub](https://img.shields.io/github/license/Wolkabout/WolkGatewayModule-SDK-Python.svg?style=flat-square)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wolk-gateway-module.svg?style=flat-square)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)  [![Documentation Status](https://readthedocs.org/projects/wolkgatewaymodule-sdk-python/badge/?version=latest)](https://wolkgatewaymodule-sdk-python.readthedocs.io/en/latest/?badge=latest)  [![PyPI version](https://badge.fury.io/py/wolk-gateway-module.svg)](https://badge.fury.io/py/wolk-gateway-module)  ![GitHub](https://img.shields.io/github/license/Wolkabout/WolkGatewayModule-SDK-Python.svg?style=flat-square)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wolk-gateway-module.svg?style=flat-square) [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 ----
 This package is meant to be used for developing WolkGateway modules that enable devices without IP connectivity to send their data to WolkAbout IoT Platform.

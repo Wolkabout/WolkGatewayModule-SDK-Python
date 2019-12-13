@@ -12,8 +12,8 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
 from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
@@ -22,7 +22,8 @@ from wolk_gateway_module.model.device_registration_response_result import (
 
 @dataclass
 class DeviceRegistrationResponse:
-    """Response for device registration request.
+    """
+    Response for device registration request.
 
     Identified by device key and result,
     with an optional description of the error that occurred.

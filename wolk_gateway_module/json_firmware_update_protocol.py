@@ -12,19 +12,16 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 
 from wolk_gateway_module.logger_factory import logger_factory
+from wolk_gateway_module.model.firmware_update_status import (
+    FirmwareUpdateStatus,
+)
+from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.protocol.firmware_update_protocol import (
     FirmwareUpdateProtocol,
 )
-from wolk_gateway_module.model.firmware_update_status import (
-    FirmwareUpdateStatus,
-    FirmwareUpdateState,
-    FirmwareUpdateErrorCode,
-)
-from wolk_gateway_module.model.message import Message
 
 
 class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
@@ -41,7 +38,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
-        """Make string representation of JsonFirmwareUpdateProtocol.
+        """
+        Make string representation of JsonFirmwareUpdateProtocol.
 
         :returns: representation
         :rtype: str
@@ -49,7 +47,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         return "JsonFirmwareUpdateProtocol()"
 
     def get_inbound_topics_for_device(self, device_key: str) -> list:
-        """Return list of inbound topics for given device key.
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -71,7 +70,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
     def make_update_message(
         self, device_key: str, status: FirmwareUpdateStatus
     ) -> Message:
-        """Make message from device firmware update status.
+        """
+        Make message from device firmware update status.
 
         :param device_key: Device key to which the firmware update status belongs to
         :type device_key: str
@@ -97,7 +97,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
     def make_version_message(
         self, device_key: str, firmware_verison: str
     ) -> Message:
-        """Make message from device firmware update version.
+        """
+        Make message from device firmware update version.
 
         :param device_key: Device key to which the firmware update belongs to
         :type device_key: str
@@ -121,7 +122,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         return message
 
     def is_firmware_install_command(self, message: Message) -> bool:
-        """Check if received message is firmware install command.
+        """
+        Check if received message is firmware install command.
 
         :param message: Message received
         :type message: Message
@@ -139,7 +141,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         return is_firmware_install_command
 
     def is_firmware_abort_command(self, message: Message) -> bool:
-        """Check if received message is firmware abort command.
+        """
+        Check if received message is firmware abort command.
 
         :param message: Message received
         :type message: Message
@@ -157,7 +160,8 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         return is_firmware_abort_command
 
     def make_firmware_file_path(self, message: Message) -> str:
-        """Extract file path from firmware install message.
+        """
+        Extract file path from firmware install message.
 
         :param message: Message received
         :type message: Message
@@ -165,13 +169,14 @@ class JsonFirmwareUpdateProtocol(FirmwareUpdateProtocol):
         :returns: firmware_file_path
         :rtype: str
         """
-        payload = json.loads(message.payload)
+        payload = json.loads(message.payload)  # type: ignore
         firmware_file_path = payload["fileName"]
         self.log.debug(f"Made {firmware_file_path} from {message}")
         return firmware_file_path
 
     def extract_key_from_message(self, message: Message) -> str:
-        """Return device key from message.
+        """
+        Return device key from message.
 
         :param message: Message received
         :type message: Message

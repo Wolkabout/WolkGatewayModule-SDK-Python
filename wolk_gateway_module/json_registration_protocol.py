@@ -12,7 +12,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 
 from wolk_gateway_module.logger_factory import logger_factory
@@ -50,7 +49,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
-        """Make string representation of JsonRegistrationProtocol.
+        """
+        Make string representation of JsonRegistrationProtocol.
 
         :returns: representation
         :rtype: str
@@ -58,7 +58,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         return "JsonRegistrationProtocol()"
 
     def get_inbound_topics_for_device(self, device_key: str) -> list:
-        """Return list of inbound topics for given device key.
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -76,7 +77,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         return inbound_topics
 
     def extract_key_from_message(self, message: Message) -> str:
-        """Return device key from message.
+        """
+        Return device key from message.
 
         :param message: Message received
         :type message: Message
@@ -90,7 +92,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         return device_key
 
     def is_registration_response_message(self, message: Message) -> bool:
-        """Check if message is device registration response.
+        """
+        Check if message is device registration response.
 
         :param message: Message received
         :type message: Message
@@ -111,7 +114,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
     def make_registration_message(
         self, request: DeviceRegistrationRequest
     ) -> Message:
-        """Make message from device registration request.
+        """
+        Make message from device registration request.
 
         :param request: Device registration request
         :type request: DeviceRegistrationRequest
@@ -176,7 +180,8 @@ class JsonRegistrationProtocol(RegistrationProtocol):
     def make_registration_response(
         self, message: Message
     ) -> DeviceRegistrationResponse:
-        """Make device registration response from message.
+        """
+        Make device registration response from message.
 
         :param message: Message received
         :rtype message: Message
@@ -184,7 +189,7 @@ class JsonRegistrationProtocol(RegistrationProtocol):
         :returns: device_registration_response
         :rtype: DeviceRegistrationResponse
         """
-        response = json.loads(message.payload)
+        response = json.loads(message.payload)  # type: ignore
 
         result = DeviceRegistrationResponseResult.ERROR_UNKNOWN
 

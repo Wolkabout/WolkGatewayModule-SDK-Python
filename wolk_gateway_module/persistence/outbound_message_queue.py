@@ -12,16 +12,19 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from abc import ABC
+from abc import abstractmethod
+from typing import List
+from typing import Optional
 
-
-from abc import ABC, abstractmethod
+from wolk_gateway_module.model.message import Message
 
 
 class OutboundMessageQueue(ABC):
     """Responsible for storing messages before being sent to WolkGateway."""
 
     @abstractmethod
-    def put(self, message):
+    def put(self, message: Message) -> bool:
         """
         Place a message in storage.
 
@@ -34,7 +37,7 @@ class OutboundMessageQueue(ABC):
         pass
 
     @abstractmethod
-    def get(self):
+    def get(self) -> Optional[Message]:
         """
         Get the first message from storage without removing it.
 
@@ -44,7 +47,7 @@ class OutboundMessageQueue(ABC):
         pass
 
     @abstractmethod
-    def remove(self, message):
+    def remove(self, message: Message) -> bool:
         """
         Remove specific message from storage.
 
@@ -54,7 +57,7 @@ class OutboundMessageQueue(ABC):
         pass
 
     @abstractmethod
-    def get_messages_for_device(self, device_key):
+    def get_messages_for_device(self, device_key: str) -> List[Message]:
         """
         Return a list of messages that belong to a certain device.
 
@@ -69,7 +72,7 @@ class OutboundMessageQueue(ABC):
         pass
 
     @abstractmethod
-    def queue_size(self):
+    def queue_size(self) -> int:
         """
         Return current number of messages in storage.
 
