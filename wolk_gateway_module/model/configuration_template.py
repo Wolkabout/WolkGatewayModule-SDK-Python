@@ -12,14 +12,17 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from typing import Dict, Optional, Union, List
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 from wolk_gateway_module.model.data_type import DataType
 
 
 class ConfigurationTemplate:
-    """Configuration template for registering device on Platform.
+    """
+    Configuration template for registering device on Platform.
 
     :ivar data_type: Configuration data type
     :vartype data_type: DataType
@@ -53,7 +56,8 @@ class ConfigurationTemplate:
         minimum: Optional[Union[int, float]] = None,
         maximum: Optional[Union[int, float]] = None,
     ):
-        """Configuration template for device registration request.
+        """
+        Configuration template for device registration request.
 
         :param name: Configuration name
         :type name: str
@@ -74,17 +78,17 @@ class ConfigurationTemplate:
         :param maximum: Maximum configuration value
         :type maximum: Optional[Union[int, float]]
         """
-        self.name = name
-        self.reference = reference
-        self.description = description
-        self.minimum = minimum
-        self.maximum = maximum
-        self.default_value = default_value
+        self.name: str = name
+        self.reference: str = reference
+        self.description: Optional[str] = description
+        self.minimum: Optional[Union[int, float]] = minimum
+        self.maximum: Optional[Union[int, float]] = maximum
+        self.default_value: Optional[str] = default_value
         if size < 1 or size > 3:
             raise ValueError("Size can only be 1, 2 or 3")
         if size == 1:
-            self.size = 1
-            self.labels = None
+            self.size: int = 1
+            self.labels: Optional[List[str]] = None
         else:
             self.size = size
             if not labels:
@@ -92,10 +96,11 @@ class ConfigurationTemplate:
             self.labels = labels
         if not isinstance(data_type, DataType):
             raise ValueError("Invalid data type given")
-        self.data_type = data_type
+        self.data_type: DataType = data_type
 
     def __repr__(self) -> str:
-        """Make string representation of configuration template.
+        """
+        Make string representation of configuration template.
 
         :returns: representation
         :rtype: str
@@ -110,20 +115,21 @@ class ConfigurationTemplate:
             f"labels='{self.labels}')"
         )
 
-    def to_dto(self) -> Dict[str, Union[str, int, float, List[str]]]:
-        """Create data transfer object used for registration.
+    def to_dto(self) -> Dict[str, Union[int, str, float, List[str]]]:
+        """
+        Create data transfer object used for registration.
 
         :returns: dto
         :rtype: Dict[str, Union[str, int, float, List[str]]]
         """
-        dto = {
+        dto: Dict[str, Union[str, int, float, List[str]]] = {
             "name": self.name,
             "reference": self.reference,
             "dataType": self.data_type.name,
         }
 
-        if self.size != 1:
-            dto["size"] = self.size
+        if self.size != 1 and self.labels is not None:
+            dto.update({"size": self.size})
             dto["labels"] = self.labels
         else:
             dto["labels"] = []

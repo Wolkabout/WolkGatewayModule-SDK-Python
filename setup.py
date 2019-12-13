@@ -1,3 +1,4 @@
+"""Run this module to install package on your machine."""
 from os import path
 
 import setuptools

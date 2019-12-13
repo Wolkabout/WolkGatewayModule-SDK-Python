@@ -12,14 +12,18 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from enum import Enum
+from enum import unique
+from typing import Optional
 
-from dataclasses import dataclass, field
-from enum import Enum, unique
+from dataclasses import dataclass
+from dataclasses import field
 
 
 @unique
 class FirmwareUpdateState(Enum):
-    """Enumeration of available firmware update states.
+    """
+    Enumeration of available firmware update states.
 
     :ivar ABORTED: Firmware installation aborted
     :vartype ABORTED: str
@@ -39,7 +43,8 @@ class FirmwareUpdateState(Enum):
 
 @unique
 class FirmwareUpdateErrorCode(Enum):
-    """Enumeration of possible firmware update errors.
+    """
+    Enumeration of possible firmware update errors.
 
     :ivar DEVICE_NOT_PRESENT: Unable to pass firmware install command to device
     :vartype DEVICE_NOT_PRESENT: int
@@ -62,7 +67,8 @@ class FirmwareUpdateErrorCode(Enum):
 
 @dataclass
 class FirmwareUpdateStatus:
-    """Holds information about current firmware update status.
+    """
+    Holds information about current firmware update status.
 
     :ivar status: Firmware update status
     :vartype status: FirmwareUpdateState
@@ -71,4 +77,4 @@ class FirmwareUpdateStatus:
     """
 
     status: FirmwareUpdateState
-    error_code: FirmwareUpdateErrorCode = field(default=None)
+    error_code: Optional[FirmwareUpdateErrorCode] = field(default=None)

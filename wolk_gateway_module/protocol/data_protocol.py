@@ -12,16 +12,46 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from abc import ABC
+from abc import abstractmethod
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
-from abc import ABC, abstractmethod
+from wolk_gateway_module.model.actuator_command import ActuatorCommand
+from wolk_gateway_module.model.actuator_status import ActuatorStatus
+from wolk_gateway_module.model.alarm import Alarm
+from wolk_gateway_module.model.configuration_command import (
+    ConfigurationCommand,
+)
+from wolk_gateway_module.model.message import Message
+from wolk_gateway_module.model.sensor_reading import SensorReading
+
+Configuration = Dict[
+    str,
+    Union[
+        int,
+        float,
+        bool,
+        str,
+        Tuple[int, int],
+        Tuple[int, int, int],
+        Tuple[float, float],
+        Tuple[float, float, float],
+        Tuple[str, str],
+        Tuple[str, str, str],
+    ],
+]
 
 
 class DataProtocol(ABC):
     """Parse inbound messages and serialize outbound messages."""
 
     @abstractmethod
-    def get_inbound_topics_for_device(self, device_key):
-        """Return list of inbound topics for given device key.
+    def get_inbound_topics_for_device(self, device_key: str) -> List[str]:
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -32,8 +62,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_actuator_get_message(self, message):
-        """Check if message is actuator get command.
+    def is_actuator_get_message(self, message: Message) -> bool:
+        """
+        Check if message is actuator get command.
 
         :param message: Message received
         :type message: Message
@@ -44,8 +75,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_actuator_set_message(self, message):
-        """Check if message is actuator set command.
+    def is_actuator_set_message(self, message: Message) -> bool:
+        """
+        Check if message is actuator set command.
 
         :param message: Message received
         :type message: Message
@@ -56,8 +88,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_configuration_get_message(self, message):
-        """Check if message is configuration get command.
+    def is_configuration_get_message(self, message: Message) -> bool:
+        """
+        Check if message is configuration get command.
 
         :param message: Message received
         :type message: Message
@@ -68,8 +101,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_configuration_set_message(self, message):
-        """Check if message is configuration set command.
+    def is_configuration_set_message(self, message: Message) -> bool:
+        """
+        Check if message is configuration set command.
 
         :param message: Message received
         :type message: Message
@@ -80,8 +114,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_key_from_message(self, message):
-        """Extract device key from message.
+    def extract_key_from_message(self, message: Message) -> str:
+        """
+        Extract device key from message.
 
         :param message: Message received
         :type message: Message
@@ -92,8 +127,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_actuator_command(self, message):
-        """Make actuator command from message.
+    def make_actuator_command(self, message: Message) -> ActuatorCommand:
+        """
+        Make actuator command from message.
 
         :param message: Message received
         :type message: Message
@@ -104,8 +140,11 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_configuration_command(self, message):
-        """Make configuration command from message.
+    def make_configuration_command(
+        self, message: Message
+    ) -> ConfigurationCommand:
+        """
+        Make configuration command from message.
 
         :param message: Message received
         :type message: Message
@@ -116,8 +155,11 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_sensor_reading_message(self, device_key, sensor_reading):
-        """Make message from sensor reading for device key.
+    def make_sensor_reading_message(
+        self, device_key: str, sensor_reading: SensorReading
+    ) -> Message:
+        """
+        Make message from sensor reading for device key.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -131,7 +173,10 @@ class DataProtocol(ABC):
 
     @abstractmethod
     def make_sensor_readings_message(
-        self, device_key, sensor_readings, timestamp=None
+        self,
+        device_key: str,
+        sensor_readings: List[SensorReading],
+        timestamp=None,
     ):
         """Make message from multiple sensor readings for device key.
 
@@ -148,8 +193,9 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_alarm_message(self, device_key, alarm):
-        """Make message from alarm for device key.
+    def make_alarm_message(self, device_key: str, alarm: Alarm):
+        """
+        Make message from alarm for device key.
 
         :param device_key: Device on which the alarm occurred
         :type device_key: str
@@ -162,8 +208,11 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_actuator_status_message(self, device_key, actuator_status):
-        """Make message from actuator status for device key.
+    def make_actuator_status_message(
+        self, device_key: str, actuator_status: ActuatorStatus
+    ) -> Message:
+        """
+        Make message from actuator status for device key.
 
         :param device_key: Device on which the actuator status occurred
         :type device_key: str
@@ -176,8 +225,11 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_configuration_message(self, device_key, configuration):
-        """Make message from configuration for device key.
+    def make_configuration_message(
+        self, device_key: str, configuration: Configuration
+    ) -> Message:
+        """
+        Make message from configuration for device key.
 
         :param device_key: Device to which the configuration belongs to.
         :type device_key: str

@@ -12,16 +12,26 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from abc import ABC
+from abc import abstractmethod
+from typing import List
 
-from abc import ABC, abstractmethod
+from wolk_gateway_module.model.device_registration_request import (
+    DeviceRegistrationRequest,
+)
+from wolk_gateway_module.model.device_registration_response import (
+    DeviceRegistrationResponse,
+)
+from wolk_gateway_module.model.message import Message
 
 
 class RegistrationProtocol(ABC):
     """Parse inbound messages and serialize outbound registration messages."""
 
     @abstractmethod
-    def get_inbound_topics_for_device(self, device_key):
-        """Return list of inbound topics for given device key.
+    def get_inbound_topics_for_device(self, device_key: str) -> List[str]:
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -32,8 +42,9 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_key_from_message(self, message):
-        """Return device key from message.
+    def extract_key_from_message(self, message: Message) -> str:
+        """
+        Return device key from message.
 
         :param message: Message received
         :type message: Message
@@ -44,8 +55,9 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_registration_response_message(self, message):
-        """Check if message is device registration response.
+    def is_registration_response_message(self, message: Message) -> bool:
+        """
+        Check if message is device registration response.
 
         :param message: Message received
         :type message: Message
@@ -56,8 +68,11 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_registration_message(self, request):
-        """Make message from device registration request.
+    def make_registration_message(
+        self, request: DeviceRegistrationRequest
+    ) -> Message:
+        """
+        Make message from device registration request.
 
         :param request: Device registration request
         :type request: DeviceRegistrationRequest
@@ -68,8 +83,11 @@ class RegistrationProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_registration_response(self, message):
-        """Make device registration response from message.
+    def make_registration_response(
+        self, message: Message
+    ) -> DeviceRegistrationResponse:
+        """
+        Make device registration response from message.
 
         :param message: Message received
         :rtpe message: Message

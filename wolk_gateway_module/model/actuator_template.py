@@ -12,14 +12,16 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from typing import Optional, Union, Dict
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from wolk_gateway_module.model.data_type import DataType
 
 
 class ActuatorTemplate:
-    """Actuator template for registering device on Platform.
+    """
+    Actuator template for registering device on Platform.
 
     :ivar description: Description detailing this actuator
     :vartype description: str or None
@@ -46,7 +48,8 @@ class ActuatorTemplate:
         minimum: Optional[Union[int, float]] = None,
         maximum: Optional[Union[int, float]] = None,
     ):
-        """Actuator template for device registration request.
+        """
+        Actuator template for device registration request.
 
         Define a reading type either by using the ``data_type`` to select a
         generic type (boolean, numeric, string) or use ``reading_type_name``
@@ -70,11 +73,11 @@ class ActuatorTemplate:
         :param maximum: Actuator maximum value
         :type maximum: Optional[Union[int,float]]
         """
-        self.name = name
-        self.reference = reference
-        self.description = description
-        self.minimum = minimum
-        self.maximum = maximum
+        self.name: str = name
+        self.reference: str = reference
+        self.description: Optional[str] = description
+        self.minimum: Optional[Union[int, float]] = minimum
+        self.maximum: Optional[Union[int, float]] = maximum
 
         if not (data_type or reading_type_name or unit):
             raise ValueError("Unable to create template")
@@ -83,7 +86,7 @@ class ActuatorTemplate:
             if not isinstance(data_type, DataType):
                 raise ValueError("Invalid data type given")
             if data_type == DataType.NUMERIC:
-                self.unit = {
+                self.unit: Dict[str, str] = {
                     "readingTypeName": "COUNT(ACTUATOR)",
                     "symbol": "count",
                 }
@@ -106,7 +109,8 @@ class ActuatorTemplate:
         self.unit = {"readingTypeName": reading_type_name, "symbol": unit}
 
     def __repr__(self) -> str:
-        """Make string representation of actuator template.
+        """
+        Make string representation of actuator template.
 
         :returns: representation
         :rtype: str
@@ -118,13 +122,14 @@ class ActuatorTemplate:
             f"minimum='{self.minimum}', maximum='{self.maximum}')"
         )
 
-    def to_dto(self) -> Dict[str, Union[int, float, str]]:
-        """Create data transfer object used for registration.
+    def to_dto(self) -> Dict[str, Union[int, float, str, Dict[str, str]]]:
+        """
+        Create data transfer object used for registration.
 
         :returns: dto
         :rtype: Dict[str, Union[int, float, str]]
         """
-        dto = {
+        dto: Dict[str, Union[int, float, str, Dict[str, str]]] = {
             "name": self.name,
             "reference": self.reference,
             "unit": self.unit,

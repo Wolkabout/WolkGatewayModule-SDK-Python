@@ -12,12 +12,13 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 
 class FirmwareHandler(ABC):
-    """Handle firmware installation and abort commands, and report version.
+    """
+    Handle firmware installation and abort commands, and report version.
 
     Once an object of this class is passed to a Wolk object,
     it will set callback methods `on_install_success` and

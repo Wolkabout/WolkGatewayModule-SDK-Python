@@ -12,16 +12,18 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from time import sleep
+from time import time
+from typing import Callable
+from typing import List
+from typing import Optional
 
-from typing import Callable, List
-from time import time, sleep
+from paho.mqtt import client as mqtt  # type: ignore
 
-from paho.mqtt import client as mqtt
-
-from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.connectivity.connectivity_service import (
     ConnectivityService,
 )
+from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.message import Message
 
 
@@ -29,7 +31,8 @@ class MQTTConnectivityService(ConnectivityService):
     """Responsible for exchanging data with WolkGateway through MQTT."""
 
     def __repr__(self) -> str:
-        """Make string representation of MQTTConnectivityService.
+        """
+        Make string representation of MQTTConnectivityService.
 
         :returns: representation
         :rtype: str
@@ -54,7 +57,8 @@ class MQTTConnectivityService(ConnectivityService):
         lastwill_message: Message,
         topics: list,
     ) -> None:
-        """Prepare MQTT connectivity service for connecting to WolkGateway.
+        """
+        Prepare MQTT connectivity service for connecting to WolkGateway.
 
         :param host: Address of WolkGateway
         :type host: str
@@ -77,16 +81,19 @@ class MQTTConnectivityService(ConnectivityService):
         self.topics = topics
         self.qos = qos
         self.lastwill_message = lastwill_message
-        self.inbound_message_listener = None
+        self.inbound_message_listener: Optional[
+            Callable[[Message], None]
+        ] = None
         self._connected = False
-        self.connected_rc = None
+        self.connected_rc: Optional[int] = None
 
         self.log.debug(self.__repr__())
 
     def set_inbound_message_listener(
         self, on_inbound_message: Callable[[Message], None]
     ) -> None:
-        """Set the callback function ot handle inbound messages.
+        """
+        Set the callback function ot handle inbound messages.
 
         :param on_inbound_message: Callable that handles inbound messages
         :type on_inbound_message: Callable[Message]
@@ -106,7 +113,8 @@ class MQTTConnectivityService(ConnectivityService):
             self.lastwill_message = message
 
     def add_subscription_topics(self, topics: List[str]) -> None:
-        """Add subscription topics.
+        """
+        Add subscription topics.
 
         :param topics: List of topics
         :type topics: List[str]
@@ -115,7 +123,8 @@ class MQTTConnectivityService(ConnectivityService):
         self.topics.extend(topics)
 
     def remove_topics_for_device(self, device_key: str) -> None:
-        """Remove topics for device from subscription topics.
+        """
+        Remove topics for device from subscription topics.
 
         :param device_key: Device identifier
         :type device_key: str
@@ -129,7 +138,8 @@ class MQTTConnectivityService(ConnectivityService):
                 self.topics.remove(topic)
 
     def connected(self) -> bool:
-        """Return if currently connected.
+        """
+        Return if currently connected.
 
         :returns: connected
         :rtype: bool
@@ -137,7 +147,8 @@ class MQTTConnectivityService(ConnectivityService):
         return self._connected
 
     def connect(self) -> bool:
-        """Establish connection with WolkGateway.
+        """
+        Establish connection with WolkGateway.
 
         :returns: result
         :rtype: bool
@@ -204,7 +215,8 @@ class MQTTConnectivityService(ConnectivityService):
         return self._connected
 
     def reconnect(self) -> bool:
-        """Terminate existing and create new connection with WolkGateway.
+        """
+        Terminate existing and create new connection with WolkGateway.
 
         :returns: result
         :rtype: bool
@@ -237,7 +249,8 @@ class MQTTConnectivityService(ConnectivityService):
         self._connected = False
 
     def publish(self, message: Message) -> bool:
-        """Publish serialized data to WolkGateway.
+        """
+        Publish serialized data to WolkGateway.
 
         :param message: Message to be published
         :type message: Message
@@ -258,8 +271,9 @@ class MQTTConnectivityService(ConnectivityService):
 
     def _on_mqtt_message(
         self, client: mqtt.Client, userdata: str, message: mqtt.MQTTMessage
-    ):
-        """Parse inbound messages and pass them to message listener.
+    ) -> None:
+        """
+        Parse inbound messages and pass them to message listener.
 
         :param client: Client that received the message
         :type client: paho.mqtt.Client
@@ -268,11 +282,16 @@ class MQTTConnectivityService(ConnectivityService):
         :param message: Class with members: topic, payload, qos, retain.
         :type message: paho.mqtt.MQTTMessage
         """
-        self.inbound_message_listener(Message(message.topic, message.payload))
+        if self.inbound_message_listener is not None:
+            self.inbound_message_listener(
+                Message(message.topic, message.payload)
+            )
+        else:
+            raise RuntimeError("No inbound message listener is set!")
 
     def _on_mqtt_connect(
         self, client: mqtt.Client, userdata: str, flags: int, rc: int
-    ):
+    ) -> None:
         """
         Handle when the client receives a CONNACK response from the server.
 

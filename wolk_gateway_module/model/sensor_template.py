@@ -12,8 +12,9 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from typing import Optional, Union, Dict
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.reading_type import ReadingType
@@ -24,7 +25,8 @@ from wolk_gateway_module.model.reading_type_name import ReadingTypeName as Name
 
 
 class SensorTemplate:
-    """Sensor template for registering device on Platform.
+    """
+    Sensor template for registering device on Platform.
 
     :ivar description: Description detailing this sensor
     :vartype description: str or None
@@ -45,13 +47,14 @@ class SensorTemplate:
         name: str,
         reference: str,
         data_type: DataType = None,
-        reading_type_name: Name = None,
-        unit: Unit = None,
+        reading_type_name: Union[Name, str] = None,
+        unit: Union[Unit, str] = None,
         description: Optional[str] = None,
         minimum: Optional[Union[int, float]] = None,
         maximum: Optional[Union[int, float]] = None,
     ):
-        """Sensor template for device registration request.
+        """
+        Sensor template for device registration request.
 
         Define a reading type for sensors,
         either a generic type by specifying
@@ -112,7 +115,8 @@ class SensorTemplate:
         self.unit = ReadingType(name=reading_type_name, unit=unit)
 
     def __repr__(self) -> str:
-        """Make string representation of sensor template.
+        """
+        Make string representation of sensor template.
 
         :returns: representation
         :rtype: str
@@ -123,13 +127,17 @@ class SensorTemplate:
             f"minimum='{self.minimum}', maximum='{self.maximum}')"
         )
 
-    def to_dto(self) -> Dict[str, Union[str, int, float]]:
-        """Create data transfer object used for registration.
+    def to_dto(self) -> Dict[str, Union[str, int, float, Dict[str, str]]]:
+        """
+        Create data transfer object used for registration.
 
         :returns: dto
         :rtype: Dict[str, Union[str, int, float]]
         """
-        dto = {"name": self.name, "reference": self.reference}
+        dto: Dict[str, Union[str, int, float, Dict[str, str]]] = {
+            "name": self.name,
+            "reference": self.reference,
+        }
 
         dto["description"] = self.description if self.description else ""
 
@@ -142,7 +150,10 @@ class SensorTemplate:
                 isinstance(self.unit.name, Name)
                 and isinstance(self.unit.unit, Unit)
             )
-            else {"readingTypeName": self.unit.name, "symbol": self.unit.unit}
+            else {
+                "readingTypeName": str(self.unit.name),
+                "symbol": str(self.unit.unit),
+            }
         )
 
         if self.minimum is not None and self.maximum is not None:
