@@ -782,6 +782,55 @@ class Wolk:
         if not self.outbound_message_queue.put(message):
             raise RuntimeError(f"Unable to store message: {message}")
 
+    def add_sensor_readings(
+        self,
+        device_key: str,
+        readings: Dict[
+            str,
+            Union[
+                bool,
+                int,
+                float,
+                str,
+                Tuple[int, int],
+                Tuple[int, int, int],
+                Tuple[float, float],
+                Tuple[float, float, float],
+                Tuple[str, str],
+                Tuple[str, str, str],
+            ],
+        ],
+        timestamp: Optional[int] = None,
+    ) -> None:
+        """Serialize multiple sensor readings and put into storage.
+
+        Storing readings without Unix timestamp will result
+        in all sent messages being treated as live readings and
+        will be assigned a timestamp upon reception, so for a valid
+        history add timestamps to readings via ``int(round(time.time() * 1000))``
+
+        :param device_key: Device on which the sensor reading occurred
+        :type device_key: str
+        :param readings: dictionary in sensor_reference:value format
+        :type readings:  Dict[str,Union[bool,int,float,str,Tuple[int, int],Tuple[int, int, int],Tuple[float, float],Tuple[float, float, float],Tuple[str, str],Tuple[str, str, str],]
+        :param timestamp: Unix time
+        :type timestamp: Optional[int]
+
+        :raises RuntimeError: Unable to place in storage
+        """
+        self.log.debug(
+            f"Add sensor readings: {device_key} , "
+            f"{readings} , {timestamp}"
+        )
+        sensor_readings = []
+        for reference, value in readings.items():
+            sensor_readings.append(SensorReading(reference, value))
+        message = self.data_protocol.make_sensor_readings_message(
+            device_key, sensor_readings, timestamp
+        )
+        if not self.outbound_message_queue.put(message):
+            raise RuntimeError(f"Unable to store message: {message}")
+
     def add_alarm(
         self,
         device_key: str,
