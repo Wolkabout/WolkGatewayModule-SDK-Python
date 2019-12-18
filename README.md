@@ -133,6 +133,9 @@ wolk_module.add_sensor_reading("DEVICE_KEY", "LOC", (24.534, -34.325))
 # Add timestamps to store when reading occurred to preserve history, otherwise
 # Platform will assign timestamp when it receives the reading
 wolk_module.add_sensor_reading("KEY", "R", 12, int(round(time.time() * 1000)))
+
+# Add multiple sensor reading for a device
+wolk_module.add_sensor_readings("KEY", {"R1": "value", "R2": True}, timestamp)
 ```
 
 This method will put serialized messages in storage.

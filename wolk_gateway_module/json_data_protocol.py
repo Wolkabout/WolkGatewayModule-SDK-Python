@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 import json
+from typing import List
 
 from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.actuator_command import (
@@ -317,6 +318,50 @@ class JsonDataProtocol(DataProtocol):
         message = Message(topic, payload)
         self.log.debug(
             f"Made {message} from {sensor_reading} and {device_key}"
+        )
+
+        return message
+
+    def make_sensor_readings_message(
+        self,
+        device_key: str,
+        sensor_readings: List[SensorReading],
+        timestamp: int = None,
+    ):
+        """Make message from multiple sensor readings for device key.
+
+        :param device_key: Device on which the sensor reading occurred
+        :type device_key: str
+        :param sensor_reading: Sensor readings data
+        :type sensor_reading: List[SensorReading]
+        :param timestamp: Timestamp
+        :type timestamp: Optional[int]
+
+        :returns: message
+        :rtype: Message
+        """
+        topic = (
+            self.SENSOR_READING
+            + self.DEVICE_PATH_PREFIX
+            + device_key
+        )
+
+        payload = {}
+        for sensor_reading in sensor_readings:
+            if isinstance(sensor_reading.value, tuple):
+                sensor_reading.value = ",".join(map(str, sensor_reading.value))
+            elif isinstance(sensor_reading.value, bool):
+                sensor_reading.value = str(sensor_reading.value).lower()
+
+            payload[sensor_reading.reference] = sensor_reading.value
+
+        if timestamp is not None:
+            payload["utc"] = timestamp
+
+        message = Message(topic, json.dumps(payload))
+        self.log.debug(
+            f"Made {message} from {sensor_readings} and {device_key} "
+            f"and timestamp {timestamp}"
         )
 
         return message
