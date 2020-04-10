@@ -863,7 +863,8 @@ class Wolk:
         ],
         timestamp: Optional[int] = None,
     ) -> None:
-        """Serialize multiple sensor readings and put into storage.
+        """
+        Serialize multiple sensor readings and put into storage.
 
         Storing readings without Unix timestamp will result
         in all sent messages being treated as live readings and
@@ -880,8 +881,7 @@ class Wolk:
         :raises RuntimeError: Unable to place in storage
         """
         self.log.debug(
-            f"Add sensor readings: {device_key} , "
-            f"{readings} , {timestamp}"
+            f"Add sensor readings: {device_key} , " f"{readings} , {timestamp}"
         )
         sensor_readings = []
         for reference, value in readings.items():

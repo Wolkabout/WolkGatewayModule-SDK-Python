@@ -18,7 +18,6 @@ from typing import List
 from wolk_gateway_module.logger_factory import logger_factory
 from wolk_gateway_module.model.actuator_command import ActuatorCommand
 from wolk_gateway_module.model.actuator_command import ActuatorCommandType
-from wolk_gateway_module.model.actuator_state import ActuatorState
 from wolk_gateway_module.model.actuator_status import ActuatorStatus
 from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.configuration_command import (
@@ -336,8 +335,9 @@ class JsonDataProtocol(DataProtocol):
         device_key: str,
         sensor_readings: List[SensorReading],
         timestamp: int = None,
-    ):
-        """Make message from multiple sensor readings for device key.
+    ) -> Message:
+        """
+        Make message from multiple sensor readings for device key.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -349,11 +349,7 @@ class JsonDataProtocol(DataProtocol):
         :returns: message
         :rtype: Message
         """
-        topic = (
-            self.SENSOR_READING
-            + self.DEVICE_PATH_PREFIX
-            + device_key
-        )
+        topic = self.SENSOR_READING + self.DEVICE_PATH_PREFIX + device_key
 
         payload = {}
         for sensor_reading in sensor_readings:

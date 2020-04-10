@@ -25,10 +25,6 @@ from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
 )
 from wolk_gateway_module.model.message import Message
-from wolk_gateway_module.model.reading_type_measurement_unit import (
-    ReadingTypeMeasurementUnit,
-)
-from wolk_gateway_module.model.reading_type_name import ReadingTypeName
 from wolk_gateway_module.protocol.registration_protocol import (
     RegistrationProtocol,
 )
