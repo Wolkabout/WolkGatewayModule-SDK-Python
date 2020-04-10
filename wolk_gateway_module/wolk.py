@@ -1133,7 +1133,8 @@ class Wolk:
             raise ValueError(
                 "Given device is not an instance of Device class!"
             )
-        if device.key in [device.key for device in self.devices]:
+        device_keys = [device.key for device in self.devices]
+        if device.key in device_keys:
             self.log.error(f"Device with key '{device.key}' was already added")
             return
 
