@@ -43,9 +43,6 @@ from wolk_gateway_module.model.reading_type_measurement_unit import (
 )
 from wolk_gateway_module.model.reading_type_name import ReadingTypeName
 from wolk_gateway_module.model.sensor_template import SensorTemplate
-from wolk_gateway_module.protocol.registration_protocol import (
-    RegistrationProtocol,
-)
 
 
 class JsonRegistrationProtocolTests(unittest.TestCase):
