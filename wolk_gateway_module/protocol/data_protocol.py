@@ -177,8 +177,9 @@ class DataProtocol(ABC):
         device_key: str,
         sensor_readings: List[SensorReading],
         timestamp=None,
-    ):
-        """Make message from multiple sensor readings for device key.
+    ) -> Message:
+        """
+        Make message from multiple sensor readings for device key.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -193,7 +194,7 @@ class DataProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_alarm_message(self, device_key: str, alarm: Alarm):
+    def make_alarm_message(self, device_key: str, alarm: Alarm) -> Message:
         """
         Make message from alarm for device key.
 
