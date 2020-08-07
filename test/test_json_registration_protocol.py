@@ -360,8 +360,8 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "name": "Slider",'
             + '    "reference": "SL",'
             + '    "unit": {'
-            + '      "readingTypeName": "COUNT(ACTUATOR)",'
-            + '      "symbol": "count"'
+            + '      "readingTypeName": "RANGE(ACTUATOR)",'
+            + '      "symbol": ""'
             + "    },"
             + '    "description": "",'
             + '    "minimum": 0,'
