@@ -360,7 +360,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "reference": "SL",'
             + '    "unit": {'
             + '      "readingTypeName": "RANGE (ACTUATOR)",'
-            + '      "symbol": ""'
+            + '      "symbol": "count"'
             + "    },"
             + '    "description": "",'
             + '    "minimum": 0,'
