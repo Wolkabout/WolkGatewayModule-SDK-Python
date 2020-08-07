@@ -84,7 +84,7 @@ class ActuatorTemplate:
                 raise ValueError("Invalid data type given")
             if data_type == DataType.NUMERIC:
                 self.unit = {
-                    "readingTypeName": "RANGE(ACTUATOR)",
+                    "readingTypeName": "RANGE (ACTUATOR)",
                     "symbol": "",
                 }
             elif data_type == DataType.BOOLEAN:
