@@ -85,7 +85,7 @@ class ActuatorTemplate:
             if data_type == DataType.NUMERIC:
                 self.unit = {
                     "readingTypeName": "RANGE (ACTUATOR)",
-                    "symbol": "",
+                    "symbol": "count",
                 }
             elif data_type == DataType.BOOLEAN:
                 self.unit = {
