@@ -21,32 +21,31 @@ sys.path.append("..")  # noqa
 
 from wolk_gateway_module.json_registration_protocol import (
     JsonRegistrationProtocol,
-)
-from wolk_gateway_module.model.actuator_template import ActuatorTemplate
-from wolk_gateway_module.model.alarm_template import AlarmTemplate
+)  # noqa
+from wolk_gateway_module.model.actuator_template import (
+    ActuatorTemplate,
+)  # noqa
+from wolk_gateway_module.model.alarm_template import AlarmTemplate  # noqa
 from wolk_gateway_module.model.configuration_template import (
     ConfigurationTemplate,
-)
-from wolk_gateway_module.model.data_type import DataType
+)  # noqa
+from wolk_gateway_module.model.data_type import DataType  # noqa
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
-)
+)  # noqa
 from wolk_gateway_module.model.device_registration_response import (
     DeviceRegistrationResponse,
-)
+)  # noqa
 from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
-)
-from wolk_gateway_module.model.device_template import DeviceTemplate
-from wolk_gateway_module.model.message import Message
+)  # noqa
+from wolk_gateway_module.model.device_template import DeviceTemplate  # noqa
+from wolk_gateway_module.model.message import Message  # noqa
 from wolk_gateway_module.model.reading_type_measurement_unit import (
     ReadingTypeMeasurementUnit,
-)
-from wolk_gateway_module.model.reading_type_name import ReadingTypeName
-from wolk_gateway_module.model.sensor_template import SensorTemplate
-from wolk_gateway_module.protocol.registration_protocol import (
-    RegistrationProtocol,
-)
+)  # noqa
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName  # noqa
+from wolk_gateway_module.model.sensor_template import SensorTemplate  # noqa
 
 
 class JsonRegistrationProtocolTests(unittest.TestCase):
@@ -360,8 +359,8 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "name": "Slider",'
             + '    "reference": "SL",'
             + '    "unit": {'
-            + '      "readingTypeName": "COUNT(ACTUATOR)",'
-            + '      "symbol": "count"'
+            + '      "readingTypeName": "RANGE (ACTUATOR)",'
+            + '      "symbol": ""'
             + "    },"
             + '    "description": "",'
             + '    "minimum": 0,'

@@ -84,8 +84,8 @@ class ActuatorTemplate:
                 raise ValueError("Invalid data type given")
             if data_type == DataType.NUMERIC:
                 self.unit = {
-                    "readingTypeName": "COUNT(ACTUATOR)",
-                    "symbol": "count",
+                    "readingTypeName": "RANGE (ACTUATOR)",
+                    "symbol": "",
                 }
             elif data_type == DataType.BOOLEAN:
                 self.unit = {
@@ -93,10 +93,7 @@ class ActuatorTemplate:
                     "symbol": "",
                 }
             elif data_type == DataType.STRING:
-                self.unit = {
-                    "readingTypeName": "STRING(ACTUATOR)",
-                    "symbol": "",
-                }
+                self.unit = {"readingTypeName": "TEXT(ACTUATOR)", "symbol": ""}
             return
 
         if not (reading_type_name and unit):
