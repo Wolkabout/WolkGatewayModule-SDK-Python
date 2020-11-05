@@ -96,10 +96,7 @@ class ActuatorTemplate:
                     "symbol": "",
                 }
             elif data_type == DataType.STRING:
-                self.unit = {
-                    "readingTypeName": "STRING(ACTUATOR)",
-                    "symbol": "",
-                }
+                self.unit = {"readingTypeName": "TEXT(ACTUATOR)", "symbol": ""}
             return
 
         if not (reading_type_name and unit):
