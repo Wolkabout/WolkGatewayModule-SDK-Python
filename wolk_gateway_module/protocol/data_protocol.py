@@ -16,6 +16,7 @@ from abc import ABC
 from abc import abstractmethod
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Union
 
@@ -176,7 +177,7 @@ class DataProtocol(ABC):
         self,
         device_key: str,
         sensor_readings: List[SensorReading],
-        timestamp=None,
+        timestamp: Optional[int] = None,
     ) -> Message:
         """
         Make message from multiple sensor readings for device key.

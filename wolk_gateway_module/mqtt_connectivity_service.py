@@ -18,7 +18,7 @@ from typing import Callable
 from typing import List
 from typing import Optional
 
-from paho.mqtt import client as mqtt  # type: ignore
+from paho.mqtt import client as mqtt
 
 from wolk_gateway_module.connectivity.connectivity_service import (
     ConnectivityService,

@@ -14,7 +14,7 @@ the specifics of their particular use case.
 
 However, all the communication that is directed towards the gateway through
 WolkConnect - BUS Handler is already provided with this package, an open source implementation
-written in Python 3.7 that uses the MQTT protocol over TCP/IP to communicate with 
+written in Python 3.7 that uses the MQTT protocol over TCP/IP to communicate with
 `WolkGateway <https://github.com/Wolkabout/WolkGateway>`_.
 
 
@@ -38,4 +38,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
