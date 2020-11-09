@@ -12,16 +12,21 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from abc import ABC
+from abc import abstractmethod
+from typing import List
 
-from abc import ABC, abstractmethod
+from wolk_gateway_module.model.device_status import DeviceStatus
+from wolk_gateway_module.model.message import Message
 
 
 class StatusProtocol(ABC):
     """Parse inbound messages and serialize device status messages."""
 
     @abstractmethod
-    def get_inbound_topics_for_device(self, device_key):
-        """Return list of inbound topics for given device key.
+    def get_inbound_topics_for_device(self, device_key: str) -> List[str]:
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -32,8 +37,9 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_device_status_request_message(self, message):
-        """Check if message is device status request.
+    def is_device_status_request_message(self, message: Message) -> bool:
+        """
+        Check if message is device status request.
 
         :param message: Message received
         :type message: Message
@@ -44,8 +50,11 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_status_response_message(self, device_status, device_key):
-        """Make message from device status response.
+    def make_device_status_response_message(
+        self, device_status: DeviceStatus, device_key: str
+    ) -> Message:
+        """
+        Make message from device status response.
 
         :param device_status: Device's current status
         :type device_status: DeviceStatus
@@ -58,8 +67,11 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_device_status_update_message(self, device_status, device_key):
-        """Make message from device status update.
+    def make_device_status_update_message(
+        self, device_status: DeviceStatus, device_key: str
+    ) -> Message:
+        """
+        Make message from device status update.
 
         :param device_status: Device's current status
         :type device_status: DeviceStatus
@@ -72,8 +84,9 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_last_will_message(self, device_keys):
-        """Make last will message from list of device keys.
+    def make_last_will_message(self, device_keys: List[str]) -> Message:
+        """
+        Make last will message from list of device keys.
 
         :param device_keys: List of device keys
         :type device_keys: list(str)
@@ -84,8 +97,9 @@ class StatusProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_key_from_message(self, message):
-        """Extract device key from message.
+    def extract_key_from_message(self, message: Message) -> str:
+        """
+        Extract device key from message.
 
         :param message: Message received
         :type message: Message

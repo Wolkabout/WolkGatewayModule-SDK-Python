@@ -12,15 +12,15 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 from collections import deque
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
+from wolk_gateway_module.logger_factory import logger_factory
+from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.persistence.outbound_message_queue import (
     OutboundMessageQueue,
 )
-from wolk_gateway_module.logger_factory import logger_factory
-from wolk_gateway_module.model.message import Message
 
 
 class OutboundMessageDeque(OutboundMessageQueue):
@@ -37,11 +37,12 @@ class OutboundMessageDeque(OutboundMessageQueue):
 
     def __init__(self) -> None:
         """Initialize a double ended queue for storing messages."""
-        self.queue = deque()
+        self.queue: deque = deque()
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
-        """Make string representation of OutboundMessageDeque.
+        """
+        Make string representation of OutboundMessageDeque.
 
         :returns: representation
         :rtype: str

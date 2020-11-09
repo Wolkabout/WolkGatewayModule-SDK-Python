@@ -12,9 +12,10 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
-from typing import Dict, List
+from dataclasses import dataclass
+from dataclasses import field
+from typing import Dict
+from typing import List
 
 from wolk_gateway_module.model.actuator_template import ActuatorTemplate
 from wolk_gateway_module.model.alarm_template import AlarmTemplate
@@ -26,7 +27,8 @@ from wolk_gateway_module.model.sensor_template import SensorTemplate
 
 @dataclass
 class DeviceTemplate:
-    """Contains information required for registering device on Platform.
+    """
+    Contains information required for registering device on Platform.
 
     A device template consists of lists of templates (actuator, alarm, sensor, configuration)
     that represent what data the device is expected to send and receive.

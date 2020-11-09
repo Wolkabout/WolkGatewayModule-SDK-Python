@@ -1,4 +1,4 @@
-"""This module contains the Wolk class that ties together the whole package."""
+"""Contains the Wolk class that ties together the whole package."""
 #   Copyright 2019 WolkAbout Technology s.r.o.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,20 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 from inspect import signature
 from reprlib import recursive_repr
-from typing import Callable, Dict, Optional, Tuple, Union
 from time import sleep
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-
+from wolk_gateway_module.connectivity.connectivity_service import (
+    ConnectivityService,
+)
+from wolk_gateway_module.interface.firmware_handler import FirmwareHandler
 from wolk_gateway_module.json_data_protocol import JsonDataProtocol
 from wolk_gateway_module.json_firmware_update_protocol import (
     JsonFirmwareUpdateProtocol,
@@ -27,25 +34,30 @@ from wolk_gateway_module.json_registration_protocol import (
     JsonRegistrationProtocol,
 )
 from wolk_gateway_module.json_status_protocol import JsonStatusProtocol
-from wolk_gateway_module.mqtt_connectivity_service import (
-    MQTTConnectivityService,
-)
 from wolk_gateway_module.logger_factory import logger_factory
-from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
+from wolk_gateway_module.model.actuator_state import ActuatorState
+from wolk_gateway_module.model.actuator_status import ActuatorStatus
+from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.device import Device
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
 )
 from wolk_gateway_module.model.device_status import DeviceStatus
-from wolk_gateway_module.model.actuator_state import ActuatorState
-from wolk_gateway_module.model.actuator_status import ActuatorStatus
-from wolk_gateway_module.model.alarm import Alarm
-from wolk_gateway_module.model.sensor_reading import SensorReading
 from wolk_gateway_module.model.firmware_update_status import (
-    FirmwareUpdateStatus,
     FirmwareUpdateState,
 )
-
+from wolk_gateway_module.model.firmware_update_status import (
+    FirmwareUpdateStatus,
+)
+from wolk_gateway_module.model.message import Message
+from wolk_gateway_module.model.sensor_reading import SensorReading
+from wolk_gateway_module.mqtt_connectivity_service import (
+    MQTTConnectivityService,
+)
+from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
+from wolk_gateway_module.persistence.outbound_message_queue import (
+    OutboundMessageQueue,
+)
 from wolk_gateway_module.protocol.data_protocol import DataProtocol
 from wolk_gateway_module.protocol.firmware_update_protocol import (
     FirmwareUpdateProtocol,
@@ -54,18 +66,27 @@ from wolk_gateway_module.protocol.registration_protocol import (
     RegistrationProtocol,
 )
 from wolk_gateway_module.protocol.status_protocol import StatusProtocol
-from wolk_gateway_module.persistence.outbound_message_queue import (
-    OutboundMessageQueue,
-)
-from wolk_gateway_module.connectivity.connectivity_service import (
-    ConnectivityService,
-)
-from wolk_gateway_module.model.message import Message
-from wolk_gateway_module.interface.firmware_handler import FirmwareHandler
+
+Configuration = Dict[
+    str,
+    Union[
+        int,
+        float,
+        bool,
+        str,
+        Tuple[int, int],
+        Tuple[int, int, int],
+        Tuple[float, float],
+        Tuple[float, float, float],
+        Tuple[str, str],
+        Tuple[str, str, str],
+    ],
+]
 
 
 class Wolk:
-    """This class is the core of this package, tying together all features.
+    """
+    Core of this package, tying together all features.
 
     :ivar actuation_handler: Set new actuator values for your devices
     :vartype actuation_handler: Optional[Callable[[str, str,str], None]]
@@ -109,34 +130,19 @@ class Wolk:
         port: int,
         module_name: str,
         device_status_provider: Callable[[str], DeviceStatus],
-        actuation_handler: Optional[Callable[[str, str, str], None]] = None,
+        actuation_handler: Optional[
+            Callable[[str, str, Union[bool, int, float, str]], None]
+        ] = None,
         actuator_status_provider: Optional[
             Callable[
                 [str, str], Tuple[ActuatorState, Union[bool, int, float, str]]
             ]
         ] = None,
         configuration_handler: Optional[
-            Callable[[str, Dict[str, str]], None]
+            Callable[[str, Configuration], None]
         ] = None,
         configuration_provider: Optional[
-            Callable[
-                [str],
-                Dict[
-                    str,
-                    Union[
-                        int,
-                        float,
-                        bool,
-                        str,
-                        Tuple[int, int],
-                        Tuple[int, int, int],
-                        Tuple[float, float],
-                        Tuple[float, float, float],
-                        Tuple[str, str],
-                        Tuple[str, str, str],
-                    ],
-                ],
-            ]
+            Callable[[str], Configuration]
         ] = None,
         firmware_handler: Optional[FirmwareHandler] = None,
         connectivity_service: Optional[ConnectivityService] = None,
@@ -146,7 +152,8 @@ class Wolk:
         status_protocol: Optional[StatusProtocol] = None,
         outbound_message_queue: Optional[OutboundMessageQueue] = None,
     ):
-        """Construct an instance ready to communicate with WolkGateway.
+        """
+        Construct an instance ready to communicate with WolkGateway.
 
         :param host: Host address of WolkGateway
         :type host: str
@@ -161,7 +168,7 @@ class Wolk:
         :param actuator_status_provider: Provider of device's current actuator status
         :type actuator_status_provider: Optional[Callable[[str, str], Tuple[ActuatorState, Union[bool, int, float, str]]]]
         :param configuration_handler: Setter of new device configuration values
-        :type configuration_handler: Optional[Callable[[str, Dict[str, str]], None]]
+        :type configuration_handler: Optional[Callable[[str, Dict[str, Union[bool, int, float, str]]], None]]
         :param configuration_provider: Provider of device's configuration options
         :type configuration_provider: Optional[Callable[[str], Dict[str, Union[int, float, bool, str, Tuple[int, int], Tuple[int, int, int], Tuple[float, float], Tuple[float, float, float], Tuple[str, str], Tuple[str, str, str]]]]]
         :param install_firmware: Handling of firmware installation
@@ -196,7 +203,9 @@ class Wolk:
                 raise RuntimeError(f"{actuation_handler} is not a callable!")
             if len(signature(actuation_handler).parameters) != 3:
                 raise RuntimeError(f"{actuation_handler} invalid signature!")
-            self.actuation_handler = actuation_handler
+            self.actuation_handler: Optional[
+                Callable[[str, str, Union[bool, int, float, str]], None]
+            ] = actuation_handler
         else:
             self.actuation_handler = None
 
@@ -209,7 +218,12 @@ class Wolk:
                 raise RuntimeError(
                     f"{actuator_status_provider} invalid signature!"
                 )
-            self.actuator_status_provider = actuator_status_provider
+            self.actuator_status_provider: Optional[
+                Callable[
+                    [str, str],
+                    Tuple[ActuatorState, Union[bool, int, float, str]],
+                ]
+            ] = actuator_status_provider
         else:
             self.actuator_status_provider = None
 
@@ -234,7 +248,9 @@ class Wolk:
                 raise RuntimeError(
                     f"{configuration_handler} invalid signature!"
                 )
-            self.configuration_handler = configuration_handler
+            self.configuration_handler: Optional[
+                Callable[[str, Configuration], None]
+            ] = configuration_handler
         else:
             self.configuration_handler = None
 
@@ -247,7 +263,9 @@ class Wolk:
                 raise RuntimeError(
                     f"{configuration_provider} invalid signature!"
                 )
-            self.configuration_provider = configuration_provider
+            self.configuration_provider: Optional[
+                Callable[[str], Configuration]
+            ] = configuration_provider
         else:
             self.configuration_provider = None
 
@@ -268,9 +286,13 @@ class Wolk:
                 raise RuntimeError(
                     f"{firmware_handler} isn't an instance of FirmwareHandler!"
                 )
-            self.firmware_handler = firmware_handler
-            self.firmware_handler.on_install_success = self._on_install_success
-            self.firmware_handler.on_install_fail = self._on_install_fail
+            self.firmware_handler: Optional[FirmwareHandler] = firmware_handler
+            self.firmware_handler.on_install_success = (
+                self._on_install_success  # type: ignore
+            )
+            self.firmware_handler.on_install_fail = (
+                self._on_install_fail  # type: ignore
+            )
         else:
             self.firmware_handler = None
 
@@ -325,7 +347,7 @@ class Wolk:
         else:
             self.outbound_message_queue = OutboundMessageDeque()
 
-        self.devices = []
+        self.devices: List[Device] = []
 
         last_will_message = self.status_protocol.make_last_will_message(
             [device.key for device in self.devices]
@@ -351,7 +373,8 @@ class Wolk:
 
     @recursive_repr()
     def __repr__(self) -> str:
-        """Make string representation or Wolk.
+        """
+        Make string representation or Wolk.
 
         :returns: representation
         :rtype: str
@@ -376,7 +399,8 @@ class Wolk:
         )
 
     def _on_install_success(self, device_key: str) -> None:
-        """Handle firmware installation message from firmware_handler.
+        """
+        Handle firmware installation message from firmware_handler.
 
         :param device_key: Device that completed firmware update
         :type device_key: str
@@ -395,26 +419,29 @@ class Wolk:
                     f"firmware version message {message}"
                 )
                 return
-        version = self.firmware_handler.get_firmware_version(device_key)
-        if not version:
-            self.log.error(
-                "Did not get firmware version for " f"device '{device_key}'"
-            )
-            return
-        message = self.firmware_update_protocol.make_version_message(
-            device_key, version
-        )
-        if not self.connectivity_service.publish(message):
-            if not self.outbound_message_queue.put(message):
+        if self.firmware_handler:
+            version = self.firmware_handler.get_firmware_version(device_key)
+            if not version:
                 self.log.error(
-                    "Failed to publish or store "
-                    f"firmware version message {message}"
+                    "Did not get firmware version for "
+                    f"device '{device_key}'"
                 )
+                return
+            message = self.firmware_update_protocol.make_version_message(
+                device_key, version
+            )
+            if not self.connectivity_service.publish(message):
+                if not self.outbound_message_queue.put(message):
+                    self.log.error(
+                        "Failed to publish or store "
+                        f"firmware version message {message}"
+                    )
 
     def _on_install_fail(
         self, device_key: str, status: FirmwareUpdateStatus
     ) -> None:
-        """Handle firmware installation failiure from firmware_handler.
+        """
+        Handle firmware installation failiure from firmware_handler.
 
         :param device_key: Device that reported firmware installation error
         :type device_key: str
@@ -426,7 +453,7 @@ class Wolk:
             f"message '{status}' for device '{device_key}'"
         )
         if not isinstance(status, FirmwareUpdateStatus):
-            self.log.error(
+            self.log.error(  # type: ignore
                 f"Received status {status} is not "
                 "an instance of FirmwareUpdateStatus!"
             )
@@ -443,7 +470,8 @@ class Wolk:
                 )
 
     def _on_inbound_message(self, message: Message) -> None:
-        """Handle messages received from WolkGateway.
+        """
+        Handle messages received from WolkGateway.
 
         :param message: Message received
         :type message: Message
@@ -473,12 +501,19 @@ class Wolk:
                 self.publish_device_status(device_key)
                 return
 
-            command = self.data_protocol.make_actuator_command(message)
+            actuator_command_set = self.data_protocol.make_actuator_command(
+                message
+            )
             self.actuation_handler(
-                device_key, command.reference, command.value
+                device_key,
+                actuator_command_set.reference,
+                actuator_command_set.value,  # type: ignore
             )
             try:
-                self.publish_actuator_status(device_key, command.reference)
+                self.publish_actuator_status(
+                    device_key, actuator_command_set.reference
+                )
+                return
             except RuntimeError as e:
                 self.log.error(
                     "Error occurred during handing"
@@ -508,9 +543,13 @@ class Wolk:
                 self.publish_device_status(device_key)
                 return
 
-            command = self.data_protocol.make_actuator_command(message)
+            actuator_command_get = self.data_protocol.make_actuator_command(
+                message
+            )
             try:
-                self.publish_actuator_status(device_key, command.reference)
+                self.publish_actuator_status(
+                    device_key, actuator_command_get.reference
+                )
             except RuntimeError as e:
                 self.log.error(
                     "Error occurred during handing "
@@ -542,14 +581,21 @@ class Wolk:
                 self.publish_device_status(device_key)
                 return
 
-            command = self.data_protocol.make_configuration_command(message)
-            self.configuration_handler(device_key, command.value)
-            try:
-                self.publish_configuration(device_key)
-            except RuntimeError as e:
-                self.log.error(
-                    "Error occurred during handling "
-                    f"inbound configuration message {message} : {e}"
+            config_set = self.data_protocol.make_configuration_command(message)
+            if config_set.value is not None:
+                self.configuration_handler(device_key, config_set.value)
+                try:
+                    self.publish_configuration(device_key)
+                except RuntimeError as e:
+                    self.log.error(
+                        "Error occurred during handling "
+                        f"inbound configuration message {message} : {e}"
+                    )
+                    return
+            else:
+                self.log.warning(
+                    "Received malformed configuration message: "
+                    f"{message}\nParser yielded: {config_set}"
                 )
                 return
 
@@ -621,16 +667,16 @@ class Wolk:
                 return
 
             if registered_device.get_actuator_references():
-                for actuator in registered_device.get_actuator_references():
+                for reference in registered_device.get_actuator_references():
                     try:
                         self.publish_actuator_status(
-                            registered_device.key, actuator.reference
+                            registered_device.key, reference
                         )
                     except RuntimeError as e:
                         self.log.error(
                             "Error occurred when sending actuator status "
                             f"for device {registered_device.key} with "
-                            f"reference {actuator.reference} : {e}"
+                            f"reference {reference} : {e}"
                         )
 
             if registered_device.has_configurations():
@@ -643,25 +689,27 @@ class Wolk:
                     )
 
             if registered_device.supports_firmware_update():
-                firmware_version = self.firmware_handler.get_firmware_version(
-                    registered_device.key
-                )
-                if not firmware_version:
-                    self.log.error(
-                        "Did not get firmware version for "
-                        f"device '{registered_device.key}'"
+                if self.firmware_handler is not None:
+                    version = self.firmware_handler.get_firmware_version(
+                        registered_device.key
                     )
-                    return
-
-                message = self.firmware_update_protocol.make_version_message(
-                    registered_device.key, firmware_version
-                )
-                if not self.connectivity_service.publish(message):
-                    if not self.outbound_message_queue.put(message):
+                    if not version:
                         self.log.error(
-                            "Failed to publish or store "
-                            f"firmware version message {message}"
+                            "Did not get firmware version for "
+                            f"device '{registered_device.key}'"
                         )
+                        return
+
+                    msg = self.firmware_update_protocol.make_version_message(
+                        registered_device.key, version
+                    )
+                    if not self.connectivity_service.publish(msg):
+                        if not self.outbound_message_queue.put(msg):
+                            self.log.error(
+                                "Failed to publish or store "
+                                f"firmware version message {msg}"
+                            )
+                            return
 
         elif self.status_protocol.is_device_status_request_message(message):
 
@@ -675,7 +723,7 @@ class Wolk:
                 )
                 return
             message = self.status_protocol.make_device_status_response_message(
-                device_key, status
+                status, device_key
             )
             if not self.connectivity_service.publish(message):
                 if not self.outbound_message_queue.put(message):
@@ -687,6 +735,12 @@ class Wolk:
         elif self.firmware_update_protocol.is_firmware_install_command(
             message
         ):
+
+            if self.firmware_handler is None:
+                self.log.warning(
+                    "No firmware handler, ignoring message: " f"{message}"
+                )
+                return
 
             key = self.firmware_update_protocol.extract_key_from_message(
                 message
@@ -727,6 +781,12 @@ class Wolk:
 
         elif self.firmware_update_protocol.is_firmware_abort_command(message):
 
+            if self.firmware_handler is None:
+                self.log.warning(
+                    "No firmware handler, ignoring message: " f"{message}"
+                )
+                return
+
             key = self.firmware_update_protocol.extract_key_from_message(
                 message
             )
@@ -753,7 +813,8 @@ class Wolk:
         ],
         timestamp: Optional[int] = None,
     ) -> None:
-        """Serialize sensor reading and put into storage.
+        """
+        Serialize sensor reading and put into storage.
 
         Storing readings without Unix timestamp will result
         in all sent messages being treated as live readings and
@@ -802,7 +863,8 @@ class Wolk:
         ],
         timestamp: Optional[int] = None,
     ) -> None:
-        """Serialize multiple sensor readings and put into storage.
+        """
+        Serialize multiple sensor readings and put into storage.
 
         Storing readings without Unix timestamp will result
         in all sent messages being treated as live readings and
@@ -819,8 +881,7 @@ class Wolk:
         :raises RuntimeError: Unable to place in storage
         """
         self.log.debug(
-            f"Add sensor readings: {device_key} , "
-            f"{readings} , {timestamp}"
+            f"Add sensor readings: {device_key} , " f"{readings} , {timestamp}"
         )
         sensor_readings = []
         for reference, value in readings.items():
@@ -838,7 +899,8 @@ class Wolk:
         active: bool,
         timestamp: Optional[int] = None,
     ) -> None:
-        """Serialize alarm event and put into storage.
+        """
+        Serialize alarm event and put into storage.
 
         Storing alarms without Unix timestamp will result
         in all sent messages being treated as live and
@@ -871,7 +933,8 @@ class Wolk:
         state: Optional[ActuatorState] = None,
         value: Optional[Union[bool, int, float, str]] = None,
     ) -> None:
-        """Publish device actuator status to WolkGateway.
+        """
+        Publish device actuator status to WolkGateway.
 
         Getting the actuator status is achieved by calling the user's
         implementation of ``actuator_status_provider`` or optionally an
@@ -951,7 +1014,8 @@ class Wolk:
     def publish_device_status(
         self, device_key: str, status: Optional[DeviceStatus] = None
     ) -> None:
-        """Publish current device status to WolkGateway.
+        """
+        Publish current device status to WolkGateway.
 
         Getting the current device status is achieved by calling the user's
         provided ``device_status_provider`` or a device status can be published
@@ -981,7 +1045,7 @@ class Wolk:
                 )
 
         message = self.status_protocol.make_device_status_update_message(
-            device_key, status
+            status, device_key
         )
 
         if self.connectivity_service.connected():
@@ -1000,7 +1064,8 @@ class Wolk:
                 raise RuntimeError(f"Unable to store message: {message}")
 
     def publish_configuration(self, device_key: str) -> None:
-        """Publish device configuration options to WolkGateway.
+        """
+        Publish device configuration options to WolkGateway.
 
         If message is unable to be sent, it will be placed in storage.
 
@@ -1068,7 +1133,8 @@ class Wolk:
             raise ValueError(
                 "Given device is not an instance of Device class!"
             )
-        if device.key in [device.key for device in self.devices]:
+        device_keys = [device.key for device in self.devices]
+        if device.key in device_keys:
             self.log.error(f"Device with key '{device.key}' was already added")
             return
 
@@ -1211,6 +1277,8 @@ class Wolk:
         if device_key is None:
             while self.outbound_message_queue.queue_size() > 0:
                 message = self.outbound_message_queue.get()
+                if message is None:
+                    return
                 if not self.connectivity_service.publish(message):
                     self.log.error(f"Failed to publish {message}")
                     sleep(0.2)
@@ -1223,7 +1291,7 @@ class Wolk:
             messages = self.outbound_message_queue.get_messages_for_device(
                 device_key
             )
-            if messages is None:
+            if len(messages) == 0:
                 self.log.warning(f"No messages stored for {device_key}")
                 return
             for message in messages:
@@ -1236,8 +1304,9 @@ class Wolk:
                         return
                 self.outbound_message_queue.remove(message)
 
-    def connect(self):
-        """Establish connection with WolkGateway.
+    def connect(self) -> None:
+        """
+        Establish connection with WolkGateway.
 
         Will attempt to publish actuator statuses, configuration options,
         and current firmware version for all added devices.
@@ -1290,6 +1359,13 @@ class Wolk:
                         raise e
 
                 if device.supports_firmware_update():
+                    if self.firmware_handler is None:
+                        self.log.warning(
+                            "Module does not support firmware update, "
+                            "not forwarding firmware version for device "
+                            f"with key '{device.key}'"
+                        )
+                        return
                     version = self.firmware_handler.get_firmware_version(
                         device.key
                     )
@@ -1309,7 +1385,7 @@ class Wolk:
                                 f"firmware version message {msg}"
                             )
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Terminate connection with WolkGateway."""
         self.log.debug("Disconnecting from WolkGateway")
         if not self.connectivity_service.connected():

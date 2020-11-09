@@ -12,16 +12,23 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from abc import ABC
+from abc import abstractmethod
+from typing import List
 
-from abc import ABC, abstractmethod
+from wolk_gateway_module.model.firmware_update_status import (
+    FirmwareUpdateStatus,
+)
+from wolk_gateway_module.model.message import Message
 
 
 class FirmwareUpdateProtocol(ABC):
     """Parse inbound messages and serialize outbound firmware messages."""
 
     @abstractmethod
-    def get_inbound_topics_for_device(self, device_key):
-        """Return list of inbound topics for given device key.
+    def get_inbound_topics_for_device(self, device_key: str) -> List[str]:
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -32,8 +39,11 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_update_message(self, device_key, status):
-        """Make message from device firmware update status.
+    def make_update_message(
+        self, device_key: str, status: FirmwareUpdateStatus
+    ) -> Message:
+        """
+        Make message from device firmware update status.
 
         :param device_key: Device key to which the firmware update belongs to
         :type device_key: str
@@ -46,8 +56,11 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_version_message(self, device_key, firmware_verison):
-        """Make message from device firmware update version.
+    def make_version_message(
+        self, device_key: str, firmware_verison: str
+    ) -> Message:
+        """
+        Make message from device firmware update version.
 
         :param device_key: Device key to which the firmware update belongs to
         :type device_key: str
@@ -60,8 +73,9 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_firmware_install_command(self, message):
-        """Check if received message is firmware install command.
+    def is_firmware_install_command(self, message: Message) -> bool:
+        """
+        Check if received message is firmware install command.
 
         :param message: Message received
         :type message: Message
@@ -72,8 +86,9 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def is_firmware_abort_command(self, message):
-        """Check if received message is firmware abort command.
+    def is_firmware_abort_command(self, message: Message) -> bool:
+        """
+        Check if received message is firmware abort command.
 
         :param message: Message received
         :type message: Message
@@ -84,8 +99,9 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def make_firmware_file_path(self, message):
-        """Extract file path from firmware install message.
+    def make_firmware_file_path(self, message: Message) -> str:
+        """
+        Extract file path from firmware install message.
 
         :param message: Message received
         :type message: Message
@@ -96,8 +112,9 @@ class FirmwareUpdateProtocol(ABC):
         pass
 
     @abstractmethod
-    def extract_key_from_message(self, message):
-        """Return device key from message.
+    def extract_key_from_message(self, message: Message) -> str:
+        """
+        Return device key from message.
 
         :param message: Message received
         :type message: Message

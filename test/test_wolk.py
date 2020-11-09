@@ -1,5 +1,5 @@
 """Tests for Wolk."""
-#   Copyright 2019 WolkAbout Technology s.r.o.
+#   Copyright 2020 WolkAbout Technology s.r.o.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
+import logging
 import sys
 import unittest
 
@@ -34,10 +34,6 @@ from wolk_gateway_module.model.firmware_update_status import (
 )
 from wolk_gateway_module.model.sensor_template import SensorTemplate
 from wolk_gateway_module.model.data_type import DataType
-
-from wolk_gateway_module.logger_factory import logging_config
-
-logging_config("notset")
 
 
 class MockConnectivityService(ConnectivityService):
@@ -248,6 +244,7 @@ class WolkTests(unittest.TestCase):
             actuation_handler=mock_actuator_handler,
             actuator_status_provider=mock_actuator_status_provider,
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.publish_actuator_status("key1", "REF1")
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
@@ -265,6 +262,7 @@ class WolkTests(unittest.TestCase):
             actuation_handler=mock_actuator_handler,
             actuator_status_provider=mock_actuator_status_provider,
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.publish_actuator_status("key1", "REF1", ActuatorState.READY, True)
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
@@ -282,6 +280,7 @@ class WolkTests(unittest.TestCase):
             actuation_handler=mock_actuator_handler,
             actuator_status_provider=mock_actuator_status_provider,
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.connectivity_service._connected = True
         message = Message("p2d/actuator_set/d/key1/r/REF2", '{"value": "3"}')
         wolk._on_inbound_message(message)
@@ -300,6 +299,7 @@ class WolkTests(unittest.TestCase):
             configuration_handler=mock_configuration_handler,
             configuration_provider=mock_configuration_provider,
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.publish_configuration("key1")
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
@@ -317,6 +317,7 @@ class WolkTests(unittest.TestCase):
             configuration_handler=mock_configuration_handler,
             configuration_provider=mock_configuration_provider,
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.connectivity_service._connected = True
         message = Message(
             "p2d/configuration_set/d/key1",
@@ -344,6 +345,7 @@ class WolkTests(unittest.TestCase):
             lambda device_key: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.publish_device_status("key1")
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
@@ -359,6 +361,7 @@ class WolkTests(unittest.TestCase):
             lambda device_key: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
         wolk.publish_device_status("key1", DeviceStatus.OFFLINE)
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
         wolk.connectivity_service._connected = True
@@ -374,6 +377,7 @@ class WolkTests(unittest.TestCase):
             lambda device_key: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
         message = Message("p2d/subdevice_status_request/d/key1")
         wolk._on_inbound_message(message)
 
@@ -389,6 +393,7 @@ class WolkTests(unittest.TestCase):
             connectivity_service=MockConnectivityService(),
             firmware_handler=MockFirmwareHandler(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
 
         message = Message(
             "p2d/firmware_update_install/d/key1", '{ "fileName": "some_path"}'
@@ -407,6 +412,7 @@ class WolkTests(unittest.TestCase):
             connectivity_service=MockConnectivityService(),
             firmware_handler=MockFirmwareHandler(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
 
         message = Message("p2d/firmware_update_abort/d/key1")
 
@@ -422,6 +428,7 @@ class WolkTests(unittest.TestCase):
             lambda device_key: DeviceStatus.CONNECTED,
             connectivity_service=MockConnectivityService(),
         )
+        wolk.log.setLevel(logging.CRITICAL)
 
         sensor1 = SensorTemplate("sensor1", "s1", DataType.NUMERIC)
 

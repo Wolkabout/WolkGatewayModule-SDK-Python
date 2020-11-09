@@ -13,9 +13,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import json
-from time import sleep, time
-from typing import Dict, Tuple, Union
 from random import randint
+from time import sleep
+from time import time
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
 import wolk_gateway_module as wolk
 
@@ -153,13 +156,15 @@ device_1_firmware_version = 1
 
 
 class FirmwareHandlerImplementation(wolk.FirmwareHandler):
-    """Handle firmware installation and abort commands, and report version.
+    """
+    Handle firmware installation and abort commands, and report version.
 
     Once an object of this class is passed to a Wolk object,
     it will set callback methods `on_install_success` and
     `on_install_fail` used for reporting the result of
     the firmware update process. Use these callbacks in `install_firmware`
-    and `abort_installation` methods."""
+    and `abort_installation` methods.
+    """
 
     def install_firmware(
         self, device_key: str, firmware_file_path: str
@@ -309,7 +314,7 @@ def get_actuator_status(
 
 
 def get_configuration(
-    device_key: str
+    device_key: str,
 ) -> Dict[
     str,
     Union[

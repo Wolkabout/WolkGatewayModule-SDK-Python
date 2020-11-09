@@ -12,8 +12,8 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
 from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.reading_type_measurement_unit import (
@@ -47,7 +47,8 @@ class ReadingType:
         name: Optional[Union[Name, str]] = None,
         unit: Optional[Union[Unit, str]] = None,
     ):
-        """Reading type used for registering device's sensors.
+        """
+        Reading type used for registering device's sensors.
 
         :param data_type: Data type for generic reading type
         :type data_type: Optional[DataType]
@@ -65,8 +66,8 @@ class ReadingType:
             if not isinstance(data_type, DataType):
                 raise ValueError("Invalid data type given")
             if data_type == DataType.NUMERIC:
-                self.name = Name.GENERIC
-                self.unit = Unit.NUMERIC
+                self.name: Union[Name, str] = Name.GENERIC
+                self.unit: Union[Unit, str] = Unit.NUMERIC
             elif data_type == DataType.BOOLEAN:
                 self.name = Name.GENERIC_BOOLEAN
                 self.unit = Unit.BOOLEAN
@@ -85,7 +86,8 @@ class ReadingType:
         self.unit = unit
 
     def __repr__(self) -> str:
-        """Make string representation of reading type.
+        """
+        Make string representation of reading type.
 
         :returns: representation
         :rtype: str
@@ -94,7 +96,8 @@ class ReadingType:
 
     @staticmethod
     def validate(name: Union[Name, str], unit: Union[Unit, str]) -> bool:
-        """Validate reading type name and measurement unit.
+        """
+        Validate reading type name and measurement unit.
 
         :param name: Reading type name
         :type name: Union[ReadingTypeName, str]

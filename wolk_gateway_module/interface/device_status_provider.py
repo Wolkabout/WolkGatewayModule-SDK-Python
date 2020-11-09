@@ -12,9 +12,10 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from wolk_gateway_module.model.device_status import DeviceStatus
 
 
-def get_device_status(device_key):
+def get_device_status(device_key: str) -> DeviceStatus:
     """
     Get current device status.
 

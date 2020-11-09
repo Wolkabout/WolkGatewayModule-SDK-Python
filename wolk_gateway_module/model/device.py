@@ -12,8 +12,8 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from typing import List
 
 from wolk_gateway_module.model.device_template import DeviceTemplate
@@ -21,7 +21,8 @@ from wolk_gateway_module.model.device_template import DeviceTemplate
 
 @dataclass
 class Device:
-    """Device identified by name and key, as well as its template.
+    """
+    Device identified by name and key, as well as its template.
 
     :ivar name: Device's name
     :vartype name: str
@@ -36,7 +37,8 @@ class Device:
     template: DeviceTemplate = field(default_factory=DeviceTemplate)
 
     def get_actuator_references(self) -> List[str]:
-        """Get list of actuator references for device.
+        """
+        Get list of actuator references for device.
 
         :returns: actuator_references
         :rtype: List[str]
@@ -47,7 +49,8 @@ class Device:
         return actuator_references
 
     def has_configurations(self) -> bool:
-        """Return if device has configuration options.
+        """
+        Return if device has configuration options.
 
         :returns: has_configurations
         :rtype: bool
@@ -55,7 +58,8 @@ class Device:
         return bool(self.template.configurations)
 
     def supports_firmware_update(self) -> bool:
-        """Return if device supports firmware update.
+        """
+        Return if device supports firmware update.
 
         :returns: supports_firmware_update
         :rtype: bool

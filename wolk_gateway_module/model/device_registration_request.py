@@ -12,15 +12,16 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
 from wolk_gateway_module.model.device_template import DeviceTemplate
 
 
 @dataclass
 class DeviceRegistrationRequest:
-    """Request for device registration.
+    """
+    Request for device registration.
 
     :ivar name: Device name
     :vartype name: str

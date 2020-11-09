@@ -28,7 +28,7 @@ Available device states:
 An stub implementation would look something like this:
 
 .. code-block:: python
-    
+
     def get_device_status(device_key):
         if device_key == "DEVICE_KEY":
             # Handle getting current device status here
@@ -39,7 +39,7 @@ Actuator functions
 ------------------
 
 Actuators enable remote control over a device peripheral that can change between predefined states,
-like turning a switch on or off, or setting a light dimmer to 20% intensity. 
+like turning a switch on or off, or setting a light dimmer to 20% intensity.
 
 In order to enable remote control, the Platform first needs to be notified
 about the actuators current state - is it ready to receive a command, is it busy changing its position
@@ -57,7 +57,7 @@ Available actuator states:
 A stub implementation would look something like this:
 
 .. code-block:: python
-    
+
     def get_actuator_status(device_key, reference):
         if device_key == "DEVICE_KEY":
             if reference == "SW":
@@ -95,8 +95,8 @@ as ``actuation_handler`` and ``actuator_status_provider``
         actuator_status_provider=get_actuator_status,
     )
 
-Once ``Wolk.connect()`` has been called, it will call ``actuator_status_provider`` 
-to get the current actuator status for each actuator of all added device. 
+Once ``Wolk.connect()`` has been called, it will call ``actuator_status_provider``
+to get the current actuator status for each actuator of all added device.
 However, publishing actuator statuses can be done explicitly by calling:
 
 ..  code-block:: python
@@ -169,8 +169,8 @@ as ``configuration_handler`` and ``configuration_provider``
         configuration_provider=get_configuration,
     )
 
-Once ``Wolk.connect()`` has been called, it will call ``configuration_provider`` 
-to get the current configuration options for each added device with configurations. 
+Once ``Wolk.connect()`` has been called, it will call ``configuration_provider``
+to get the current configuration options for each added device with configurations.
 However, publishing configurations can be done explicitly by calling:
 
 ..  code-block:: python

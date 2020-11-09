@@ -12,7 +12,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 import sys
 import unittest
@@ -69,7 +68,7 @@ class JsonStatusProtocolTests(unittest.TestCase):
         )
 
         serialized = json_status_protocol.make_device_status_response_message(
-            device_key, status
+            status, device_key
         )
 
         self.assertEqual(expected, serialized)
@@ -88,7 +87,7 @@ class JsonStatusProtocolTests(unittest.TestCase):
         )
 
         serialized = json_status_protocol.make_device_status_update_message(
-            device_key, status
+            status, device_key
         )
 
         self.assertEqual(expected, serialized)

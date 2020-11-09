@@ -12,14 +12,16 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
-from typing import Optional, Dict
+from dataclasses import dataclass
+from dataclasses import field
+from typing import Dict
+from typing import Optional
 
 
 @dataclass
 class AlarmTemplate:
-    """Alarm template for registering device on WolkAbout IoT Platform.
+    """
+    Alarm template for registering device on WolkAbout IoT Platform.
 
     :ivar name: Alarm name
     :vartype name: str
@@ -34,7 +36,8 @@ class AlarmTemplate:
     description: Optional[str] = field(default="")
 
     def to_dto(self) -> Dict[str, str]:
-        """Create data transfer object used for registration.
+        """
+        Create data transfer object used for registration.
 
         :returns: dto
         :rtype: Dict[str, str]

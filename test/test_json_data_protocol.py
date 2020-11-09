@@ -12,7 +12,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 import sys
 import unittest
@@ -279,32 +278,6 @@ class JsonDataProtocolTests(unittest.TestCase):
             + self.REFERENCE_PATH_PREFIX
             + reference,
             json.dumps({"status": "READY", "value": "15"}),
-        )
-
-        serialized = json_data_protocol.make_actuator_status_message(
-            device_key, actuator_status
-        )
-
-        self.assertEqual(expected, serialized)
-
-    def test_make_multi_data_actuator_status_message(self):
-        """Test serializing of tuple actuator status for device key."""
-        json_data_protocol = JsonDataProtocol()
-
-        device_key = "some_key"
-        reference = "REF"
-        actuator_status = ActuatorStatus(
-            reference, ActuatorState.READY, (15, 12)
-        )
-
-        expected = Message(
-            self.ACTUATOR_STATUS
-            + self.DEVICE_PATH_PREFIX
-            + device_key
-            + self.CHANNEL_DELIMITER
-            + self.REFERENCE_PATH_PREFIX
-            + reference,
-            json.dumps({"status": "READY", "value": "15,12"}),
         )
 
         serialized = json_data_protocol.make_actuator_status_message(

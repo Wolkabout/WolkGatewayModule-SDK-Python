@@ -12,20 +12,18 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 from typing import List
 
 from wolk_gateway_module.logger_factory import logger_factory
-from wolk_gateway_module.model.actuator_command import (
-    ActuatorCommand,
-    ActuatorCommandType,
-)
-from wolk_gateway_module.model.actuator_state import ActuatorState
+from wolk_gateway_module.model.actuator_command import ActuatorCommand
+from wolk_gateway_module.model.actuator_command import ActuatorCommandType
 from wolk_gateway_module.model.actuator_status import ActuatorStatus
 from wolk_gateway_module.model.alarm import Alarm
 from wolk_gateway_module.model.configuration_command import (
     ConfigurationCommand,
+)
+from wolk_gateway_module.model.configuration_command import (
     ConfigurationCommandType,
 )
 from wolk_gateway_module.model.message import Message
@@ -54,7 +52,8 @@ class JsonDataProtocol(DataProtocol):
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
-        """Make string representation of JsonDataProtocol.
+        """
+        Make string representation of JsonDataProtocol.
 
         :returns: representation
         :rtype: str
@@ -62,7 +61,8 @@ class JsonDataProtocol(DataProtocol):
         return "JsonDataProtocol()"
 
     def get_inbound_topics_for_device(self, device_key: str) -> list:
-        """Return list of inbound topics for given device key.
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -91,7 +91,8 @@ class JsonDataProtocol(DataProtocol):
         return inbound_topics
 
     def is_actuator_get_message(self, message: Message) -> bool:
-        """Check if message is actuator get command.
+        """
+        Check if message is actuator get command.
 
         :param message: Message received
         :type message: Message
@@ -107,7 +108,8 @@ class JsonDataProtocol(DataProtocol):
         return is_actuator_get_message
 
     def is_actuator_set_message(self, message: Message) -> bool:
-        """Check if message is actuator set command.
+        """
+        Check if message is actuator set command.
 
         :param message: Message received
         :type message: Message
@@ -123,7 +125,8 @@ class JsonDataProtocol(DataProtocol):
         return is_actuator_set_message
 
     def is_configuration_get_message(self, message: Message) -> bool:
-        """Check if message is configuration get command.
+        """
+        Check if message is configuration get command.
 
         :param message: Message received
         :type message: Message
@@ -142,7 +145,8 @@ class JsonDataProtocol(DataProtocol):
         return is_configuration_get_message
 
     def is_configuration_set_message(self, message: Message) -> bool:
-        """Check if message is configuration set command.
+        """
+        Check if message is configuration set command.
 
         :param message: Message received
         :type message: Message
@@ -161,7 +165,8 @@ class JsonDataProtocol(DataProtocol):
         return is_configuration_set_message
 
     def extract_key_from_message(self, message: Message) -> str:
-        """Extract device key from message.
+        """
+        Extract device key from message.
 
         :param message: Message received
         :type message: Message
@@ -178,7 +183,8 @@ class JsonDataProtocol(DataProtocol):
         return device_key
 
     def make_actuator_command(self, message: Message) -> ActuatorCommand:
-        """Make actuator command from message.
+        """
+        Make actuator command from message.
 
         :param message: Message received
         :type message: Message
@@ -189,7 +195,7 @@ class JsonDataProtocol(DataProtocol):
         reference = message.topic.split("/")[-1]
         if self.is_actuator_set_message(message):
             command = ActuatorCommandType.SET
-            payload = json.loads(message.payload)
+            payload = json.loads(message.payload)  # type: ignore
             value = payload["value"]
             if "\n" in str(value):
                 value = value.replace("\n", "\\n")
@@ -220,7 +226,8 @@ class JsonDataProtocol(DataProtocol):
     def make_configuration_command(
         self, message: Message
     ) -> ConfigurationCommand:
-        """Make configuration command from message.
+        """
+        Make configuration command from message.
 
         :param message: Message received
         :type message: Message
@@ -230,7 +237,7 @@ class JsonDataProtocol(DataProtocol):
         """
         if self.is_configuration_set_message(message):
             command = ConfigurationCommandType.SET
-            payload = json.loads(message.payload)
+            payload = json.loads(message.payload)  # type: ignore
             for reference, value in payload.items():
                 if "\n" in str(value):
                     value = value.replace("\n", "\\n")
@@ -281,7 +288,8 @@ class JsonDataProtocol(DataProtocol):
     def make_sensor_reading_message(
         self, device_key: str, sensor_reading: SensorReading
     ) -> Message:
-        """Make message from sensor reading for device key.
+        """
+        Make message from sensor reading for device key.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -327,8 +335,9 @@ class JsonDataProtocol(DataProtocol):
         device_key: str,
         sensor_readings: List[SensorReading],
         timestamp: int = None,
-    ):
-        """Make message from multiple sensor readings for device key.
+    ) -> Message:
+        """
+        Make message from multiple sensor readings for device key.
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -340,11 +349,7 @@ class JsonDataProtocol(DataProtocol):
         :returns: message
         :rtype: Message
         """
-        topic = (
-            self.SENSOR_READING
-            + self.DEVICE_PATH_PREFIX
-            + device_key
-        )
+        topic = self.SENSOR_READING + self.DEVICE_PATH_PREFIX + device_key
 
         payload = {}
         for sensor_reading in sensor_readings:
@@ -367,7 +372,8 @@ class JsonDataProtocol(DataProtocol):
         return message
 
     def make_alarm_message(self, device_key: str, alarm: Alarm) -> Message:
-        """Make message from alarm for device key.
+        """
+        Make message from alarm for device key.
 
         :param device_key: Device on which the alarm occurred
         :type device_key: str
@@ -404,7 +410,8 @@ class JsonDataProtocol(DataProtocol):
     def make_actuator_status_message(
         self, device_key: str, actuator_status: ActuatorStatus
     ) -> Message:
-        """Make message from actuator status for device key.
+        """
+        Make message from actuator status for device key.
 
         :param device_key: Device on which the actuator status occurred
         :type device_key: str
@@ -423,9 +430,7 @@ class JsonDataProtocol(DataProtocol):
             + actuator_status.reference
         )
 
-        if isinstance(actuator_status.value, tuple):
-            actuator_status.value = ",".join(map(str, actuator_status.value))
-        elif isinstance(actuator_status.value, bool):
+        if isinstance(actuator_status.value, bool):
             actuator_status.value = str(actuator_status.value).lower()
 
         payload = json.dumps(
@@ -445,7 +450,8 @@ class JsonDataProtocol(DataProtocol):
     def make_configuration_message(
         self, device_key: str, configuration: dict
     ) -> Message:
-        """Make message from configuration for device key.
+        """
+        Make message from configuration for device key.
 
         :param device_key: Device to which the configuration belongs to.
         :type device_key: str

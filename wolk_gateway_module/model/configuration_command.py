@@ -12,15 +12,37 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from dataclasses import dataclass
+from dataclasses import field
+from enum import auto
+from enum import Enum
+from enum import unique
+from typing import Dict
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-from dataclasses import dataclass, field
-from enum import Enum, auto, unique
-from typing import Dict, Optional, Tuple, Union
+Configuration = Dict[
+    str,
+    Union[
+        int,
+        float,
+        bool,
+        str,
+        Tuple[int, int],
+        Tuple[int, int, int],
+        Tuple[float, float],
+        Tuple[float, float, float],
+        Tuple[str, str],
+        Tuple[str, str, str],
+    ],
+]
 
 
 @unique
 class ConfigurationCommandType(Enum):
-    """Configuration command type.
+    """
+    Configuration command type.
 
     :ivar GET: Get current configuration options
     :vartype GET: int
@@ -34,7 +56,8 @@ class ConfigurationCommandType(Enum):
 
 @dataclass
 class ConfigurationCommand:
-    """Configuration command with command and optionally value.
+    """
+    Configuration command with command and optionally value.
 
     :ivar command: Configuration command received
     :vartype command: int
@@ -43,6 +66,4 @@ class ConfigurationCommand:
     """
 
     command: ConfigurationCommandType
-    value: Optional[Dict[str, Union[bool, int, float, str, Tuple]]] = field(
-        default=None
-    )
+    value: Optional[Configuration] = field(default=None)

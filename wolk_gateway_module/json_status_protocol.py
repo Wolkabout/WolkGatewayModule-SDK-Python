@@ -12,7 +12,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 
 from wolk_gateway_module.logger_factory import logger_factory
@@ -35,7 +34,8 @@ class JsonStatusProtocol(StatusProtocol):
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
     def __repr__(self) -> str:
-        """Make string representation of JsonStatusProtocol.
+        """
+        Make string representation of JsonStatusProtocol.
 
         :returns: representation
         :rtype: str
@@ -43,7 +43,8 @@ class JsonStatusProtocol(StatusProtocol):
         return "JsonStatusProtocol()"
 
     def get_inbound_topics_for_device(self, device_key: str) -> list:
-        """Return list of inbound topics for given device key.
+        """
+        Return list of inbound topics for given device key.
 
         :param device_key: Device key for which to create topics
         :type device_key: str
@@ -61,7 +62,8 @@ class JsonStatusProtocol(StatusProtocol):
         return inbound_topics
 
     def is_device_status_request_message(self, message: Message) -> bool:
-        """Check if message is device status request.
+        """
+        Check if message is device status request.
 
         :param message: Message received
         :type message: Message
@@ -80,14 +82,15 @@ class JsonStatusProtocol(StatusProtocol):
         return is_device_status_request
 
     def make_device_status_response_message(
-        self, device_key: str, device_status: DeviceStatus
+        self, device_status: DeviceStatus, device_key: str
     ) -> Message:
-        """Make message from device status response.
+        """
+        Make message from device status response.
 
-        :param device_status: Device's current status
-        :type device_status: DeviceStatus
         :param device_key: Device to which the status belongs to
         :type device_key: str
+        :param device_status: Device's current status
+        :type device_status: DeviceStatus
 
         :returns: message
         :rtype: Message
@@ -103,14 +106,15 @@ class JsonStatusProtocol(StatusProtocol):
         return message
 
     def make_device_status_update_message(
-        self, device_key: str, device_status: DeviceStatus
+        self, device_status: DeviceStatus, device_key: str
     ) -> Message:
-        """Make message from device status update.
+        """
+        Make message from device status update.
 
-        :param device_status: Device's current status
-        :type device_status: DeviceStatus
         :param device_key: Device to which the status belongs to
         :type device_key: str
+        :param device_status: Device's current status
+        :type device_status: DeviceStatus
 
         :returns: message
         :rtype: Message
@@ -126,7 +130,8 @@ class JsonStatusProtocol(StatusProtocol):
         return message
 
     def make_last_will_message(self, device_keys: list) -> Message:
-        """Make last will message from list of device keys.
+        """
+        Make last will message from list of device keys.
 
         :param device_keys: List of device keys
         :type device_keys: list(str)
@@ -140,7 +145,8 @@ class JsonStatusProtocol(StatusProtocol):
         return message
 
     def extract_key_from_message(self, message: Message) -> str:
-        """Extract device key from message.
+        """
+        Extract device key from message.
 
         :param message: Message received
         :type message: Message

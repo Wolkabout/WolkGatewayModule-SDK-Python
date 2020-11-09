@@ -12,7 +12,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import json
 import sys
 import unittest
@@ -21,31 +20,31 @@ sys.path.append("..")  # noqa
 
 from wolk_gateway_module.json_registration_protocol import (
     JsonRegistrationProtocol,
-)  # noqa
+)
 from wolk_gateway_module.model.actuator_template import (
     ActuatorTemplate,
-)  # noqa
-from wolk_gateway_module.model.alarm_template import AlarmTemplate  # noqa
+)
+from wolk_gateway_module.model.alarm_template import AlarmTemplate
 from wolk_gateway_module.model.configuration_template import (
     ConfigurationTemplate,
-)  # noqa
-from wolk_gateway_module.model.data_type import DataType  # noqa
+)
+from wolk_gateway_module.model.data_type import DataType
 from wolk_gateway_module.model.device_registration_request import (
     DeviceRegistrationRequest,
-)  # noqa
+)
 from wolk_gateway_module.model.device_registration_response import (
     DeviceRegistrationResponse,
-)  # noqa
+)
 from wolk_gateway_module.model.device_registration_response_result import (
     DeviceRegistrationResponseResult,
-)  # noqa
-from wolk_gateway_module.model.device_template import DeviceTemplate  # noqa
-from wolk_gateway_module.model.message import Message  # noqa
+)
+from wolk_gateway_module.model.device_template import DeviceTemplate
+from wolk_gateway_module.model.message import Message
 from wolk_gateway_module.model.reading_type_measurement_unit import (
     ReadingTypeMeasurementUnit,
-)  # noqa
-from wolk_gateway_module.model.reading_type_name import ReadingTypeName  # noqa
-from wolk_gateway_module.model.sensor_template import SensorTemplate  # noqa
+)
+from wolk_gateway_module.model.reading_type_name import ReadingTypeName
+from wolk_gateway_module.model.sensor_template import SensorTemplate
 
 
 class JsonRegistrationProtocolTests(unittest.TestCase):

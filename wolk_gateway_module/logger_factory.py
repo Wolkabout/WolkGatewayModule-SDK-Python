@@ -12,8 +12,8 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import logging
+from typing import Optional
 
 
 class LoggerFactory:
@@ -21,10 +21,11 @@ class LoggerFactory:
 
     def __init__(
         self,
-        level=logging.INFO,
-        log_format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        console=True,
-        log_file=None,
+        level: int = logging.INFO,
+        log_format: str = "%(asctime)s - %(name)s "
+        + "- %(levelname)s - %(message)s",
+        console: bool = True,
+        log_file: Optional[str] = None,
     ):
         """
         Create a factory that will give loggers through calls to get_logger().
@@ -43,7 +44,9 @@ class LoggerFactory:
         self.console = console
         self.log_file = log_file
 
-    def get_logger(self, name, level=None):
+    def get_logger(
+        self, name: str, level: Optional[int] = None
+    ) -> logging.Logger:
         """
         Return a ready to use logger instance.
 
@@ -91,7 +94,7 @@ class LoggerFactory:
 logger_factory = LoggerFactory(level=logging.INFO)
 
 
-def logging_config(level, log_file=None):
+def logging_config(level: int, log_file: Optional[str] = None) -> None:
     """
     Set desired log level and designate a log file.
 

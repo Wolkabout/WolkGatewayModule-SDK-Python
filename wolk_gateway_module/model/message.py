@@ -12,20 +12,22 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
-from dataclasses import dataclass, field
-from typing import Optional, Union
+from dataclasses import dataclass
+from dataclasses import field
+from typing import Optional
+from typing import Union
 
 
 @dataclass
 class Message:
-    """MQTT message identified by topic and payload.
+    """
+    MQTT message identified by topic and payload.
 
     :ivar topic: Topic where the message is from or will be sent to
     :vartype topic: str
     :ivar payload: Content of the message
-    :vartype payload: bytes or str or None
+    :vartype payload: bytes or str or bytearray or None
     """
 
     topic: str
-    payload: Optional[Union[bytes, str, None]] = field(default=None)
+    payload: Optional[Union[str, bytes, bytearray]] = field(default=None)
