@@ -42,8 +42,6 @@ temperature_sensor = wolk.SensorTemplate(
     reference="T",
     reading_type_name=wolk.ReadingTypeName.TEMPERATURE,
     unit=wolk.ReadingTypeMeasurementUnit.CELSIUS,
-    minimum=-20,
-    maximum=85,
     description="Temperature sensor with range -20 to 85 Celsius",
 )
 
@@ -52,8 +50,6 @@ pressure_sensor = wolk.SensorTemplate(
     reference="P",
     reading_type_name=wolk.ReadingTypeName.PRESSURE,
     unit=wolk.ReadingTypeMeasurementUnit.MILLIBAR,
-    minimum=300,
-    maximum=1100,
     description="Pressure sensor with range 300 to 1100 milibars",
 )
 
@@ -62,8 +58,6 @@ humidity_sensor = wolk.SensorTemplate(
     reference="H",
     reading_type_name=wolk.ReadingTypeName.HUMIDITY,
     unit=wolk.ReadingTypeMeasurementUnit.HUMIDITY_PERCENT,
-    minimum=0,
-    maximum=100,
 )
 
 acceleration_sensor = wolk.SensorTemplate(
@@ -71,8 +65,6 @@ acceleration_sensor = wolk.SensorTemplate(
     reference="ACCL",
     reading_type_name=wolk.ReadingTypeName.ACCELEROMETER,
     unit=wolk.ReadingTypeMeasurementUnit.METRES_PER_SQUARE_SECOND,
-    minimum=0,
-    maximum=1000,
 )
 
 humidity_alarm = wolk.AlarmTemplate(
@@ -92,8 +84,6 @@ slider_actuator = wolk.ActuatorTemplate(
     name="Slider",
     reference="SL",
     data_type=wolk.DataType.NUMERIC,
-    minimum=0,
-    maximum=100,
     description="Light dimmer",
 )
 
