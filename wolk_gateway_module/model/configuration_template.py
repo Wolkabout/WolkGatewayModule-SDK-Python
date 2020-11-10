@@ -32,10 +32,6 @@ class ConfigurationTemplate:
     :vartype description: str or None
     :ivar labels: Labels of fields when data size > 1
     :vartype labels: List[str] or None
-    :ivar maximum: Maximum configuration value
-    :vartype maximum: int
-    :ivar minimum: Minimum configuration value
-    :vartype minimum: int
     :ivar name: Configuration name
     :vartype name: str
     :ivar reference: Unique configuration reference
@@ -53,8 +49,6 @@ class ConfigurationTemplate:
         size: int = 1,
         labels: Optional[List[str]] = None,
         default_value: Optional[str] = None,
-        minimum: Optional[Union[int, float]] = None,
-        maximum: Optional[Union[int, float]] = None,
     ):
         """
         Configuration template for device registration request.
@@ -73,16 +67,11 @@ class ConfigurationTemplate:
         :type labels: Optional[List[str]]
         :param default_value: Default configuration value
         :type default_value: Optional[str]
-        :param minimum: Minimum configuration value
-        :type minimum: Optional[Union[int, float]]
-        :param maximum: Maximum configuration value
-        :type maximum: Optional[Union[int, float]]
         """
         self.name: str = name
         self.reference: str = reference
         self.description: Optional[str] = description
-        self.minimum: Optional[Union[int, float]] = minimum
-        self.maximum: Optional[Union[int, float]] = maximum
+
         self.default_value: Optional[str] = default_value
         if size < 1 or size > 3:
             raise ValueError("Size can only be 1, 2 or 3")
@@ -109,7 +98,6 @@ class ConfigurationTemplate:
             f"ConfigurationTemplate(name='{self.name}', "
             f"reference='{self.reference}', description='{self.description}', "
             f"data_type='{self.data_type}', "
-            f"minimum='{self.minimum}', maximum='{self.maximum}')"
             f"default_value='{self.default_value}', "
             f"size='{self.size}', "
             f"labels='{self.labels}')"
@@ -133,10 +121,6 @@ class ConfigurationTemplate:
             dto["labels"] = self.labels
         else:
             dto["labels"] = []
-
-        if self.minimum is not None and self.maximum is not None:
-            dto["minimum"] = self.minimum
-            dto["maximum"] = self.maximum
 
         if self.default_value:
             dto["defaultValue"] = str(self.default_value)

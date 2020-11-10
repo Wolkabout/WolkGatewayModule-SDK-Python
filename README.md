@@ -51,17 +51,13 @@ generic_sensor = wolk.SensorTemplate(
     name="Generic sensor",
     reference="G",  # References must be unique per device
     data_type=wolk.DataType.NUMERIC,
-    description="Optional description",
-    minimum=0,  # Optional minimum value
-    maximum=100,  # Optional maximum value
+    description="Optional description"
 )
 temperature_sensor = wolk.SensorTemplate(
     name="Temperature",
     reference="T",
     reading_type_name=wolk.ReadingTypeName.TEMPERATURE,
     unit=wolk.ReadingTypeMeasurementUnit.CELSIUS,
-    minimum=-20,
-    maximum=85,
     description="Temperature sensor with range -20 to 85 Celsius",
 )
 # Create a device template used to register the device
@@ -177,8 +173,6 @@ slider_actuator = wolk.ActuatorTemplate(
     name="Slider",
     reference="SL",
     data_type=wolk.DataType.NUMERIC,
-    minimum=0,
-    maximum=100,
     description="Light dimmer",
 )
 device_template = wolk.DeviceTemplate(

@@ -146,8 +146,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             "T",
             reading_type_name=ReadingTypeName.TEMPERATURE,
             unit=ReadingTypeMeasurementUnit.CELSIUS,
-            minimum=0,
-            maximum=100,
             description="A temperature sensor",
         )
 
@@ -168,9 +166,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '{"name": "Temperature", '
             + '"reference": "T", '
             + '"unit": {"readingTypeName": "TEMPERATURE", "symbol": "℃"}, '
-            + '"description": "A temperature sensor", '
-            + '"minimum": 0, '
-            + '"maximum": 100}],'
+            + '"description": "A temperature sensor"}],'
             + '"actuators": [],'
             + '"alarms": [],'
             + '"configurations": [],'
@@ -198,8 +194,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             "T",
             reading_type_name=ReadingTypeName.TEMPERATURE,
             unit=ReadingTypeMeasurementUnit.CELSIUS,
-            minimum=0,
-            maximum=100,
             description="A temperature sensor",
         )
         pressure_sensor = SensorTemplate(
@@ -208,8 +202,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             reading_type_name=ReadingTypeName.PRESSURE,
             unit=ReadingTypeMeasurementUnit.MILLIBAR,
             description="A pressure sensor",
-            minimum=300,
-            maximum=1200,
         )
         humidity_sensor = SensorTemplate(
             "Humidity",
@@ -217,8 +209,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             reading_type_name=ReadingTypeName.HUMIDITY,
             unit=ReadingTypeMeasurementUnit.PERCENT,
             description="A humidity sensor",
-            minimum=0,
-            maximum=100,
         )
 
         accelerometer_sensor = SensorTemplate(
@@ -227,8 +217,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             reading_type_name=ReadingTypeName.ACCELEROMETER,
             unit=ReadingTypeMeasurementUnit.METRES_PER_SQUARE_SECOND,
             description="An accelerometer sensor",
-            minimum=0,
-            maximum=100,
         )
 
         sensors = [
@@ -245,7 +233,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
         alarms = [high_humidity_alarm]
 
         slider_actuator = ActuatorTemplate(
-            "Slider", "SL", data_type=DataType.NUMERIC, minimum=0, maximum=100
+            "Slider", "SL", data_type=DataType.NUMERIC
         )
 
         switch_actuator = ActuatorTemplate(
@@ -258,8 +246,6 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             "configuration_1",
             "config_1",
             DataType.NUMERIC,
-            minimum=0,
-            maximum=100,
         )
         configuration_2 = ConfigurationTemplate(
             "configuration_2", "config_2", DataType.BOOLEAN
@@ -306,9 +292,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "unit": {'
             + '      "readingTypeName": "TEMPERATURE",'
             + '      "symbol": "℃"'
-            + "    },"
-            + '    "minimum": 0,'
-            + '    "maximum": 100'
+            + "    }"
             + "  },"
             + "  {"
             + '    "name": "Pressure",'
@@ -317,9 +301,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "unit": {'
             + '      "readingTypeName": "PRESSURE",'
             + '      "symbol": "mb"'
-            + "    },"
-            + '    "minimum": 300,'
-            + '    "maximum": 1200'
+            + "    }"
             + "  },"
             + "  {"
             + '    "name": "Humidity",'
@@ -328,9 +310,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "unit": {'
             + '      "readingTypeName": "HUMIDITY",'
             + '      "symbol": "%"'
-            + "    },"
-            + '    "minimum": 0,'
-            + '    "maximum": 100'
+            + "    }"
             + "  },"
             + "  {"
             + '    "name": "Accelerometer",'
@@ -339,9 +319,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "unit": {'
             + '      "readingTypeName": "ACCELEROMETER",'
             + '      "symbol": "m/s²"'
-            + "    },"
-            + '    "minimum": 0,'
-            + '    "maximum": 100'
+            + "    }"
             + "  }"
             + "],"
             + '"actuators": ['
@@ -358,12 +336,10 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "name": "Slider",'
             + '    "reference": "SL",'
             + '    "unit": {'
-            + '      "readingTypeName": "RANGE (ACTUATOR)",'
+            + '      "readingTypeName": "COUNT(ACTUATOR)",'
             + '      "symbol": "count"'
             + "    },"
-            + '    "description": "",'
-            + '    "minimum": 0,'
-            + '    "maximum": 100'
+            + '    "description": ""'
             + "  }"
             + "],"
             + '"alarms": ['
@@ -378,9 +354,7 @@ class JsonRegistrationProtocolTests(unittest.TestCase):
             + '    "name": "configuration_1",'
             + '    "reference": "config_1",'
             + '    "dataType": "NUMERIC",'
-            + '    "labels": [],'
-            + '    "minimum": 0,'
-            + '    "maximum": 100'
+            + '    "labels": []'
             + "  },"
             + "  {"
             + '    "name": "configuration_2",'
