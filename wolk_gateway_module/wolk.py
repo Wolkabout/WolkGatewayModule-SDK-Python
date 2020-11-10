@@ -15,6 +15,7 @@
 from inspect import signature
 from reprlib import recursive_repr
 from time import sleep
+from time import time
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -816,10 +817,8 @@ class Wolk:
         """
         Serialize sensor reading and put into storage.
 
-        Storing readings without Unix timestamp will result
-        in all sent messages being treated as live readings and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via ``int(round(time.time() * 1000))``
+        Readings without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -836,6 +835,10 @@ class Wolk:
             f"Add sensor reading: {device_key} , "
             f"{reference} , {value} , {timestamp}"
         )
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         reading = SensorReading(reference, value, timestamp)
         message = self.data_protocol.make_sensor_reading_message(
             device_key, reading
@@ -866,10 +869,8 @@ class Wolk:
         """
         Serialize multiple sensor readings and put into storage.
 
-        Storing readings without Unix timestamp will result
-        in all sent messages being treated as live readings and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via ``int(round(time.time() * 1000))``
+        Readings without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -884,6 +885,10 @@ class Wolk:
             f"Add sensor readings: {device_key} , " f"{readings} , {timestamp}"
         )
         sensor_readings = []
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         for reference, value in readings.items():
             sensor_readings.append(SensorReading(reference, value))
         message = self.data_protocol.make_sensor_readings_message(
@@ -902,10 +907,8 @@ class Wolk:
         """
         Serialize alarm event and put into storage.
 
-        Storing alarms without Unix timestamp will result
-        in all sent messages being treated as live and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to alarms via ``int(round(time.time() * 1000))``
+        Alarms without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -921,6 +924,10 @@ class Wolk:
         self.log.debug(
             f"Add alarm: {device_key} , {reference} , {active} , {timestamp}"
         )
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         alarm = Alarm(reference, active, timestamp)
         message = self.data_protocol.make_alarm_message(device_key, alarm)
         if not self.outbound_message_queue.put(message):
@@ -939,8 +946,8 @@ class Wolk:
         Getting the actuator status is achieved by calling the user's
         implementation of ``actuator_status_provider`` or optionally an
         actuator status can be published explicitly
-        by providing ``ActuatorState`` as ``state`` parameter and the
-        current actuator value via ``value`` parameter
+        by providing ``ActuatorState`` as ``state`` argument and the
+        current actuator value via ``value`` argument
 
         If message is unable to be sent, it will be placed in storage.
 

@@ -126,8 +126,8 @@ wolk_module.publish_device_status("DEVICE_KEY")
 wolk_module.add_sensor_reading("DEVICE_KEY", "REFERENCE", "value")
 # For reading with data size > 1, like location or acceleration use tuples
 wolk_module.add_sensor_reading("DEVICE_KEY", "LOC", (24.534, -34.325))
-# Add timestamps to store when reading occurred to preserve history, otherwise
-# Platform will assign timestamp when it receives the reading
+# Add timestamps to reading occurred to preserve history, otherwise
+# module will assign timestamp when adding it to storage
 wolk_module.add_sensor_reading("KEY", "R", 12, int(round(time.time() * 1000)))
 
 # Add multiple sensor reading for a device
