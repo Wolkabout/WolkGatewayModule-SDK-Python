@@ -186,6 +186,9 @@ class Wolk:
         :type status_protocol: Optional[StatusProtocol]
         :param outbound_message_queue: Custom persistent storage implementation
         :type outbound_message_queue: Optional[OutboundMessageQueue]
+
+        :raises ValueError: Bad values provided for arguments.
+        :raises RuntimeError: An argument is missing its pair.
         """
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
@@ -194,16 +197,16 @@ class Wolk:
         self.module_name = module_name
 
         if not callable(device_status_provider):
-            raise RuntimeError(f"{device_status_provider} is not a callable!")
+            raise ValueError(f"{device_status_provider} is not a callable!")
         if len(signature(device_status_provider).parameters) != 1:
-            raise RuntimeError(f"{device_status_provider} invalid signature!")
+            raise ValueError(f"{device_status_provider} invalid signature!")
         self.device_status_provider = device_status_provider
 
         if actuation_handler is not None:
             if not callable(actuation_handler):
-                raise RuntimeError(f"{actuation_handler} is not a callable!")
+                raise ValueError(f"{actuation_handler} is not a callable!")
             if len(signature(actuation_handler).parameters) != 3:
-                raise RuntimeError(f"{actuation_handler} invalid signature!")
+                raise ValueError(f"{actuation_handler} invalid signature!")
             self.actuation_handler: Optional[
                 Callable[[str, str, Union[bool, int, float, str]], None]
             ] = actuation_handler
@@ -212,11 +215,11 @@ class Wolk:
 
         if actuator_status_provider is not None:
             if not callable(actuator_status_provider):
-                raise RuntimeError(
+                raise ValueError(
                     f"{actuator_status_provider} is not a callable!"
                 )
             if len(signature(actuator_status_provider).parameters) != 2:
-                raise RuntimeError(
+                raise ValueError(
                     f"{actuator_status_provider} invalid signature!"
                 )
             self.actuator_status_provider: Optional[
@@ -242,13 +245,9 @@ class Wolk:
 
         if configuration_handler is not None:
             if not callable(configuration_handler):
-                raise RuntimeError(
-                    f"{configuration_handler} is not a callable!"
-                )
+                raise ValueError(f"{configuration_handler} is not a callable!")
             if len(signature(configuration_handler).parameters) != 2:
-                raise RuntimeError(
-                    f"{configuration_handler} invalid signature!"
-                )
+                raise ValueError(f"{configuration_handler} invalid signature!")
             self.configuration_handler: Optional[
                 Callable[[str, Configuration], None]
             ] = configuration_handler
@@ -257,11 +256,11 @@ class Wolk:
 
         if configuration_provider is not None:
             if not callable(configuration_provider):
-                raise RuntimeError(
+                raise ValueError(
                     f"{configuration_provider} is not a callable!"
                 )
             if len(signature(configuration_provider).parameters) != 1:
-                raise RuntimeError(
+                raise ValueError(
                     f"{configuration_provider} invalid signature!"
                 )
             self.configuration_provider: Optional[
@@ -284,7 +283,7 @@ class Wolk:
 
         if firmware_handler is not None:
             if not isinstance(firmware_handler, FirmwareHandler):
-                raise RuntimeError(
+                raise ValueError(
                     f"{firmware_handler} isn't an instance of FirmwareHandler!"
                 )
             self.firmware_handler: Optional[FirmwareHandler] = firmware_handler
@@ -299,7 +298,7 @@ class Wolk:
 
         if data_protocol is not None:
             if not isinstance(data_protocol, DataProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{data_protocol} is not a valid instance of DataProtocol!"
                 )
             self.data_protocol = data_protocol
@@ -310,7 +309,7 @@ class Wolk:
             if not isinstance(
                 firmware_update_protocol, FirmwareUpdateProtocol
             ):
-                raise RuntimeError(
+                raise ValueError(
                     f"{firmware_update_protocol} is not a valid instance of"
                     " FirmwareUpdateProtocol!"
                 )
@@ -320,7 +319,7 @@ class Wolk:
 
         if status_protocol is not None:
             if not isinstance(status_protocol, StatusProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{status_protocol} is not a valid instance of "
                     "StatusProtocol!"
                 )
@@ -330,7 +329,7 @@ class Wolk:
 
         if registration_protocol is not None:
             if not isinstance(registration_protocol, RegistrationProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{registration_protocol} is not a valid instance of "
                     "RegistrationProtocol!"
                 )
@@ -340,7 +339,7 @@ class Wolk:
 
         if outbound_message_queue is not None:
             if not isinstance(outbound_message_queue, OutboundMessageQueue):
-                raise RuntimeError(
+                raise ValueError(
                     f"{outbound_message_queue} is not a valid instance of "
                     "OutboundMessageQueue!"
                 )
@@ -356,7 +355,7 @@ class Wolk:
 
         if connectivity_service is not None:
             if not isinstance(connectivity_service, ConnectivityService):
-                raise RuntimeError(
+                raise ValueError(
                     f"{connectivity_service} is not a valid instance of "
                     "ConnectivityService!"
                 )
