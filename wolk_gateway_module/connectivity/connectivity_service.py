@@ -34,7 +34,7 @@ class ConnectivityService(ABC):
         :param on_inbound_message: Callable that handles inbound messages
         :type on_inbound_message: Callable[[Message], None]
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def set_lastwill_message(self, message: Message) -> None:
@@ -44,7 +44,7 @@ class ConnectivityService(ABC):
         :param message: Message to be published
         :type message: Message
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def add_subscription_topics(self, topics: List[str]) -> None:
@@ -54,7 +54,7 @@ class ConnectivityService(ABC):
         :param topics: List of topics
         :type topics: List[str]
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def remove_topics_for_device(self, device_key: str) -> None:
@@ -64,7 +64,7 @@ class ConnectivityService(ABC):
         :param device_key: Device identifier
         :type device_key: str
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def connected(self) -> bool:
@@ -74,22 +74,22 @@ class ConnectivityService(ABC):
         :returns: connected
         :rtype: bool
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def connect(self) -> Optional[bool]:
         """Establish connection with WolkGateway."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reconnect(self) -> Optional[bool]:
         """Reestablish connection with WolkGateway."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def disconnect(self) -> Optional[bool]:
         """Terminate connection with WolkGateway."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def publish(self, message: Message) -> bool:
@@ -101,4 +101,4 @@ class ConnectivityService(ABC):
         :returns: result
         :rtype: bool
         """
-        pass
+        raise NotImplementedError

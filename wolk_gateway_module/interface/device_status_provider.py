@@ -24,4 +24,4 @@ def get_device_status(device_key: str) -> DeviceStatus:
     :returns: status
     :rtype: DeviceStatus
     """
-    pass
+    raise NotImplementedError

@@ -62,7 +62,7 @@ class FirmwareHandler(ABC):
         :param firmware_file_path: Path where the firmware file is located
         :type firmware_file_path: str
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def abort_installation(self, device_key: str) -> None:
@@ -77,7 +77,7 @@ class FirmwareHandler(ABC):
         :param device_key: Device for which to abort installation
         :type device_key: str
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_firmware_version(self, device_key: str) -> str:
@@ -89,4 +89,4 @@ class FirmwareHandler(ABC):
         :returns: version
         :rtype: str
         """
-        pass
+        raise NotImplementedError
