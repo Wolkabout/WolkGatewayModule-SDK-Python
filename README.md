@@ -58,7 +58,7 @@ temperature_sensor = wolk.SensorTemplate(
     reference="T",
     reading_type_name=wolk.ReadingTypeName.TEMPERATURE,
     unit=wolk.ReadingTypeMeasurementUnit.CELSIUS,
-    description="Temperature sensor with range -20 to 85 Celsius",
+    description="Temperature sensor",
 )
 # Create a device template used to register the device
 device_template = wolk.DeviceTemplate(

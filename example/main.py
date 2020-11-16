@@ -42,7 +42,7 @@ temperature_sensor = wolk.SensorTemplate(
     reference="T",
     reading_type_name=wolk.ReadingTypeName.TEMPERATURE,
     unit=wolk.ReadingTypeMeasurementUnit.CELSIUS,
-    description="Temperature sensor with range -20 to 85 Celsius",
+    description="Temperature sensor",
 )
 
 pressure_sensor = wolk.SensorTemplate(
@@ -50,7 +50,7 @@ pressure_sensor = wolk.SensorTemplate(
     reference="P",
     reading_type_name=wolk.ReadingTypeName.PRESSURE,
     unit=wolk.ReadingTypeMeasurementUnit.MILLIBAR,
-    description="Pressure sensor with range 300 to 1100 milibars",
+    description="Pressure sensor",
 )
 
 humidity_sensor = wolk.SensorTemplate(
