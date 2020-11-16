@@ -11,11 +11,11 @@ This package is meant to be used for developing WolkGateway modules that enable 
 
 The user is responsible for providing the custom implementation that usually contains the device’s network communication protocol, as well as for providing the business logic and everything related to the used hardware and the specifics of their particular use case.
 
-However, all the communication that is directed towards the gateway through WolkConnect - BUS Handler is already provided with this package, an open source implementation written in Python 3.7 that uses the MQTT protocol over TCP/IP to communicate with [WolkGateway](https://github.com/Wolkabout/WolkGateway).
+However, all the communication that is directed towards the gateway through WolkConnect - BUS Handler is already provided with this package, an open source implementation written in Python 3 that uses the MQTT protocol over TCP/IP to communicate with [WolkGateway](https://github.com/Wolkabout/WolkGateway).
 
 ## Requirements
 
-* Python 3.7
+* Python 3.7+
 
 All requirements for this project can be installed on Debian based systems by invoking:
 ```console
