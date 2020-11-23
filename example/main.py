@@ -23,7 +23,7 @@ from typing import Union
 import wolk_gateway_module as wolk
 
 # # uncomment to enable debug logging to file
-# wolk.logging_config("debug", "wolk_gateway_module.log")
+wolk.logging_config("debug", "wolk_gateway_module.log")
 
 with open("configuration.json", encoding="utf-8") as file:
     configuration = json.load(file)
