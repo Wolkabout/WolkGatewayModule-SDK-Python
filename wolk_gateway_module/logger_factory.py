@@ -94,7 +94,7 @@ class LoggerFactory:
 logger_factory = LoggerFactory(level=logging.INFO)
 
 
-def logging_config(level: int, log_file: Optional[str] = None) -> None:
+def logging_config(level: str, log_file: Optional[str] = None) -> None:
     """
     Set desired log level and designate a log file.
 

@@ -15,6 +15,7 @@
 from inspect import signature
 from reprlib import recursive_repr
 from time import sleep
+from time import time
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -185,6 +186,9 @@ class Wolk:
         :type status_protocol: Optional[StatusProtocol]
         :param outbound_message_queue: Custom persistent storage implementation
         :type outbound_message_queue: Optional[OutboundMessageQueue]
+
+        :raises ValueError: Bad values provided for arguments.
+        :raises RuntimeError: An argument is missing its pair.
         """
         self.log = logger_factory.get_logger(str(self.__class__.__name__))
 
@@ -193,16 +197,16 @@ class Wolk:
         self.module_name = module_name
 
         if not callable(device_status_provider):
-            raise RuntimeError(f"{device_status_provider} is not a callable!")
+            raise ValueError(f"{device_status_provider} is not a callable!")
         if len(signature(device_status_provider).parameters) != 1:
-            raise RuntimeError(f"{device_status_provider} invalid signature!")
+            raise ValueError(f"{device_status_provider} invalid signature!")
         self.device_status_provider = device_status_provider
 
         if actuation_handler is not None:
             if not callable(actuation_handler):
-                raise RuntimeError(f"{actuation_handler} is not a callable!")
+                raise ValueError(f"{actuation_handler} is not a callable!")
             if len(signature(actuation_handler).parameters) != 3:
-                raise RuntimeError(f"{actuation_handler} invalid signature!")
+                raise ValueError(f"{actuation_handler} invalid signature!")
             self.actuation_handler: Optional[
                 Callable[[str, str, Union[bool, int, float, str]], None]
             ] = actuation_handler
@@ -211,11 +215,11 @@ class Wolk:
 
         if actuator_status_provider is not None:
             if not callable(actuator_status_provider):
-                raise RuntimeError(
+                raise ValueError(
                     f"{actuator_status_provider} is not a callable!"
                 )
             if len(signature(actuator_status_provider).parameters) != 2:
-                raise RuntimeError(
+                raise ValueError(
                     f"{actuator_status_provider} invalid signature!"
                 )
             self.actuator_status_provider: Optional[
@@ -241,13 +245,9 @@ class Wolk:
 
         if configuration_handler is not None:
             if not callable(configuration_handler):
-                raise RuntimeError(
-                    f"{configuration_handler} is not a callable!"
-                )
+                raise ValueError(f"{configuration_handler} is not a callable!")
             if len(signature(configuration_handler).parameters) != 2:
-                raise RuntimeError(
-                    f"{configuration_handler} invalid signature!"
-                )
+                raise ValueError(f"{configuration_handler} invalid signature!")
             self.configuration_handler: Optional[
                 Callable[[str, Configuration], None]
             ] = configuration_handler
@@ -256,11 +256,11 @@ class Wolk:
 
         if configuration_provider is not None:
             if not callable(configuration_provider):
-                raise RuntimeError(
+                raise ValueError(
                     f"{configuration_provider} is not a callable!"
                 )
             if len(signature(configuration_provider).parameters) != 1:
-                raise RuntimeError(
+                raise ValueError(
                     f"{configuration_provider} invalid signature!"
                 )
             self.configuration_provider: Optional[
@@ -283,7 +283,7 @@ class Wolk:
 
         if firmware_handler is not None:
             if not isinstance(firmware_handler, FirmwareHandler):
-                raise RuntimeError(
+                raise ValueError(
                     f"{firmware_handler} isn't an instance of FirmwareHandler!"
                 )
             self.firmware_handler: Optional[FirmwareHandler] = firmware_handler
@@ -298,7 +298,7 @@ class Wolk:
 
         if data_protocol is not None:
             if not isinstance(data_protocol, DataProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{data_protocol} is not a valid instance of DataProtocol!"
                 )
             self.data_protocol = data_protocol
@@ -309,7 +309,7 @@ class Wolk:
             if not isinstance(
                 firmware_update_protocol, FirmwareUpdateProtocol
             ):
-                raise RuntimeError(
+                raise ValueError(
                     f"{firmware_update_protocol} is not a valid instance of"
                     " FirmwareUpdateProtocol!"
                 )
@@ -319,7 +319,7 @@ class Wolk:
 
         if status_protocol is not None:
             if not isinstance(status_protocol, StatusProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{status_protocol} is not a valid instance of "
                     "StatusProtocol!"
                 )
@@ -329,7 +329,7 @@ class Wolk:
 
         if registration_protocol is not None:
             if not isinstance(registration_protocol, RegistrationProtocol):
-                raise RuntimeError(
+                raise ValueError(
                     f"{registration_protocol} is not a valid instance of "
                     "RegistrationProtocol!"
                 )
@@ -339,7 +339,7 @@ class Wolk:
 
         if outbound_message_queue is not None:
             if not isinstance(outbound_message_queue, OutboundMessageQueue):
-                raise RuntimeError(
+                raise ValueError(
                     f"{outbound_message_queue} is not a valid instance of "
                     "OutboundMessageQueue!"
                 )
@@ -355,7 +355,7 @@ class Wolk:
 
         if connectivity_service is not None:
             if not isinstance(connectivity_service, ConnectivityService):
-                raise RuntimeError(
+                raise ValueError(
                     f"{connectivity_service} is not a valid instance of "
                     "ConnectivityService!"
                 )
@@ -816,10 +816,8 @@ class Wolk:
         """
         Serialize sensor reading and put into storage.
 
-        Storing readings without Unix timestamp will result
-        in all sent messages being treated as live readings and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via ``int(round(time.time() * 1000))``
+        Readings without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -836,6 +834,10 @@ class Wolk:
             f"Add sensor reading: {device_key} , "
             f"{reference} , {value} , {timestamp}"
         )
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         reading = SensorReading(reference, value, timestamp)
         message = self.data_protocol.make_sensor_reading_message(
             device_key, reading
@@ -866,10 +868,8 @@ class Wolk:
         """
         Serialize multiple sensor readings and put into storage.
 
-        Storing readings without Unix timestamp will result
-        in all sent messages being treated as live readings and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to readings via ``int(round(time.time() * 1000))``
+        Readings without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -884,6 +884,10 @@ class Wolk:
             f"Add sensor readings: {device_key} , " f"{readings} , {timestamp}"
         )
         sensor_readings = []
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         for reference, value in readings.items():
             sensor_readings.append(SensorReading(reference, value))
         message = self.data_protocol.make_sensor_readings_message(
@@ -902,10 +906,8 @@ class Wolk:
         """
         Serialize alarm event and put into storage.
 
-        Storing alarms without Unix timestamp will result
-        in all sent messages being treated as live and
-        will be assigned a timestamp upon reception, so for a valid
-        history add timestamps to alarms via ``int(round(time.time() * 1000))``
+        Alarms without a specified timestamp will be assigned
+        a timestamps via ``int(round(time.time() * 1000))``
 
         :param device_key: Device on which the sensor reading occurred
         :type device_key: str
@@ -921,6 +923,10 @@ class Wolk:
         self.log.debug(
             f"Add alarm: {device_key} , {reference} , {active} , {timestamp}"
         )
+
+        if timestamp is None:
+            timestamp = int(round(time() * 1000))
+
         alarm = Alarm(reference, active, timestamp)
         message = self.data_protocol.make_alarm_message(device_key, alarm)
         if not self.outbound_message_queue.put(message):
@@ -939,8 +945,8 @@ class Wolk:
         Getting the actuator status is achieved by calling the user's
         implementation of ``actuator_status_provider`` or optionally an
         actuator status can be published explicitly
-        by providing ``ActuatorState`` as ``state`` parameter and the
-        current actuator value via ``value`` parameter
+        by providing ``ActuatorState`` as ``state`` argument and the
+        current actuator value via ``value`` argument
 
         If message is unable to be sent, it will be placed in storage.
 

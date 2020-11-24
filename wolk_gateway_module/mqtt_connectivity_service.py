@@ -12,6 +12,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+from threading import Lock
 from time import sleep
 from time import time
 from typing import Callable
@@ -81,11 +82,22 @@ class MQTTConnectivityService(ConnectivityService):
         self.topics = topics
         self.qos = qos
         self.lastwill_message = lastwill_message
-        self.inbound_message_listener: Optional[
-            Callable[[Message], None]
-        ] = None
+        self.inbound_message_listener: Callable[
+            [Message], None
+        ] = lambda message: print("\n\nNo inbound message listener set!\n\n")
         self._connected = False
         self.connected_rc: Optional[int] = None
+
+        self.client = mqtt.Client(client_id=self.client_id)
+        self.client.on_connect = self._on_mqtt_connect
+        self.client.on_disconnect = self._on_mqtt_disconnect
+        self.client.on_message = self._on_mqtt_message
+        self.client.username_pw_set(self.client_id)
+        self.client.will_set(
+            self.lastwill_message.topic, self.lastwill_message.payload
+        )
+
+        self.mutex = Lock()
 
         self.log.debug(self.__repr__())
 
@@ -96,7 +108,7 @@ class MQTTConnectivityService(ConnectivityService):
         Set the callback function ot handle inbound messages.
 
         :param on_inbound_message: Callable that handles inbound messages
-        :type on_inbound_message: Callable[Message]
+        :type on_inbound_message: Callable[[Message], None]
         """
         self.log.debug(f"Set inbound message listener to {on_inbound_message}")
         self.inbound_message_listener = on_inbound_message
@@ -115,6 +127,9 @@ class MQTTConnectivityService(ConnectivityService):
     def add_subscription_topics(self, topics: List[str]) -> None:
         """
         Add subscription topics.
+
+        Adding these topics will not subscribe to them immediately,
+        a new connection needs to happen to subscribe to them.
 
         :param topics: List of topics
         :type topics: List[str]
@@ -152,21 +167,13 @@ class MQTTConnectivityService(ConnectivityService):
 
         :returns: result
         :rtype: bool
-
-        :raises RuntimeError: Reason for connection being refused
         """
         if self._connected:
-            self.log.debug("Already connected")
+            self.log.info("Already connected")
             return True
 
-        self.client = mqtt.Client(client_id=self.client_id)
-        self.client.on_connect = self._on_mqtt_connect
-        self.client.on_disconnect = self._on_mqtt_disconnect
-        self.client.on_message = self._on_mqtt_message
-        self.client.username_pw_set(self.client_id)
-        self.client.will_set(
-            self.lastwill_message.topic, self.lastwill_message.payload
-        )
+        self.mutex.acquire()
+
         self.client.connect(self.host, self.port)
         self.client.loop_start()
 
@@ -177,42 +184,54 @@ class MQTTConnectivityService(ConnectivityService):
         while True:
 
             if round(time()) > timeout:
-                raise RuntimeError("Connection timed out!")
+                self.log.warning("Connection timed out!")
+                self.mutex.release()
+                return False
 
-            if self.connected_rc is None:
+            if self._connected is not True:
                 sleep(0.1)
                 continue
 
             if self.connected_rc == 0:
-                self._connected = True
                 break
 
             elif self.connected_rc == 1:
-                raise RuntimeError(
+                self.log.error(
                     "Connection refused - incorrect protocol version"
                 )
+                self.mutex.release()
+                return False
 
             elif self.connected_rc == 2:
-                raise RuntimeError(
+                self.log.error(
                     "Connection refused - invalid client identifier"
                 )
+                self.mutex.release()
+                return False
 
             elif self.connected_rc == 3:
-                raise RuntimeError("Connection refused - server unavailable")
+                self.log.error("Connection refused - server unavailable")
+                self.mutex.release()
+                return False
 
             elif self.connected_rc == 4:
-                raise RuntimeError(
-                    "Connection refused - bad username or password"
-                )
+                self.log.error("Connection refused - bad username or password")
+                self.mutex.release()
+                return False
 
             elif self.connected_rc == 5:
-                raise RuntimeError("Connection refused - not authorised")
+                self.log.error("Connection refused - not authorized")
+                self.mutex.release()
+                return False
 
         self.log.debug(f"Subscribing to topics: {self.topics}")
         for topic in self.topics:
             self.client.subscribe(topic, 2)
 
-        return self._connected
+        self.mutex.release()
+        self._connected = True
+
+        return True
 
     def reconnect(self) -> bool:
         """
@@ -224,29 +243,21 @@ class MQTTConnectivityService(ConnectivityService):
         :raises RuntimeError: Reason for connection being refused
         """
         self.log.debug("Attempting reconnect")
-        self._connected = False
-        try:
+        if self._connected:
             self.client.loop_stop()
             self.client.disconnect()
-        except AttributeError:
-            pass
-        try:
-            return self.connect()
-        except RuntimeError as exception:
-            raise exception
+
+        return self.connect()
 
     def disconnect(self) -> None:
         """Terminate connection with WolkGateway."""
         self.log.debug(f"Disconnecting from {self.host} : {self.port}")
-        try:
+        if self._connected:
             self.client.publish(
                 self.lastwill_message.topic, self.lastwill_message.payload
             )
             self.client.loop_stop()
             self.client.disconnect()
-        except AttributeError:
-            pass
-        self._connected = False
 
     def publish(self, message: Message) -> bool:
         """
@@ -261,12 +272,16 @@ class MQTTConnectivityService(ConnectivityService):
             self.log.warning(f"Not connected, unable to publish {message}")
             return False
 
+        self.mutex.acquire()
+
         info = self.client.publish(message.topic, message.payload, self.qos)
 
         if info.rc == mqtt.MQTT_ERR_SUCCESS:
             self.log.debug(f"Published {message}")
+            self.mutex.release()
             return True
         else:
+            self.mutex.release()
             return info.is_published()
 
     def _on_mqtt_message(
@@ -282,12 +297,8 @@ class MQTTConnectivityService(ConnectivityService):
         :param message: Class with members: topic, payload, qos, retain.
         :type message: paho.mqtt.MQTTMessage
         """
-        if self.inbound_message_listener is not None:
-            self.inbound_message_listener(
-                Message(message.topic, message.payload)
-            )
-        else:
-            raise RuntimeError("No inbound message listener is set!")
+        self.log.debug(f"Received message on topic: {message.topic}")
+        self.inbound_message_listener(Message(message.topic, message.payload))
 
     def _on_mqtt_connect(
         self, client: mqtt.Client, userdata: str, flags: int, rc: int
@@ -306,13 +317,15 @@ class MQTTConnectivityService(ConnectivityService):
         """
         self.log.debug(f"CONNACK: {rc}")
         if rc == 0:  # Connection successful
-            self._connected = True
             self.connected_rc = 0
+            self._connected = True
             # Subscribing in on_mqtt_connect() means if we lose the connection
             # and reconnect then subscriptions will be renewed.
             if self.topics:
+                self.mutex.acquire()
                 for topic in self.topics:
                     self.client.subscribe(topic, 2)
+                self.mutex.release()
         elif rc == 1:  # Connection refused - incorrect protocol version
             self.connected_rc = 1
         elif rc == 2:  # Connection refused - invalid client identifier
@@ -321,7 +334,7 @@ class MQTTConnectivityService(ConnectivityService):
             self.connected_rc = 3
         elif rc == 4:  # Connection refused - bad username or password
             self.connected_rc = 4
-        elif rc == 5:  # Connection refused - not authorised
+        elif rc == 5:  # Connection refused - not authorized
             self.connected_rc = 5
 
     def _on_mqtt_disconnect(
@@ -336,10 +349,10 @@ class MQTTConnectivityService(ConnectivityService):
         :type userdata: str
         :param rc: Disconnection result
         :type rc: int
-        :raises RuntimeError: Unexpected disconnection
         """
         self.log.debug(f"Disconnect return code: {rc}")
-        if rc != 0:
-            raise RuntimeError("Unexpected disconnection.")
         self._connected = False
-        self.connected_rc = None
+        if rc != 0:
+            self.log.warning(
+                f"Unexpected disconnect on {self.host}:{self.port}!"
+            )

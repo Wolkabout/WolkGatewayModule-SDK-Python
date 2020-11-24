@@ -23,4 +23,4 @@ def get_firmware_version(device_key: str) -> str:
     :returns: version
     :rtype: str
     """
-    pass
+    raise NotImplementedError

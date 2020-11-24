@@ -46,4 +46,4 @@ def handle_configuration(
     :param configuration: Configuration option reference:value pairs
     :type configuration: dict
     """
-    pass
+    raise NotImplementedError

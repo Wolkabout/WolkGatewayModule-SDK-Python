@@ -11,11 +11,11 @@ This package is meant to be used for developing WolkGateway modules that enable 
 
 The user is responsible for providing the custom implementation that usually contains the device’s network communication protocol, as well as for providing the business logic and everything related to the used hardware and the specifics of their particular use case.
 
-However, all the communication that is directed towards the gateway through WolkConnect - BUS Handler is already provided with this package, an open source implementation written in Python 3.7 that uses the MQTT protocol over TCP/IP to communicate with [WolkGateway](https://github.com/Wolkabout/WolkGateway).
+However, all the communication that is directed towards the gateway through WolkConnect - BUS Handler is already provided with this package, an open source implementation written in Python 3 that uses the MQTT protocol over TCP/IP to communicate with [WolkGateway](https://github.com/Wolkabout/WolkGateway).
 
 ## Requirements
 
-* Python 3.7
+* Python 3.7+
 
 All requirements for this project can be installed on Debian based systems by invoking:
 ```console
@@ -51,18 +51,14 @@ generic_sensor = wolk.SensorTemplate(
     name="Generic sensor",
     reference="G",  # References must be unique per device
     data_type=wolk.DataType.NUMERIC,
-    description="Optional description",
-    minimum=0,  # Optional minimum value
-    maximum=100,  # Optional maximum value
+    description="Optional description"
 )
 temperature_sensor = wolk.SensorTemplate(
     name="Temperature",
     reference="T",
     reading_type_name=wolk.ReadingTypeName.TEMPERATURE,
     unit=wolk.ReadingTypeMeasurementUnit.CELSIUS,
-    minimum=-20,
-    maximum=85,
-    description="Temperature sensor with range -20 to 85 Celsius",
+    description="Temperature sensor",
 )
 # Create a device template used to register the device
 device_template = wolk.DeviceTemplate(
@@ -130,8 +126,8 @@ wolk_module.publish_device_status("DEVICE_KEY")
 wolk_module.add_sensor_reading("DEVICE_KEY", "REFERENCE", "value")
 # For reading with data size > 1, like location or acceleration use tuples
 wolk_module.add_sensor_reading("DEVICE_KEY", "LOC", (24.534, -34.325))
-# Add timestamps to store when reading occurred to preserve history, otherwise
-# Platform will assign timestamp when it receives the reading
+# Add timestamps to reading occurred to preserve history, otherwise
+# module will assign timestamp when adding it to storage
 wolk_module.add_sensor_reading("KEY", "R", 12, int(round(time.time() * 1000)))
 
 # Add multiple sensor reading for a device
@@ -177,8 +173,6 @@ slider_actuator = wolk.ActuatorTemplate(
     name="Slider",
     reference="SL",
     data_type=wolk.DataType.NUMERIC,
-    minimum=0,
-    maximum=100,
     description="Light dimmer",
 )
 device_template = wolk.DeviceTemplate(

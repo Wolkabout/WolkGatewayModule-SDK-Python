@@ -15,6 +15,7 @@
 import logging
 import sys
 import unittest
+from typing import List
 
 sys.path.append("..")  # noqa
 
@@ -34,12 +35,21 @@ from wolk_gateway_module.model.firmware_update_status import (
 )
 from wolk_gateway_module.model.sensor_template import SensorTemplate
 from wolk_gateway_module.model.data_type import DataType
+from wolk_gateway_module.json_data_protocol import JsonDataProtocol
+from wolk_gateway_module.json_status_protocol import JsonStatusProtocol
+from wolk_gateway_module.json_firmware_update_protocol import (
+    JsonFirmwareUpdateProtocol,
+)
+from wolk_gateway_module.json_registration_protocol import (
+    JsonRegistrationProtocol,
+)
+from wolk_gateway_module.outbound_message_deque import OutboundMessageDeque
 
 
 class MockConnectivityService(ConnectivityService):
 
     _connected = False
-    _topics = []
+    _topics: List[str] = []
 
     def set_inbound_message_listener(self, on_inbound_message):
         pass
@@ -140,53 +150,15 @@ class MockFirmwareHandler(FirmwareHandler):
     def install_firmware(
         self, device_key: str, firmware_file_path: str
     ) -> None:
-        """
-        Handle the installation of the firmware file.
-
-        Call `self.on_install_success(device_key)` to report success.
-        Reporting success will also get new firmware version.
-
-        If installation fails, call `self.on_install_fail(device_key, status)`
-        where:
-        `status = FirmwareUpdateStatus(
-            FirmwareUpdateState.ERROR,
-            FirmwareUpdateErrorCode.INSTALLATION_FAILED
-        )`
-        or use other values from `FirmwareUpdateErrorCode` if they fit better.
-
-        :param device_key: Device for which the firmware command is intended
-        :type device_key: str
-        :param firmware_file_path: Path where the firmware file is located
-        :type firmware_file_path: str
-        """
         if device_key == "key1":
             self.on_install_success(device_key)
 
     def abort_installation(self, device_key: str) -> None:
-        """
-        Attempt to abort the firmware installation process for device.
-
-        Call `self.on_install_fail(device_key, status)` to report if
-        the installation process was able to be aborted with
-        `status = FirmwareUpdateStatus(FirmwareUpdateState.ABORTED)`
-        If unable to stop the installation process, no action is required.
-
-        :param device_key: Device for which to abort installation
-        :type device_key: str
-        """
         if device_key == "key1":
             status = FirmwareUpdateStatus(FirmwareUpdateState.ABORTED)
             self.on_install_fail(device_key, status)
 
     def get_firmware_version(self, device_key: str) -> str:
-        """
-        Return device's current firmware version.
-
-        :param device_key: Device identifier
-        :type device_key: str
-        :returns: version
-        :rtype: str
-        """
         if device_key == "key1":
             return "v1.0"
         elif device_key == "key2":
@@ -196,12 +168,17 @@ class MockFirmwareHandler(FirmwareHandler):
 class WolkTests(unittest.TestCase):
     """Wolk Tests."""
 
-    def test_bad_status_provider(self):
+    def test_bad_status_provider_callable(self):
         """Test that exception is raised for bad device status provider."""
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             wolk = Wolk(  # noqa
                 "host", 1883, "module_name", lambda a, b: a * b
             )
+
+    def test_bad_status_provider_not_callable(self):
+        """Test that exception is raised for bad device status provider."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk("host", 1883, "module_name", False)  # noqa
 
     def test_add_sensor_reading(self):
         """Test adding a sensor reading to storage and then publish."""
@@ -439,6 +416,281 @@ class WolkTests(unittest.TestCase):
         wolk.add_device(device)
 
         self.assertEqual(1, wolk.outbound_message_queue.queue_size())
+
+    def test_bad_actuation_handler_not_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                actuation_handler=False,
+            )
+
+    def test_bad_actuation_handler_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                actuation_handler=lambda a: a,
+            )
+
+    def test_bad_actuation_provider_not_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                actuator_status_provider=False,
+            )
+
+    def test_bad_actuation_provider_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                actuator_status_provider=lambda a: a,
+            )
+
+    def test_missing_actuator_status_provider(self):
+        """Test passing an actuator handler but no provider raises an exception."""
+        with self.assertRaises(RuntimeError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                connectivity_service=MockConnectivityService(),
+                actuation_handler=mock_actuator_handler,
+            )
+
+    def test_bad_configuration_handler_not_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                configuration_handler=False,
+            )
+
+    def test_bad_configuration_handler_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                configuration_handler=lambda a: a,
+            )
+
+    def test_bad_configuration_provider_not_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                configuration_provider=False,
+            )
+
+    def test_bad_configuration_provider_callable(self):
+        """Test passing something that isn't callable raises ValueError."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda device_key: DeviceStatus.CONNECTED,
+                configuration_provider=lambda a, b: a,
+            )
+
+    def test_missing_configuration_provider(self):
+        """Test passing an config handler but no provider raises an exception."""
+        with self.assertRaises(RuntimeError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                connectivity_service=MockConnectivityService(),
+                configuration_handler=mock_configuration_handler,
+            )
+
+    def test_bad_firmware_handler(self):
+        """Test passing a bad firmware handler raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                firmware_handler=False,
+            )
+
+    def test_bad_data_protocol(self):
+        """Test passing a bad data protocol raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                data_protocol=False,
+            )
+
+    def test_good_data_protocol(self):
+        """Test passing a good data protocol doesn't raise an exception."""
+        data_protocol = JsonDataProtocol()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            data_protocol=data_protocol,
+        )
+
+        self.assertEqual(data_protocol, wolk.data_protocol)
+
+    def test_bad_firmware_update_protocol(self):
+        """Test passing a bad firmware update protocol raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                firmware_update_protocol=False,
+            )
+
+    def test_good_firmware_update_protocol(self):
+        """Test passing a good firmware update protocol doesn't raise an exception."""
+        firmware_update_protocol = JsonFirmwareUpdateProtocol()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            firmware_update_protocol=firmware_update_protocol,
+        )
+
+        self.assertEqual(
+            firmware_update_protocol, wolk.firmware_update_protocol
+        )
+
+    def test_bad_status_protocol(self):
+        """Test passing a bad status protocol raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                status_protocol=False,
+            )
+
+    def test_good_status_protocol(self):
+        """Test passing a good status protocol doesn't raise an exception."""
+        status_protocol = JsonStatusProtocol()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            status_protocol=status_protocol,
+        )
+
+        self.assertEqual(status_protocol, wolk.status_protocol)
+
+    def test_bad_registration_protocol(self):
+        """Test passing a bad registration protocol raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                registration_protocol=False,
+            )
+
+    def test_good_registration_protocol(self):
+        """Test passing a good registration protocol doesn't raise an exception."""
+        registration_protocol = JsonRegistrationProtocol()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            registration_protocol=registration_protocol,
+        )
+
+        self.assertEqual(registration_protocol, wolk.registration_protocol)
+
+    def test_bad_outbound_message_queue(self):
+        """Test passing a bad outbound message queue raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                outbound_message_queue=False,
+            )
+
+    def test_good_outbound_message_queue(self):
+        """Test passing a good outbound message queue doesn't raise an exception."""
+        outbound_message_queue = OutboundMessageDeque()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            outbound_message_queue=outbound_message_queue,
+        )
+
+        self.assertEqual(outbound_message_queue, wolk.outbound_message_queue)
+
+    def test_bad_connectivity_service(self):
+        """Test passing a bad connectivity service raises an exception."""
+        with self.assertRaises(ValueError):
+            wolk = Wolk(  # noqa
+                "host",
+                1883,
+                "module_name",
+                lambda a: a,
+                connectivity_service=False,
+            )
+
+    def test_good_connectivity_service(self):
+        """Test passing a good connectivity service doesn't raise an exception."""
+        connectivity_service = MockConnectivityService()
+
+        wolk = Wolk(
+            "host",
+            1883,
+            "module_name",
+            lambda a: a,
+            connectivity_service=connectivity_service,
+        )
+
+        self.assertEqual(connectivity_service, wolk.connectivity_service)
 
 
 if __name__ == "__main__":

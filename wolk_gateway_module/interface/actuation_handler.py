@@ -31,4 +31,4 @@ def handle_actuation(
     :param value: Value to which to set the actuator
     :type value: str
     """
-    pass
+    raise NotImplementedError

@@ -30,10 +30,6 @@ class SensorTemplate:
 
     :ivar description: Description detailing this sensor
     :vartype description: str or None
-    :ivar maximum: Maximum sensor value
-    :vartype maximum: int or float or None
-    :ivar minimum: Minimum sensor value
-    :vartype minimum: int or float or None
     :ivar name: Name of sensor
     :vartype name: str
     :ivar reference: Unique sensor reference
@@ -50,8 +46,6 @@ class SensorTemplate:
         reading_type_name: Union[Name, str] = None,
         unit: Union[Unit, str] = None,
         description: Optional[str] = None,
-        minimum: Optional[Union[int, float]] = None,
-        maximum: Optional[Union[int, float]] = None,
     ):
         """
         Sensor template for device registration request.
@@ -80,16 +74,10 @@ class SensorTemplate:
         :type unit: Optional[Union[ReadingTypeMeasurementUnit, str]]
         :param description: Description detailing the sensor's specification
         :type description: Optional[str]
-        :param minimum: Minimum sensor value
-        :type minimum: Optional[Union[int, float]]
-        :param maximum: Maximum sensor value
-        :type maximum: Optional[Union[int, float]]
         """
         self.name = name
         self.reference = reference
         self.description = description
-        self.minimum = minimum
-        self.maximum = maximum
 
         if not (data_type or reading_type_name or unit):
             raise ValueError("Unable to create template")
@@ -123,8 +111,7 @@ class SensorTemplate:
         """
         return (
             f"SensorTemplate(name='{self.name}', reference='{self.reference}',"
-            f" description='{self.description}', unit='{self.unit}', "
-            f"minimum='{self.minimum}', maximum='{self.maximum}')"
+            f" description='{self.description}', unit='{self.unit}')"
         )
 
     def to_dto(self) -> Dict[str, Union[str, int, float, Dict[str, str]]]:
@@ -155,9 +142,5 @@ class SensorTemplate:
                 "symbol": str(self.unit.unit),
             }
         )
-
-        if self.minimum is not None and self.maximum is not None:
-            dto["minimum"] = self.minimum
-            dto["maximum"] = self.maximum
 
         return dto
