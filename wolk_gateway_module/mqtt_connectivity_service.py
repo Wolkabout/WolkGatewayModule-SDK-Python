@@ -116,7 +116,7 @@ class MQTTConnectivityService(ConnectivityService):
     def set_lastwill_message(self, message: Message) -> None:
         """Send offline state for module devices on disconnect."""
         self.log.debug(f"Set lastwill message: {message}")
-        if self.client.is_connected():
+        if self._connected:
             self.log.debug("Reconnecting to set lastwill")
             self.disconnect()
             self.lastwill_message = message
@@ -159,7 +159,7 @@ class MQTTConnectivityService(ConnectivityService):
         :returns: connected
         :rtype: bool
         """
-        return self.client.is_connected()
+        return self._connected
 
     def connect(self) -> bool:
         """
@@ -168,7 +168,7 @@ class MQTTConnectivityService(ConnectivityService):
         :returns: result
         :rtype: bool
         """
-        if self.client.is_connected():
+        if self._connected:
             self.log.info("Already connected")
             return True
 
@@ -188,7 +188,7 @@ class MQTTConnectivityService(ConnectivityService):
                 self.mutex.release()
                 return False
 
-            if self.client.is_connected() is not True:
+            if self._connected is not True:
                 sleep(0.1)
                 continue
 
@@ -229,6 +229,7 @@ class MQTTConnectivityService(ConnectivityService):
             self.client.subscribe(topic, 2)
 
         self.mutex.release()
+        self._connected = True
 
         return True
 
@@ -242,7 +243,7 @@ class MQTTConnectivityService(ConnectivityService):
         :raises RuntimeError: Reason for connection being refused
         """
         self.log.debug("Attempting reconnect")
-        if self.client.is_connected():
+        if self._connected:
             self.client.loop_stop()
             self.client.disconnect()
 
@@ -251,7 +252,7 @@ class MQTTConnectivityService(ConnectivityService):
     def disconnect(self) -> None:
         """Terminate connection with WolkGateway."""
         self.log.debug(f"Disconnecting from {self.host} : {self.port}")
-        if self.client.is_connected():
+        if self._connected:
             self.client.publish(
                 self.lastwill_message.topic, self.lastwill_message.payload
             )
@@ -267,7 +268,7 @@ class MQTTConnectivityService(ConnectivityService):
         :returns: result
         :rtype: bool
         """
-        if not self.client.is_connected():
+        if not self._connected:
             self.log.warning(f"Not connected, unable to publish {message}")
             return False
 
@@ -317,9 +318,10 @@ class MQTTConnectivityService(ConnectivityService):
         self.log.debug(f"CONNACK: {rc}")
         if rc == 0:  # Connection successful
             self.connected_rc = 0
+            self._connected = True
             # Subscribing in on_mqtt_connect() means if we lose the connection
             # and reconnect then subscriptions will be renewed.
-            if self.topics and client.is_connected():
+            if self.topics:
                 self.mutex.acquire()
                 for topic in self.topics:
                     self.client.subscribe(topic, 2)
@@ -349,6 +351,7 @@ class MQTTConnectivityService(ConnectivityService):
         :type rc: int
         """
         self.log.debug(f"Disconnect return code: {rc}")
+        self._connected = False
         if rc != 0:
             self.log.warning(
                 f"Unexpected disconnect on {self.host}:{self.port}!"

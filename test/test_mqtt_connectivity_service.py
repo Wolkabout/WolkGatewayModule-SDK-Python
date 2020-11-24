@@ -54,15 +54,10 @@ class MQTTConnectivityServiceTests(unittest.TestCase):
 
     def tearDown(self):
         """Clean context from completed test."""
-        self.host = None
-        self.port = None
-        self.client_id = None
-        self.qos = None
-        self.lastwill_message = None
-        self.topics = None
-        self.listener = None
+        self.mqttcs.disconnect()
+        for handler in self.mqttcs.log.handlers:
+            handler.close()
         self.mqttcs = None
-        self.message = None
 
     def test_set_inbound_message_listener(self):
         """Test that inbound message listener is set correctly."""
@@ -131,6 +126,7 @@ class MQTTConnectivityServiceTests(unittest.TestCase):
 
     def test_connected(self):
         """Test connected returns false."""
+        self.mqttcs.client.is_connected = MagicMock(return_value=False)
         self.assertFalse(self.mqttcs.connected())
 
     def test_reconnect(self):
